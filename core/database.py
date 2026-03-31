@@ -1,0 +1,45 @@
+# core/database.py
+# Асинхронное подключение к PostgreSQL через SQLAlchemy 2.0.
+
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+from sqlalchemy.orm import DeclarativeBase
+
+from core.config import settings
+
+# Движок — управляет пулом соединений к PostgreSQL
+engine = create_async_engine(
+    url=settings.database_url,
+    echo=settings.DEBUG,  # логирование SQL-запросов в консоль
+)
+
+# Фабрика сессий — каждый запрос получает свою сессию
+async_session = async_sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
+
+
+class Base(DeclarativeBase):
+    """
+    Базовый класс для всех моделей.
+    Аналог BaseModel из твоего Django-проекта.
+    """
+    pass
+
+
+async def get_session() -> AsyncSession:
+    """
+    Dependency для FastAPI.
+    Создаёт сессию на время запроса и закрывает после.
+
+    Используется так:
+    async def my_endpoint(session: AsyncSession = Depends(get_session)):
+        ...
+    """
+    async with async_session() as session:
+        yield session
