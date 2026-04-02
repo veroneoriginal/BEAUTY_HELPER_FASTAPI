@@ -1,1 +1,121 @@
 # core/security.py
+
+# Модуль безопасности.
+# Хеширование паролей (bcrypt) и работа с JWT-токенами.
+# Используется сервисами (UserService, AuthService) —
+# они вызывают hash_password / verify_password / create_access_token,
+# не зная деталей реализации.
+
+from datetime import datetime, timedelta, timezone
+
+import bcrypt
+import jwt
+
+from core.config import settings
+
+
+# === Хеширование паролей ===
+
+def hash_password(password: str) -> str:
+    """
+    Хеширует пароль через bcrypt.
+    Возвращает строку вида '$2b$12$...' — она сохраняется в БД.
+    """
+    password_bytes = password.encode("utf-8")
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password_bytes, salt)
+    return hashed.decode("utf-8")
+
+
+def verify_password(
+        plain_password: str,
+        hashed_password: str,
+) -> bool:
+    """
+    Проверяет, совпадает ли введённый пароль с хешем из БД.
+    Используется при логине.
+    """
+    return bcrypt.checkpw(
+        plain_password.encode("utf-8"),
+        hashed_password.encode("utf-8"),
+    )
+
+
+# === JWT-токены ===
+
+def create_access_token(
+        data: dict,
+        expires_delta: timedelta | None = None,
+) -> str:
+    """
+    Создаёт JWT access-токен.
+
+    data — полезная нагрузка (payload), обычно {"sub": user_id}.
+    expires_delta — время жизни токена. Если не указано,
+    берётся из настроек (ACCESS_TOKEN_EXPIRE_MINUTES).
+    """
+    to_encode = data.copy()
+
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(
+            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        )
+
+    # exp — стандартное поле JWT, по нему библиотека проверяет срок
+    to_encode.update({"exp": expire})
+
+    return jwt.encode(
+        to_encode,
+        settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM,
+    )
+
+def create_refresh_token(
+        data: dict,
+        expires_delta: timedelta | None = None,
+) -> str:
+    """
+    Создаёт JWT refresh-токен (долгоживущий).
+
+    Используется для обновления пары токенов.
+    Когда access-токен протухает, клиент отправляет refresh-токен
+    и получает новую пару (access + refresh) без повторного логина.
+
+    data — полезная нагрузка (payload), обычно {"sub": user_id}.
+    expires_delta — время жизни. По умолчанию REFRESH_TOKEN_EXPIRE_DAYS.
+    """
+    to_encode = data.copy()
+
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(
+            days=settings.REFRESH_TOKEN_EXPIRE_DAYS
+        )
+
+    to_encode.update({
+        "exp": expire,
+        "type": "refresh",  # помечаем тип токена
+    })
+
+    return jwt.encode(
+        to_encode,
+        settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM,
+    )
+
+
+def decode_token(token: str) -> dict:
+    """
+    Декодирует и проверяет JWT-токен (любой — access или refresh).
+    Если токен невалидный или просрочен — выбрасывает исключение.
+
+    Возвращает payload (например, {"sub": 1, "type": "access", "exp": ...}).
+    """
+    return jwt.decode(
+        token,
+        settings.SECRET_KEY,
+        algorithms=[settings.ALGORITHM],
+    )
