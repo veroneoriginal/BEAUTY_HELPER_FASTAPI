@@ -9,6 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from apps.auth.schemas import (
     ConfirmEmailResponse,
     LoginRequest,
+    LogoutRequest,
+    LogoutResponse,
     RefreshRequest,
     RegisterRequest,
     RegisterResponse,
@@ -116,3 +118,17 @@ async def refresh(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e),
         )
+
+@router.post(
+    "/logout",
+    response_model=LogoutResponse,
+    summary="Выход из аккаунта",
+    description="Инвалидирует access и refresh токены. "
+                "После logout токены перестают работать.",
+)
+async def logout(
+        data: LogoutRequest,
+        service: AuthService = Depends(get_auth_service),
+):
+    result = await service.logout(data.access_token, data.refresh_token)
+    return result

@@ -59,3 +59,18 @@ class RefreshRequest(BaseModel):
     Клиент отправляет refresh_token, получает новую пару.
     """
     refresh_token: str
+
+class LogoutRequest(BaseModel):
+    """
+    Данные для logout.
+    Клиент отправляет оба токена для инвалидации.
+    """
+    access_token: str
+    refresh_token: str
+
+
+class LogoutResponse(BaseModel):
+    """
+    Ответ после logout.
+    """
+    message: str

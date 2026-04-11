@@ -4,17 +4,21 @@
 # логин, обновление токенов.
 # Работает через UserRepository — не знает про SQLAlchemy напрямую.
 
+import logging
 from datetime import timedelta
 
 from apps.users.repository import UserRepository
 from apps.auth.schemas import RegisterRequest, LoginRequest
+from infrastructure.redis import redis_client
 from core.security import (
     hash_password,
     verify_password,
     create_access_token,
     create_refresh_token,
-    decode_token,
+    decode_token, is_token_blacklisted,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class AuthService:
@@ -141,7 +145,6 @@ class AuthService:
             "token_type": "bearer",
         }
 
-
     async def refresh_tokens(self, refresh_token: str) -> dict:
         """
         Обновление пары токенов по refresh-токену.
@@ -151,6 +154,10 @@ class AuthService:
         3. Проверяем, что юзер существует и активен.
         4. Генерируем новую пару токенов.
         """
+        # не в blacklist ли токен
+        if await is_token_blacklisted(refresh_token, "refresh"):
+            raise ValueError("Токен отозван")
+
         try:
             payload = decode_token(refresh_token)
         except Exception:
@@ -168,7 +175,7 @@ class AuthService:
         if user.is_banned:
             raise ValueError("Аккаунт заблокирован")
 
-        # Генерируем новую пару
+        # Генерация новой пары
         new_access = create_access_token(
             data={"sub": str(user.id)},
         )
@@ -181,3 +188,48 @@ class AuthService:
             "refresh_token": new_refresh,
             "token_type": "bearer",
         }
+
+    async def logout(
+            self,
+            access_token: str,
+            refresh_token: str,
+    ) -> dict:
+        """
+        Выход из аккаунта.
+        Добавляет оба токена в blacklist (Redis).
+
+        Токены хранятся в Redis с TTL = оставшееся время жизни.
+        После этого они не пройдут проверку при обращении к API.
+        """
+        # Инвалидируем access-токен
+        try:
+            access_payload = decode_token(access_token)
+            access_ttl = access_payload["exp"] - int(
+                __import__("time").time()
+            )
+            if access_ttl > 0:
+                await redis_client.setex(
+                    f"blacklist:access:{access_token}",
+                    access_ttl,
+                    "revoked",
+                )
+        except Exception as e:
+            logger.warning("Не удалось инвалидировать access-токен: %s", e)
+
+        # Инвалидируем refresh-токен
+        try:
+            refresh_payload = decode_token(refresh_token)
+            refresh_ttl = refresh_payload["exp"] - int(
+                __import__("time").time()
+            )
+            if refresh_ttl > 0:
+                await redis_client.setex(
+                    f"blacklist:refresh:{refresh_token}",
+                    refresh_ttl,
+                    "revoked",
+                )
+
+        except Exception as e:
+            logger.warning("Не удалось инвалидировать access-токен: %s", e)
+
+        return {"message": "Вы вышли из аккаунта"}

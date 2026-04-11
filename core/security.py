@@ -12,6 +12,7 @@ import bcrypt
 import jwt
 
 from core.config import settings
+from infrastructure.redis import redis_client
 
 
 # === Хеширование паролей ===
@@ -72,6 +73,7 @@ def create_access_token(
         algorithm=settings.ALGORITHM,
     )
 
+
 def create_refresh_token(
         data: dict,
         expires_delta: timedelta | None = None,
@@ -119,3 +121,15 @@ def decode_token(token: str) -> dict:
         settings.SECRET_KEY,
         algorithms=[settings.ALGORITHM],
     )
+
+
+async def is_token_blacklisted(
+        token: str,
+        token_type: str = "access",
+) -> bool:
+    """
+    Проверяет, находится ли токен в blacklist (Redis).
+    Вызывается при каждом защищённом запросе.
+    """
+    result = await redis_client.get(f"blacklist:{token_type}:{token}")
+    return result is not None
