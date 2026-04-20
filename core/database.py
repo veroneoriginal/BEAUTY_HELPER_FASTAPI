@@ -27,7 +27,7 @@ async_session = async_sessionmaker(
 class Base(DeclarativeBase):
     """
     Базовый класс для всех моделей.
-    Аналог BaseModel из твоего Django-проекта.
+    Аналог BaseModel из Django-проекта.
     """
     pass
 
@@ -36,10 +36,6 @@ async def get_session() -> AsyncSession:
     """
     Dependency для FastAPI.
     Создаёт сессию на время запроса и закрывает после.
-
-    Используется так:
-    async def my_endpoint(session: AsyncSession = Depends(get_session)):
-        ...
     """
     async with async_session() as session:
         yield session

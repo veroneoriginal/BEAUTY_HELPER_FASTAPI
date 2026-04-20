@@ -1,14 +1,16 @@
 # main.py
 # Точка входа в приложение.
 
-from fastapi import FastAPI
-from apps.auth.routes import router as auth_router
 from contextlib import asynccontextmanager
-from core.database import Base, engine
+
+from fastapi import FastAPI
+
+from api.auth import router as auth_router
 
 # Импортируем модели, чтобы SQLAlchemy увидел их при create_all.
 # Без этого Base.metadata будет пустой и таблицы не создадутся.
 from apps.users.models import User  # noqa: F401
+from core.database import Base, engine
 
 
 @asynccontextmanager

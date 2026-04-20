@@ -5,7 +5,8 @@
 # Используется сервисами (UserService, AuthService) —
 # они вызывают hash_password / verify_password / create_access_token,
 # не зная деталей реализации.
-
+import logging
+import time
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
@@ -13,6 +14,8 @@ import jwt
 
 from core.config import settings
 from infrastructure.redis import redis_client
+
+logger = logging.getLogger(__name__)
 
 
 # === Хеширование паролей ===
@@ -133,3 +136,25 @@ async def is_token_blacklisted(
     """
     result = await redis_client.get(f"blacklist:{token_type}:{token}")
     return result is not None
+
+
+async def blacklist_token(
+        token: str,
+        token_type: str = "access",
+) -> None:
+    """
+    Добавляет токен в blacklist (Redis).
+    TTL = оставшееся время жизни токена.
+    После этого токен не пройдёт проверку is_token_blacklisted.
+    """
+    try:
+        payload = decode_token(token)
+        ttl = payload["exp"] - int(time.time())
+        if ttl > 0:
+            await redis_client.setex(
+                f"blacklist:{token_type}:{token}",
+                ttl,
+                "revoked",
+            )
+    except Exception as e:
+        logger.warning("Токен невалидный или просроченный: %s", e)

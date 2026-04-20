@@ -2,7 +2,6 @@
 
 # Pydantic-схемы для модуля users.
 # Определяют формат данных на входе и выходе API.
-# Модели БД (SQLAlchemy) и схемы API (Pydantic) — разные вещи.
 # Схемы контролируют, какие данные клиент может отправить
 # и какие данные он получит в ответ.
 
@@ -10,7 +9,6 @@ from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, EmailStr
-
 
 # === Схемы для создания пользователя ===
 

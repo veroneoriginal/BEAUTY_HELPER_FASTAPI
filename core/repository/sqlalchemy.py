@@ -1,4 +1,5 @@
-# core/sa_repository.py
+# core/repository/sqlalchemy.py
+
 # SQLAlchemy-реализация базового репозитория.
 # Содержит общую логику CRUD, которую наследуют все конкретные репозитории.
 # Если меняем ORM — переписываем этот файл, остальное не трогаем.
@@ -8,7 +9,7 @@ from typing import Optional, Sequence, Type, TypeVar
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.repository import AbstractRepository
+from core.repository.abstract import AbstractRepository
 
 T = TypeVar("T")
 
@@ -24,26 +25,42 @@ class SQLAlchemyRepository(AbstractRepository[T]):
     # Подклассы переопределяют это поле своей моделью
     model: Type[T]
 
-    def __init__(self, session: AsyncSession):
+    def __init__(
+            self,
+            session: AsyncSession,
+    ):
         """
         Принимает сессию как зависимость.
         Сессия приходит из FastAPI Depends(get_session).
         """
         self.session = session
 
-    async def get_by_id(self, entity_id: int) -> Optional[T]:
-        """Получить запись по ID."""
+    async def get_by_id(
+            self,
+            entity_id: int,
+    ) -> Optional[T]:
+        """
+        Получить запись по ID.
+        """
         return await self.session.get(self.model, entity_id)
 
     async def get_all(self) -> Sequence[T]:
-        """Получить все записи."""
+        """
+        Получить все записи.
+        """
+
         result = await self.session.execute(select(self.model))
         return result.scalars().all()
 
-    async def create(self, data: dict) -> T:
+    async def create(
+            self,
+            data: dict,
+    ) -> T:
         """
         Создать новую запись.
-        data — словарь с полями модели (например, {"email": "...", "password": "..."}).
+
+        data — словарь с полями модели
+        (например, {"email": "...", "password": "..."}).
         """
         instance = self.model(**data)
         self.session.add(instance)
@@ -51,7 +68,11 @@ class SQLAlchemyRepository(AbstractRepository[T]):
         await self.session.refresh(instance)
         return instance
 
-    async def update(self, entity_id: int, data: dict) -> Optional[T]:
+    async def update(
+            self,
+            entity_id: int,
+            data: dict,
+    ) -> Optional[T]:
         """
         Обновить запись по ID.
         data — словарь с полями для обновления.
@@ -67,8 +88,13 @@ class SQLAlchemyRepository(AbstractRepository[T]):
         await self.session.refresh(instance)
         return instance
 
-    async def delete(self, entity_id: int) -> bool:
-        """Удалить запись по ID. Возвращает True если удалено."""
+    async def delete(
+            self,
+            entity_id: int,
+    ) -> bool:
+        """
+        Удалить запись по ID. Возвращает True если удалено.
+        """
         instance = await self.get_by_id(entity_id)
         if instance is None:
             return False

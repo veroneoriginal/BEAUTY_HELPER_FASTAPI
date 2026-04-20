@@ -1,4 +1,4 @@
-# apps/auth/routes.py
+# api/auth.py
 
 # Эндпоинты для регистрации, подтверждения email, логина и обновления токенов.
 # Роуты: принимают запрос, вызывают сервис, возвращают ответ.
@@ -48,7 +48,7 @@ async def register(
         service: AuthService = Depends(get_auth_service),
 ):
     try:
-        result = await service.register(data)
+        result = await service.register(data=data)
         return result
     except ValueError as e:
         raise HTTPException(
@@ -118,6 +118,7 @@ async def refresh(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e),
         )
+
 
 @router.post(
     "/logout",

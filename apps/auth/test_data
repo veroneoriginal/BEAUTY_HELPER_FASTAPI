@@ -1,0 +1,21 @@
+{
+  "email": "use1r21212@example.com",
+  "password": "string123"
+}
+
+{
+  "message": "Пользователь зарегистрирован. Проверьте почту для подтверждения email.",
+  "confirmation_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwidHlwZSI6ImVtYWlsX2NvbmZpcm1hdGlvbiIsImV4cCI6MTc3Njc4MzI1NX0.b9redSVSgIpS9AETqTOQtPvfp9m1lAK9attsg1I276w"
+}
+
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzc2Njk4Njk1fQ.8nM0vOxn7FOsIbqO_-XfuJ3qVpEKYTEzyDxAEZ5mx8I",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzc3MzAxNjk1LCJ0eXBlIjoicmVmcmVzaCJ9.jtaijOiQa5Y1JxyQMrW5jG6F6m9x7y7x6V6fMAppjHA",
+  "token_type": "bearer" # тип авторизации по стандарту OAuth 2.0. Он говорит клиенту, как использовать токен: нужно вставлять его в заголовок HTTP-запроса
+}
+
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzc2Njk4NzYwfQ.Mnjp3xlu1sBtlh3cjeMLBLak64YAPGB0Brvp-aKJz48",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzc3MzAxNzYwLCJ0eXBlIjoicmVmcmVzaCJ9.8nvi8dWCTSnrpPUp2-mwivtFMvAswC8GAeEJx-wlVy0",
+  "token_type": "bearer"
+}

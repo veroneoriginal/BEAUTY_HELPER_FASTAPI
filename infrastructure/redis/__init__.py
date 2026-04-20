@@ -4,6 +4,7 @@
 # Используется для blacklist токенов при logout.
 
 import redis.asyncio as redis
+
 from core.config import settings
 
 # Пул соединений — переиспользуется всем приложением

@@ -1,6 +1,7 @@
 combined_code.py
-my.md
-help.md
+help_files/my.md
+help_files/help.md
+help_files/bh_fastapi.drawio
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
