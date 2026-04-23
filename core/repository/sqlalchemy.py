@@ -64,8 +64,8 @@ class SQLAlchemyRepository(AbstractRepository[T]):
         """
         instance = self.model(**data)
         self.session.add(instance)
-        await self.session.commit()
-        await self.session.refresh(instance)
+        await self.session.flush()       # отправляет INSERT в БД, но без commit
+        await self.session.refresh(instance)  # подтягивает id, created_at и т.д.
         return instance
 
     async def update(
@@ -83,8 +83,7 @@ class SQLAlchemyRepository(AbstractRepository[T]):
 
         for key, value in data.items():
             setattr(instance, key, value)
-
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(instance)
         return instance
 
@@ -100,5 +99,5 @@ class SQLAlchemyRepository(AbstractRepository[T]):
             return False
 
         await self.session.delete(instance)
-        await self.session.commit()
+        await self.session.flush()
         return True

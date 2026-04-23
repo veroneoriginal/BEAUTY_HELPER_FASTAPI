@@ -5,6 +5,7 @@
 # Используется сервисами (UserService, AuthService) —
 # они вызывают hash_password / verify_password / create_access_token,
 # не зная деталей реализации.
+import asyncio
 import logging
 import time
 from datetime import datetime, timedelta, timezone
@@ -44,6 +45,29 @@ def verify_password(
         hashed_password.encode("utf-8"),
     )
 
+
+# === Асинхронные обёртки для bcrypt ===
+# bcrypt — CPU-bound, блокирует event loop.
+# Выносим в thread pool, чтобы не замораживать async-приложение.
+
+
+async def hash_password_async(password: str) -> str:
+    """
+    Асинхронная обёртка над hash_password.
+    """
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, hash_password, password)
+
+
+async def verify_password_async(
+        plain_password: str,
+        hashed_password: str,
+) -> bool:
+    """Асинхронная обёртка над verify_password."""
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(
+        None, verify_password, plain_password, hashed_password,
+    )
 
 # === JWT-токены ===
 

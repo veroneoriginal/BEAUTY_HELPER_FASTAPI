@@ -12,7 +12,7 @@ from typing import Optional, Sequence
 from apps.users.models import User
 from apps.users.repository import UserRepository
 from apps.users.schemas import UserCreate, UserUpdate
-from core.security import hash_password
+from core.security import hash_password_async
 
 
 class UserService:
@@ -39,7 +39,7 @@ class UserService:
         # Хешируем пароль перед сохранением
         user_data = {
             "email": data.email,
-            "password": hash_password(data.password),
+            "password": await hash_password_async(data.password),
         }
 
         return await self.repository.create(user_data)

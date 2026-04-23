@@ -13,9 +13,9 @@ from core.security import (
     create_access_token,
     create_refresh_token,
     decode_token,
-    hash_password,
+    hash_password_async,
     is_token_blacklisted,
-    verify_password,
+    verify_password_async,
 )
 
 
@@ -34,7 +34,10 @@ class AuthService:
     def __init__(self, repository: UserRepository):
         self.repository = repository
 
-    async def register(self, data: RegisterRequest) -> dict:
+    async def register(
+            self,
+            data: RegisterRequest,
+    ) -> dict:
         """
         Регистрация нового пользователя.
 
@@ -54,9 +57,10 @@ class AuthService:
         # Создаём юзера (email не подтверждён)
         user = await self.repository.create({
             "email": data.email,
-            "password": hash_password(data.password),
+            "password": await hash_password_async(data.password),
             "email_confirmed": False,
-        })
+        }
+        )
 
         # Генерируем токен подтверждения (живёт 24 часа)
         confirmation_token = create_access_token(
@@ -72,7 +76,10 @@ class AuthService:
             "confirmation_token": confirmation_token,  # убрать после подключения email
         }
 
-    async def confirm_email(self, token: str) -> dict:
+    async def confirm_email(
+            self,
+            token: str,
+    ) -> dict:
         """
         Подтверждение email по токену из ссылки.
 
@@ -104,7 +111,10 @@ class AuthService:
 
         return {"message": "Email успешно подтверждён. Теперь вы можете войти."}
 
-    async def login(self, data: LoginRequest) -> dict:
+    async def login(
+            self,
+            data: LoginRequest,
+    ) -> dict:
         """
         Аутентификация пользователя.
 
@@ -118,7 +128,7 @@ class AuthService:
         if user is None:
             raise ValueError("Неверный email или пароль")
 
-        if not verify_password(data.password, user.password):
+        if not await verify_password_async(data.password, user.password):
             raise ValueError("Неверный email или пароль")
 
         if not user.email_confirmed:
@@ -143,7 +153,10 @@ class AuthService:
             "token_type": "bearer",
         }
 
-    async def refresh_tokens(self, refresh_token: str) -> dict:
+    async def refresh_tokens(
+            self,
+            refresh_token: str,
+    ) -> dict:
         """
         Обновление пары токенов по refresh-токену.
 

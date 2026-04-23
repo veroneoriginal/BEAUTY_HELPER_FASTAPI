@@ -30,12 +30,12 @@ class AbstractRepository(ABC, Generic[T]):
             entity_id: int,
     ) -> Optional[T]:
         """ Получить запись по ID. """
-        raise NotImplementedError  # Не реализовано
+        ...
 
     @abstractmethod
     async def get_all(self) -> Sequence[T]:
         """ Получить все записи. """
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     async def create(
@@ -43,7 +43,7 @@ class AbstractRepository(ABC, Generic[T]):
             data: dict,
     ) -> T:
         """ Создать новую запись. """
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     async def update(
@@ -52,7 +52,7 @@ class AbstractRepository(ABC, Generic[T]):
             data: dict,
     ) -> Optional[T]:
         """ Обновить запись по ID. """
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     async def delete(
@@ -62,4 +62,4 @@ class AbstractRepository(ABC, Generic[T]):
         """
         Удалить запись по ID. Возвращает True если удалено.
         """
-        raise NotImplementedError
+        ...
