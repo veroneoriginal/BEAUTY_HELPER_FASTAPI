@@ -2,7 +2,7 @@
 
 # Pydantic-схемы определяют формат данных для регистрации, логина и токенов.
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class RegisterRequest(BaseModel):
@@ -11,7 +11,7 @@ class RegisterRequest(BaseModel):
     Клиент отправляет email и пароль.
     """
     email: EmailStr
-    password: str
+    password: str = Field(min_length=8, max_length=128)
 
 
 class RegisterResponse(BaseModel):
@@ -39,7 +39,7 @@ class LoginRequest(BaseModel):
     Email + пароль → получаем пару токенов.
     """
     email: EmailStr
-    password: str
+    password: str = Field(min_length=8, max_length=128)
 
 
 class TokenResponse(BaseModel):

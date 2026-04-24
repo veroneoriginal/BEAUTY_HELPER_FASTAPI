@@ -55,7 +55,7 @@ async def hash_password_async(password: str) -> str:
     """
     Асинхронная обёртка над hash_password.
     """
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     return await loop.run_in_executor(None, hash_password, password)
 
 
@@ -64,7 +64,7 @@ async def verify_password_async(
         hashed_password: str,
 ) -> bool:
     """Асинхронная обёртка над verify_password."""
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     return await loop.run_in_executor(
         None, verify_password, plain_password, hashed_password,
     )
@@ -173,12 +173,36 @@ async def blacklist_token(
     """
     try:
         payload = decode_token(token)
-        ttl = payload["exp"] - int(time.time())
-        if ttl > 0:
-            await redis_client.setex(
-                f"blacklist:{token_type}:{token}",
-                ttl,
-                "revoked",
-            )
     except Exception as e:
         logger.warning("Токен невалидный или просроченный: %s", e)
+        return
+
+    ttl = payload["exp"] - int(time.time())
+    if ttl > 0:
+        await redis_client.setex(
+            f"blacklist:{token_type}:{token}",
+            ttl,
+            "revoked",
+        )
+
+def create_confirmation_token(
+        user_id: int,
+        expires_delta: timedelta | None = None,
+) -> str:
+    """
+    Создаёт токен подтверждения email.
+    Тип 'email_confirmation' зашит внутри — нельзя подменить.
+    """
+    expire = datetime.now(timezone.utc) + (
+            expires_delta or timedelta(hours=24)
+    )
+    to_encode = {
+        "sub": str(user_id),
+        "type": "email_confirmation",
+        "exp": expire,
+    }
+    return jwt.encode(
+        to_encode,
+        settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM,
+    )

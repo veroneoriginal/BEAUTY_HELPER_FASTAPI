@@ -19,6 +19,15 @@ from apps.auth.schemas import (
 from apps.auth.services import AuthService
 from apps.users.repository import UserRepository
 from core.database import get_session
+from core.exceptions import (
+    EmailNotConfirmedError,
+    InvalidCredentialsError,
+    InvalidTokenError,
+    TokenRevokedError,
+    UserAlreadyExistsError,
+    UserBannedError,
+    UserNotFoundError,
+)
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -50,7 +59,7 @@ async def register(
     try:
         result = await service.register(data=data)
         return result
-    except ValueError as e:
+    except UserAlreadyExistsError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
@@ -71,7 +80,7 @@ async def confirm_email(
     try:
         result = await service.confirm_email(token)
         return result
-    except ValueError as e:
+    except (InvalidTokenError, UserNotFoundError) as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
@@ -92,7 +101,7 @@ async def login(
     try:
         result = await service.login(data)
         return result
-    except ValueError as e:
+    except (InvalidCredentialsError, EmailNotConfirmedError, UserBannedError) as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e),
@@ -113,7 +122,7 @@ async def refresh(
     try:
         result = await service.refresh_tokens(data.refresh_token)
         return result
-    except ValueError as e:
+    except (InvalidTokenError, TokenRevokedError, UserNotFoundError, UserBannedError) as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e),

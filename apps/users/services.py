@@ -12,6 +12,7 @@ from typing import Optional, Sequence
 from apps.users.models import User
 from apps.users.repository import UserRepository
 from apps.users.schemas import UserCreate, UserUpdate
+from core.exceptions import UserAlreadyExistsError
 from core.security import hash_password_async
 
 
@@ -34,7 +35,7 @@ class UserService:
         """
         # Проверяем, что email не занят
         if await self.repository.exists_by_email(data.email):
-            raise ValueError(f"Email {data.email} уже зарегистрирован")
+            raise UserAlreadyExistsError(f"Email {data.email} уже зарегистрирован")
 
         # Хешируем пароль перед сохранением
         user_data = {
@@ -42,7 +43,9 @@ class UserService:
             "password": await hash_password_async(data.password),
         }
 
-        return await self.repository.create(user_data)
+        user = await self.repository.create(user_data)
+        await self.repository.session.commit()
+        return user
 
     async def get_user_by_id(self, user_id: int) -> Optional[User]:
         """Получить пользователя по ID."""
@@ -57,7 +60,9 @@ class UserService:
         return await self.repository.get_all()
 
     async def update_user(
-            self, user_id: int, data: UserUpdate,
+            self,
+            user_id: int,
+            data: UserUpdate,
     ) -> Optional[User]:
         """
         Обновить профиль пользователя.
@@ -70,8 +75,18 @@ class UserService:
             # Клиент не прислал ни одного поля для обновления
             return await self.repository.get_by_id(user_id)
 
-        return await self.repository.update(user_id, update_data)
+        user = await self.repository.update(user_id, update_data)
+        await self.repository.session.commit()
+        return user
 
-    async def delete_user(self, user_id: int) -> bool:
-        """Удалить пользователя."""
-        return await self.repository.delete(user_id)
+    async def delete_user(
+            self,
+            user_id: int,
+    ) -> bool:
+        """
+        Удалить пользователя.
+        """
+
+        result = await self.repository.delete(user_id)
+        await self.repository.session.commit()
+        return result

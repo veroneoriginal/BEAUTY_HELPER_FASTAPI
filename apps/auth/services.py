@@ -8,9 +8,19 @@ from datetime import timedelta
 
 from apps.auth.schemas import LoginRequest, RegisterRequest
 from apps.users.repository import UserRepository
+from core.exceptions import (
+    EmailNotConfirmedError,
+    InvalidCredentialsError,
+    InvalidTokenError,
+    TokenRevokedError,
+    UserAlreadyExistsError,
+    UserBannedError,
+    UserNotFoundError,
+)
 from core.security import (
     blacklist_token,
     create_access_token,
+    create_confirmation_token,
     create_refresh_token,
     decode_token,
     hash_password_async,
@@ -52,7 +62,7 @@ class AuthService:
         """
         # Проверяем уникальность email
         if await self.repository.exists_by_email(data.email):
-            raise ValueError(f"Email {data.email} уже зарегистрирован")
+            raise UserAlreadyExistsError(f"Email {data.email} уже зарегистрирован")
 
         # Создаём юзера (email не подтверждён)
         user = await self.repository.create({
@@ -63,13 +73,12 @@ class AuthService:
         )
 
         # Генерируем токен подтверждения (живёт 24 часа)
-        confirmation_token = create_access_token(
-            data={"sub": str(user.id), "type": "email_confirmation"},
-            expires_delta=timedelta(hours=24),
-        )
+        confirmation_token = create_confirmation_token(user_id=user.id)
 
         # TODO: отправить confirmation_token на почту через aiosmtplib
         # await send_confirmation_email(user.email, confirmation_token)
+
+        await self.repository.session.commit()
 
         return {
             "message": "Пользователь зарегистрирован. Проверьте почту для подтверждения email.",
@@ -91,23 +100,28 @@ class AuthService:
         try:
             payload = decode_token(token)
         except Exception:
-            raise ValueError("Невалидный или просроченный токен подтверждения")
+            raise InvalidTokenError("Невалидный или просроченный токен подтверждения")
 
         # Проверяем, что это именно токен подтверждения email
         if payload.get("type") != "email_confirmation":
-            raise ValueError("Неверный тип токена")
+            raise InvalidTokenError("Неверный тип токена")
 
         user_id = int(payload.get("sub"))
         user = await self.repository.get_by_id(user_id)
 
         if user is None:
-            raise ValueError("Пользователь не найден")
+            raise UserNotFoundError("Пользователь не найден")
 
         if user.email_confirmed:
             return {"message": "Email уже подтверждён"}
 
         # Подтверждаем email
-        await self.repository.update(user_id, {"email_confirmed": True})
+        await self.repository.update(
+            user_id,
+            {"email_confirmed": True},
+        )
+
+        await self.repository.session.commit()
 
         return {"message": "Email успешно подтверждён. Теперь вы можете войти."}
 
@@ -126,18 +140,21 @@ class AuthService:
         user = await self.repository.get_by_email(data.email)
 
         if user is None:
-            raise ValueError("Неверный email или пароль")
+            raise InvalidCredentialsError("Неверный email или пароль")
 
-        if not await verify_password_async(data.password, user.password):
-            raise ValueError("Неверный email или пароль")
+        if not await verify_password_async(
+                plain_password=data.password,
+                hashed_password=user.password,
+        ):
+            raise InvalidCredentialsError("Неверный email или пароль")
 
         if not user.email_confirmed:
-            raise ValueError(
+            raise EmailNotConfirmedError(
                 "Email не подтверждён. Проверьте почту."
             )
 
         if user.is_banned:
-            raise ValueError("Аккаунт заблокирован")
+            raise UserBannedError("Аккаунт заблокирован")
 
         # Генерируем пару токенов
         access_token = create_access_token(
@@ -167,24 +184,24 @@ class AuthService:
         """
         # не в blacklist ли токен
         if await is_token_blacklisted(refresh_token, "refresh"):
-            raise ValueError("Токен отозван")
+            raise TokenRevokedError("Токен отозван")
 
         try:
             payload = decode_token(refresh_token)
         except Exception:
-            raise ValueError("Невалидный или просроченный refresh-токен")
+            raise InvalidTokenError("Невалидный или просроченный refresh-токен")
 
         if payload.get("type") != "refresh":
-            raise ValueError("Неверный тип токена")
+            raise InvalidTokenError("Неверный тип токена")
 
         user_id = int(payload.get("sub"))
         user = await self.repository.get_by_id(user_id)
 
         if user is None:
-            raise ValueError("Пользователь не найден")
+            raise UserNotFoundError("Пользователь не найден")
 
         if user.is_banned:
-            raise ValueError("Аккаунт заблокирован")
+            raise UserBannedError("Аккаунт заблокирован")
 
         # Генерация новой пары
         new_access = create_access_token(
