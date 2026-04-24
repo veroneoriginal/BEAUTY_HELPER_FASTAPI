@@ -1,1 +1,0 @@
-# apps/products/schemas.py
