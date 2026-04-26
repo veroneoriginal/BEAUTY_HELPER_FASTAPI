@@ -44,3 +44,8 @@ class UserNotFoundError(AppError):
 class TokenRevokedError(AppError):
     """Токен отозван (в blacklist)."""
     pass
+
+
+class PackageProtectedError(AppError):
+    """Попытка изменить защищённые поля или удалить пакет."""
+    pass

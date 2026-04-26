@@ -67,17 +67,17 @@ class BalanceService:
 
     # === Пополнение ===
 
-    async def add_spins(
+    async def add_spins_no_commit(
             self,
             user_id: int,
             count: int,
             description: str = "Начисление генераций",
     ) -> bool:
         """
-        Пополнить баланс пользователя.
-
-        Используется при покупке пакета, активации промокода,
-        ручном начислении админом.
+        Пополнить баланс без commit.
+        Используется когда начисление идёт в составе
+        другой транзакции (например, выдача пакета).
+        Commit делает вызывающий код.
         """
         balance = await self.repository.get_locked_by_user_id(user_id)
         if balance is None:
@@ -93,7 +93,6 @@ class BalanceService:
             description=description,
         )
 
-        await self.repository.session.commit()
         return True
 
     # === Резервирование ===
