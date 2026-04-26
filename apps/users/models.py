@@ -91,17 +91,6 @@ class User(Base):
         nullable=True,
         comment="Последний вход",
     )
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        comment="Дата создания",
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
-        comment="Дата последнего обновления",
-    )
 
     def __repr__(self) -> str:
         return f"User(id={self.id}, email={self.email})"

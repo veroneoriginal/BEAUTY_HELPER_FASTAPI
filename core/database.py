@@ -2,13 +2,15 @@
 # Асинхронное подключение к PostgreSQL через SQLAlchemy 2.0.
 
 from collections.abc import AsyncGenerator
+from datetime import datetime
 
+from sqlalchemy import DateTime, func
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from core.config import settings
 
@@ -31,7 +33,18 @@ class Base(DeclarativeBase):
     Базовый класс для всех моделей.
     Аналог BaseModel из Django-проекта.
     """
-    pass
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        comment="Дата создания",
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        comment="Дата последнего обновления",
+    )
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:

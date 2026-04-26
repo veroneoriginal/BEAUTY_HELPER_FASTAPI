@@ -54,12 +54,12 @@ class SelectionStatus(str, enum.Enum):
     Статус генерации подборки.
     Отслеживает, на каком этапе находится процесс создания.
     """
-    QUEUE = "queue"              # Задача поставлена, воркер ещё не взял
-    PROCESS = "process"          # Подборка создаётся (запросы, PDF)
-    ON_REVIEW = "on_review"      # PDF готов, модератор не проверил
-    DONE = "done"                # Прошла модерацию, можно отправлять
-    DEVIATION = "deviation"      # Отклонена модератором
-    FAILED = "failed"            # Ошибка создания
+    QUEUE = "queue"  # Задача поставлена, воркер ещё не взял
+    PROCESS = "process"  # Подборка создаётся (запросы, PDF)
+    ON_REVIEW = "on_review"  # PDF готов, модератор не проверил
+    DONE = "done"  # Прошла модерацию, можно отправлять
+    DEVIATION = "deviation"  # Отклонена модератором
+    FAILED = "failed"  # Ошибка создания
 
 
 class SelectionTaskType(str, enum.Enum):
@@ -67,8 +67,8 @@ class SelectionTaskType(str, enum.Enum):
     Тип задачи, по которой создаётся подборка.
     """
     COMPOSITION_ANALYSIS = "detailed_analysis"  # Подробный анализ состава
-    BEST_CHOICE = "best"                        # Лучшее средство
-    ANALOG = "analog"                           # Аналог
+    BEST_CHOICE = "best"  # Лучшее средство
+    ANALOG = "analog"  # Аналог
 
 
 # === Модель ===
@@ -160,19 +160,6 @@ class Selection(Base):
         Text,
         nullable=True,
         comment="Сообщение об ошибке",
-    )
-
-    # === Временные метки ===
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        comment="Дата создания",
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
-        comment="Дата последнего обновления",
     )
 
     def __repr__(self) -> str:

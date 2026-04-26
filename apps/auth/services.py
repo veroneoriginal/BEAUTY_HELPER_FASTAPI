@@ -7,6 +7,8 @@
 from datetime import timedelta
 
 from apps.auth.schemas import LoginRequest, RegisterRequest
+from apps.balance.repository import BalanceRepository
+from apps.balance.services import BalanceService
 from apps.users.repository import UserRepository
 from core.exceptions import (
     EmailNotConfirmedError,
@@ -77,6 +79,10 @@ class AuthService:
 
         # TODO: отправить confirmation_token на почту через aiosmtplib
         # await send_confirmation_email(user.email, confirmation_token)
+
+        # Создаём баланс с нулевыми значениями
+        balance_service = BalanceService(BalanceRepository(self.repository.session))
+        await balance_service.create_balance_no_commit(user_id=user.id)
 
         await self.repository.session.commit()
 

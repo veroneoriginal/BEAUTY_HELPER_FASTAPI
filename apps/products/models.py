@@ -207,18 +207,5 @@ class Product(Base):
         comment="Статус заполнения данных",
     )
 
-    # === Временные метки ===
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        comment="Дата создания",
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
-        comment="Дата последнего обновления",
-    )
-
     def __repr__(self) -> str:
         return f"Product(id={self.id}, name={self.name}, article={self.article_ga})"
