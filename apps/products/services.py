@@ -68,8 +68,6 @@ class ProductService:
         await self.repository.session.commit()
         return result
 
-    # === Методы, перенесённые из Django-модели ===
-
     @staticmethod
     def is_filled(product: Product) -> bool:
         """Заполнены ли все данные продукта."""
