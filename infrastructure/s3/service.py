@@ -1,4 +1,5 @@
 import aioboto3
+
 from core.config import settings
 from infrastructure.s3.decorators import s3_safe_call
 

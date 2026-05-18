@@ -45,6 +45,16 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
+    # === OpenAI ===
+    OPENAI_API_KEY_ACCOUNT_ONE: str = ""
+    OPENAI_API_KEY_ACCOUNT_TWO: str = ""
+
+    # === S3 ===
+    S3_ENDPOINT_URL: str = ""
+    S3_ACCESS_KEY_ID: str = ""
+    S3_SECRET_KEY: str = ""
+    S3_BUCKET_NAME: str = ""
+
     model_config = {
         "env_file": ".env",
         "env_file_encoding": "utf-8",
