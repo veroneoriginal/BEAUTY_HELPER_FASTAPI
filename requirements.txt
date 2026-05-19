@@ -26,3 +26,5 @@ redis==7.4.0
 aioboto3==15.5.0
 tiktoken==0.13.0
 openai==2.37.0
+emoji==2.15.0
+reportlab==4.5.1

@@ -1,9 +1,6 @@
 # apps/content_generation/openai/settings.py
 # данные для модели 4о-mini
 
-
-import os
-
 from core.config import settings
 
 OPENAI_ACCOUNT_1 = 'account_1'
