@@ -39,6 +39,16 @@ class Settings(BaseSettings):
     REDIS_PORT: int = 6379
     REDIS_PASSWORD: str = ""
 
+    # === Redis URL (для Celery backend) ===
+    @property
+    def REDIS_URL(self) -> str:
+        return f"redis://:${self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/0"
+
+    # === RabbitMQ ===
+    RABBITMQ_USER: str = "verone26"
+    RABBITMQ_PASSWORD: str = "verone26"
+    RABBITMQ_URL: str = "amqp://verone26:verone26@localhost:5672//"
+
     # === JWT ===
     SECRET_KEY: str = "change-me-in-production"
     ALGORITHM: str = "HS256"

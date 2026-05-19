@@ -16,3 +16,8 @@ PDF: ReportLab
 Аутентификация: JWT
 Контейнеризация: Docker + docker-compose
 Тесты: pytest + pytest-asyncio + httpx (AsyncClient)
+
+
+Оркестратор — два движка (sync + async)
+FastAPI использует asyncpg,
+Celery использует psycopg2.

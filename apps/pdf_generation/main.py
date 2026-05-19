@@ -1,7 +1,5 @@
 # apps/pdf_generation/main.py
 
-from infrastructure.s3.service import S3Service
-
 from apps.pdf_generation.creator_logic.main import (
     PDFCreator,
 )
@@ -9,6 +7,7 @@ from apps.pdf_generation.pdf_data_processing.main import (
     PDFDataProcessor,
 )
 from apps.selection.models import SelectionTaskType
+from infrastructure.s3.service import S3Service
 
 
 def generate_selection_pdf(

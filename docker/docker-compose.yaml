@@ -38,6 +38,47 @@ services:
     networks:
       - bh_network
 
+  # === RabbitMQ ===
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    restart: unless-stopped
+    container_name: bh_rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"    # AMQP протокол
+      - "15672:15672"  # Management UI
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bh_network
+
+  # === Celery Worker ===
+  celery_worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    container_name: bh_celery
+    command: celery -A infrastructure.celery.app worker --loglevel=info
+    volumes:
+      - ..:/app
+    env_file:
+      - ../.env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - bh_network
+
   # === FastAPI-приложение ===
   app:
     build:
