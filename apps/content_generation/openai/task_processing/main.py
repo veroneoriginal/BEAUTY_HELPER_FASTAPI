@@ -16,43 +16,41 @@ from apps.content_generation.openai.task_processing.utils import (
     create_request_details,
     formation_context,
 )
-from apps.selection.models import (
-    Selection,
-    SelectionTaskType,
-)
+from apps.selection.models import SelectionTaskType
 
 logger = logging.getLogger(__name__)
 
 class TaskProcessing:
     """
-    Класс для выполнения задач по разборам средств
+    Класс для выполнения задач по разбору состава средств.
+    Делит состав на шаги по 10 ингредиентов, для каждого шага:
+    формирует промпт и JSON-схему, отправляет запрос в OpenAI,
+    сохраняет результат.
+
+    :param collection_data: словарь с данными продукта
+    :param task_type: тип задачи подборки
     """
 
     def __init__(
             self,
             collection_data: dict,
-            selection: Selection,
             task_type: SelectionTaskType,
     ):
-        """
-        :param collection_data: инфо из dataclass-а продукта
-        :param selection: Объект Selection (подборки), связанный с текущей задачей
-        :param task_type: Тип задачи, по которой создается подборка
-        """
         self.collection_data = collection_data
-        self.selection = selection
         self.task_type = task_type
         self.request_data = []  # здесь будут все request_details
         self.response_data = []  # здесь будут ответы от OPENAI
 
         self.method_for_task_code = {
-            # код задачи - Подробный анализ каждого элемента состава
+            # Подробный анализ каждого элемента состава
             SelectionTaskType.COMPOSITION_ANALYSIS: self.detailed_analysis_composition,
         }
 
     def detailed_analysis_composition(self):
         """
-        Выполнение задачи 'Подробный анализ каждого элемента состава'
+        Выполняет задачу COMPOSITION_ANALYSIS / Подробный анализ каждого элемента состава
+        Делит полный состав на шаги по MAX_ELEMENTS_IN_STEP ингредиентов
+        и запускает выполнение всех шагов.
         """
 
         # Максимальное количество элементов в составе средства для одного шага в задаче
@@ -107,15 +105,13 @@ class TaskProcessing:
             step_collection_data: dict,
     ) -> None:
         """
-        Выполнение одного шага задачи.
+        Выполняет один шаг задачи:
+        1) Формирует JSON-схему и промпт
+        2) Отправляет запрос в OpenAI
+        3) Сохраняет результат
 
-        В один шаг входит:
-        1) Подготовка json-схемы и промпта
-        2) Отправка запроса в OpenAI
-        3) Сохранение результата в базу данных
-
-        :param step_collection_data: словарь необходимый для генерации одного шага задачи
-        :return: None
+        :param step_collection_data: данные текущего шага
+        :raises RuntimeError: если OpenAI вернул ошибку
         """
 
         # полный словарь включая шаг из средств внутри step_collection_data
@@ -148,7 +144,7 @@ class TaskProcessing:
         openai_client = OpenAIClient()
         answer_openai = openai_client.main_request(request_details=request_details)
 
-        # Проверяем, что вернулось от OpeanAI,
+        # Проверяем, что вернулось от OpenAI,
         # чтобы в случае ошибки первого шага, код не шел дальше
         if answer_openai.get("error") is True:
             raise RuntimeError(
@@ -169,10 +165,13 @@ class TaskProcessing:
             answer_openai_to_final: dict,
     ) -> None:
         """
-        Метод для сохранения данных одного шага в два отдельных списка:
-        - request_details (все запросы в OpenAI)
-        - answer_openai_to_final (все ответы от OpenAI)
+        Сохраняет данные одного шага в списки request_data и response_data.
+
+        :param step_number: номер текущего шага
+        :param request_details: словарь с данными запроса
+        :param answer_openai_to_final: словарь с ответом от OpenAI
         """
+
         self.request_data.append({
             "step_number": step_number,
             "request_details": request_details,
@@ -188,10 +187,9 @@ class TaskProcessing:
             all_task_steps: list,
     ) -> None:
         """
-        Выполнение всех шагов задачи.
+        Выполняет все шаги задачи последовательно.
 
-        :param all_task_steps: Список со всеми шагами задачи
-        :return: None
+        :param all_task_steps: список со всеми шагами задачи
         """
 
         for step_data in all_task_steps:
@@ -201,8 +199,8 @@ class TaskProcessing:
             self,
     ) -> None:
         """
-        Главный метод класса, внутри которого определяется с какой
-        задачей работаем и запускаем процесс выполнения этой задачи.
+        Главный метод класса.
+        Определяет тип задачи и запускает соответствующий метод обработки.
         """
 
         self.method_for_task_code[self.task_type]()

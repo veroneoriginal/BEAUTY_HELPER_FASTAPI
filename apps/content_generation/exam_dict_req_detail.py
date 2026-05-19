@@ -1,5 +1,5 @@
 # apps/content_generation/exam_dict_req_detail.py
-# Вот такая структура приходит в get_access_key
+# такая структура приходит в get_access_key
 
 request_details = {
     'service': 'openai',

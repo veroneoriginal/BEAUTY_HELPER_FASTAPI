@@ -17,7 +17,6 @@ from apps.selection.models import (
 def get_json_scheme(
         task_type: SelectionTaskType,
         data_collection: dict,
-
 ) -> dict:
     """
     Функция для получения json-схемы для текущей подборки.

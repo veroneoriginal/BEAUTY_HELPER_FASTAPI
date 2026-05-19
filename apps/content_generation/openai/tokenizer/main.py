@@ -18,10 +18,11 @@ def checking_type_data_context(
         context: list,
 ) -> list:
     """
-    Функция, проверяющая тип данных контекста, который по итогу считаем.
+    Проверяет тип данных контекста перед подсчётом токенов.
 
-    :param context: Контекст для отправки в OPENAI
-    :return: список словарей
+    :param context: контекст для отправки в OpenAI
+    :return: тот же список, если всё ок
+    :raises TypeError: если context не список или содержит не словари
     """
 
     if not isinstance(context, list):
@@ -38,10 +39,11 @@ def checking_type_data_json_scheme(
         json_scheme: dict,
 ) -> dict:
     """
-    Проверяет, что json_scheme — это словарь, как ожидается.
+    Проверяет что json_scheme является словарём.
 
     :param json_scheme: json-схема для отправки в OpenAI
     :return: тот же словарь, если всё ок
+    :raises TypeError: если json_scheme не словарь
     """
 
     if not isinstance(json_scheme, dict):
@@ -55,12 +57,11 @@ def checking_relevance_model_name(
         model: Literal["gpt-4o-mini",],
 ) -> tiktoken.Encoding:
     """
-    Функция подбирает энкодер для заданной модели GPT.
+    Подбирает энкодер tiktoken для указанной модели GPT.
 
-    :param model: Имя модели GPT, для которой нужно получить энкодер
-    и с помощью которой идет анализ данных
-
-    :return: Объект токенизации tiktoken.Encoding для указанной модели.
+    :param model: название модели OpenAI
+    :return: объект tiktoken.Encoding для указанной модели
+    :raises ValueError: если модель не поддерживается tiktoken
     """
 
     try:
@@ -75,10 +76,10 @@ def prepares_text_for_counting(
         context: list,
 ) -> str:
     """
-    Функция для преобразования атрибута context в строку.
+    Преобразует контекст в строку для подсчёта токенов.
 
-    :param context: контекст для отправки в OPENAI.
-    :return: контекст в виде строки
+    :param context: контекст для отправки в OpenAI
+    :return: все текстовые сообщения объединённые в одну строку
     """
 
     # Инициализируем переменную для объединения всех текстовых сообщений
@@ -103,10 +104,10 @@ def prepares_json_for_counting(
         json_scheme: dict,
 ) -> str:
     """
-    Функция для преобразования json_scheme в строку.
+    Преобразует json_scheme в строку для подсчёта токенов.
 
-    :param json_scheme: json_scheme для отправки в OPENAI.
-    :return: контекст в виде строки
+    :param json_scheme: json-схема для отправки в OpenAI
+    :return: json_scheme в виде строки
     """
 
     return json.dumps(json_scheme, ensure_ascii=False)
@@ -117,16 +118,13 @@ def count_tokens(
         encoding: tiktoken.Encoding,
 ) -> int:
     """
-    Функция для подсчета количества токенов в контексте/json-схеме.
+    Подсчитывает количество токенов в строке.
 
-    :param entity_count: сущность, которую нужно посчитать
-    :param encoding: объект, который знает, как разбивать строки на токены,
-    по правилам конкретной модели
-
-    :return: количество токенов в тексте (числом)
+    :param entity_count: строка для подсчёта
+    :param encoding: энкодер tiktoken для конкретной модели
+    :return: количество токенов
     """
 
-    # считаем токены, возвращаем полученный результат
     return len(encoding.encode(entity_count))
 
 
@@ -136,12 +134,13 @@ def main_count_tokens(
         json_scheme: dict | None,
 ) -> int:
     """
-    Главная функция модуля для подсчета количества токенов в контексте и json-схеме.
+    Главная функция модуля. Считает итоговое количество токенов
+    в контексте и json-схеме с учётом служебных токенов OpenAI.
 
-    :param context: контекст для отправки в OPENAI, который нужно посчитать
-    :param model: модель GPT, с помощью которой идет анализ данных
-    :param json_scheme: json-схема запроса для отправки в OPENAI, которую нужно посчитать
-    :return: количество токенов в контексте (число)
+    :param context: контекст для отправки в OpenAI
+    :param model: модель GPT для подсчёта
+    :param json_scheme: json-схема запроса (None если не используется)
+    :return: итоговое количество токенов включая запас
     """
 
     # Получаем энкодер для модели

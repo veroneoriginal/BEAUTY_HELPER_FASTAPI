@@ -31,7 +31,9 @@ from apps.content_generation.openai.utils.utils_errors import (
 
 class OpenAIClient:
     """
-    Класс для управления запросами в OpenAI API.
+    Класс для управления запросами к OpenAI API.
+    Получает ключ доступа через KeyManager, считает токены,
+    отправляет запрос и возвращает структурированный ответ.
     """
 
     def __init__(self):
@@ -44,11 +46,12 @@ class OpenAIClient:
             exception: Optional[Exception],
     ) -> Dict:
         """
-        Возвращает словарь с информацией об ошибке.
+        Формирует словарь с информацией об ошибке.
 
-        :param exception: Исключение, возбужденное произошедшей ошибкой
-        :return: словарь с ошибкой, исключением и пояснением
+        :param exception: исключение которое произошло
+        :return: словарь с ключами status, message, error, cost_interaction, exception, traceback
         """
+
         return {
             'status': "failed",
             'message': "Ошибка запроса при обращении к OpenAI",
@@ -63,10 +66,11 @@ class OpenAIClient:
             response: ChatCompletion,
     ) -> str:
         """
-        Метод для извлечения контента из объекта ChatCompletion.
+        Извлекает контент из объекта ChatCompletion.
+        Парсит аргументы tool_call как JSON.
 
-        :param response: Объект ChatCompletion с ответом от OPENAI API
-        :return: строка с извлеченным content-ом из объекта ChatCompletion.
+        :param response: объект ChatCompletion от OpenAI
+        :return: распарсенный JSON-ответ
         """
 
         # response.choices[0].message
@@ -79,11 +83,10 @@ class OpenAIClient:
             response: ChatCompletion,
     ) -> Dict:
         """
-        Метод для рассчета стоимости запроса, стоимости ответа и общей стоимости
-        в долларах и рублях.
+        Рассчитывает стоимость запроса в USD и RUB.
 
-        :param response: Объект ChatCompletion с ответом от OPENAI API
-        :return: словарь с количеством токенов и их ценами в долларах и рублях
+        :param response: объект ChatCompletion от OpenAI
+        :return: словарь со стоимостью prompt, completion и total в токенах, USD и RUB
         """
 
         # prompt_tokens: Количество токенов в запросе
@@ -115,7 +118,7 @@ class OpenAIClient:
         total_cost_usd = prompt_cost_usd + completion_token_cost_usd
         total_cost_rub = total_cost_usd * usd_to_rub
 
-        # Возвращаем словарь с количеством токенов и их ценами в долларах и рублях
+        # словарь с количеством токенов и их ценами в долларах и рублях
         return {
             'prompt': {
                 'prompt_tokens': prompt_tokens,
@@ -139,11 +142,10 @@ class OpenAIClient:
             response: ChatCompletion,
     ) -> Dict:
         """
-        Возвращает словарь со стоимостью и сообщением в случае успеха.
+        Формирует словарь с успешным ответом от OpenAI.
 
-        :param response: Объект ChatCompletion с ответом от OPENAI API
-        :return: словарь с обработанным ответом от OPENAI API,
-        статусом операции, ценами на запрос-ответ
+        :param response: объект ChatCompletion от OpenAI
+        :return: словарь с ключами status, message, error, cost_interaction
         """
         return {
             'status': 'success',
@@ -157,13 +159,13 @@ class OpenAIClient:
             request_details: dict,
     ) -> str:
         """
-        Метод для получения ключа доступа, который нужен при отправке запроса в OPENAI.
+        Считает токены запроса и получает ключ доступа через KeyManager.
 
-        :param request_details: Словарь с информацией запроса
-        :return: ключ доступа в виде строки
+        :param request_details: словарь с данными запроса
+        :return: API-ключ для отправки запроса
         """
 
-        # получаю количество токенов в этом контексте - int
+        # количество токенов в этом контексте - int
         count_tokens = main_count_tokens(
             context=request_details['context'],
             model=request_details['model'],
@@ -173,28 +175,24 @@ class OpenAIClient:
         # обновляю значение в словаре
         request_details['count_tokens'] = count_tokens
 
-        # получаю ключ доступа
-        access_key = self.key_manager.get_key(query_details=request_details)
-
         # возвращаю ключ доступа
-        return access_key
+        return self.key_manager.get_key(query_details=request_details)
 
     def send_text_request_to_openai(
             self,
             api_key: str,
             context: list,
-            model: Literal["gpt-4o-mini", "gpt-3.5-turbo"],
+            model: Literal["gpt-4o-mini"],
             json_scheme: dict,
     ) -> Dict:
         """
-        Метод для отправки текстового запроса на OpenAI API.
+        Отправляет текстовый запрос в OpenAI API.
 
-        :param api_key: Ключ доступа к аккаунту
+        :param api_key: ключ доступа к аккаунту
         :param context: контекст запроса
-        :param model: название модели OpenAI, которая будет использована для генерации
-        :param json_scheme: json-схема запроса
-
-        :return: словарь с ответом от OPENAI API
+        :param model: название модели OpenAI
+        :param json_scheme: JSON-схема для structured output
+        :return: словарь с ответом от OpenAI
         """
 
         try:
@@ -218,9 +216,7 @@ class OpenAIClient:
             request_details: dict,
     ) -> dict:
         """
-        Главный метод, в котором:
-        проверяем контент,
-        получаем ключ доступа,
+        Главный метод, в котором: проверяем контент, получаем ключ доступа,
         отправляем реальный запрос на API.
 
         :param request_details: словарь с информацией о запросе
@@ -252,7 +248,7 @@ class OpenAIClient:
                 ],
             'pictures': None}
 
-        :return: ответ от open ai в виде словаря
+        :return: ответ от OpenAI в виде словаря
         """
 
         if request_details['target'] != 'text':

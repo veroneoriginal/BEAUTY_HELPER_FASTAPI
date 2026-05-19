@@ -1,4 +1,5 @@
 # apps/content_generation/main_manage_class.py
+
 from typing import Callable
 
 from apps.content_generation.openai.main_openai import (
@@ -9,18 +10,19 @@ from apps.content_generation.openai.main_openai import (
 class GenerationManager:
     """
     Главный управляющий класс для взаимодействия со всей системой генерации контента.
+    Принимает словарь с данными запроса, определяет сервис и вызывает нужный метод.
 
     :param data_request: словарь с данными запроса из бизнес-логики в следующем виде
     {
-            'service': "openai",
-            'model': "gpt-4o-mini",
-            'target': "text",
-            'context': (
-            ('system', 'Ты профессиональный эксперт по косметике с медицинским образованием'),
-            ('user', 'Напиши о том, как правильно ухаживать за собой женщине в 31 год'),
-            ),
-            'pictures': None,
-        }
+        'service': "openai",
+        'model': "gpt-4o-mini",
+        'target': "text",
+        'context': (
+        ('system', 'Ты профессиональный эксперт по косметике с медицинским образованием'),
+        ('user', 'Напиши о том, как правильно ухаживать за собой женщине в 31 год'),
+        ),
+        'pictures': None,
+    }
     """
 
     def __init__(
@@ -37,19 +39,18 @@ class GenerationManager:
 
     def _convert_user_request(self) -> None:
         """
-        Метод для преобразования self.data в список словарей
-        и обновления в текущем словаре запроса, который по итогу отправляется на API.
-
+        Преобразует context из кортежа кортежей в список словарей
+        необходимый для отправки запроса в OpenAI API.
         """
 
         # Фомирование списка для преобразования параметра context
-        CONTEXT_FROM_USER = []
+        context_from_user = []
 
         # получаем кортеж кортежей
         messages = self.data["context"]
 
         for role, text in messages:
-            CONTEXT_FROM_USER.append(
+            context_from_user.append(
                 {"role": role,
                  "content": [
                      {
@@ -61,26 +62,27 @@ class GenerationManager:
             )
 
         # в исходном словаре обновляем значение по ключу messages
-        self.data["context"] = CONTEXT_FROM_USER
+        self.data["context"] = context_from_user
 
     def _generate_text_with_openai(
             self,
     ) -> dict:
         """
-        Метод для генерации текстового ответа от OpenAI.
-        :return: ответ от API
+        Отправляет запрос на генерацию текстового ответа от OpenAI.
+
+        :return: ответ от OpenAI в виде словаря
         """
 
-        # отправляю запрос и получаю ответ от OPENAI
         return self.openai.main_request(request_details=self.data)
 
     def process_request(
             self,
     ) -> dict:
         """
-        Метод для обработки запроса и вызова метода, соответствующего запросу.
+        Главный метод класса.
+        Преобразует запрос и вызывает метод соответствующий сервису и типу контента.
 
-        :return: результат генерации в виде словаря.
+        :return: результат генерации в виде словаря
         """
 
         # Преобразовываем словарь запроса

@@ -1,17 +1,15 @@
 # apps/content_generation/openai/json_constructor/json_processing_data.py
 
-from apps.selection.models import (
-    SelectionTaskType,
-)
+from apps.selection.models import SelectionTaskType
 
 
 class JsonProcessingData:
     """
-    Класс, внутри которого преобразовываются данные для текущей подборки
-    в зависимости от кода задачи.
+    Класс для подготовки данных перед созданием JSON-схемы.
+    Формирует словарь с нужными полями в зависимости от типа задачи.
 
-    :param data_collection: Словарь с информацией по текущей подборке
-    :param task_type: Тип задачи, по которой создается подборка
+    :param data_collection: словарь с данными текущего шага подборки
+    :param task_type: тип задачи подборки
     """
 
     def __init__(
@@ -23,21 +21,18 @@ class JsonProcessingData:
         self.task_type = task_type
 
         self.method_for_task_code = {
-            # код задачи - Подробный анализ каждого элемента состава
+            # Подробный анализ каждого элемента состава
             SelectionTaskType.COMPOSITION_ANALYSIS:
                 self.conversion_dict_for_task_each_element_composition,
-            # "Общий анализ групп элементов состава":
-            # self.decryption_task_detailed_analysis_composition,
+            # "Общий анализ элементов состава": self.decryption_task_detailed_analysis_composition,
             # "Аналог": self.decryption_analogue_product,
-            # "Лучшее средство": self.decryption_task_best_product,
-            # "Лучшее средство без канцерогенов": self.decryption_task_best_product,
-            # "Лучшая пара": self.decryption_task_best_couple,
-            # "Лучшее сочетание": self.decryption_task_best_combination,
         }
 
     def distribution_on_task(self):
         """
-        С помощью этого метода определяю какую функцию для расшифровки вызывать
+        Определяет и вызывает метод подготовки данных в зависимости от типа задачи.
+
+        :return: подготовленный словарь для создания JSON-схемы
         """
 
         return self.method_for_task_code[self.task_type]()
@@ -46,12 +41,10 @@ class JsonProcessingData:
             self,
     ) -> dict:
         """
-        Функция для формирования нового словаря по коду задачи
-        SelectionTaskType.COMPOSITION_ANALYSIS или
-        "Подробный анализ каждого элемента состава".
+        Формирует словарь для задачи COMPOSITION_ANALYSIS /
+        Подробный анализ каждого элемента состава.
 
-        :return: Словарь с необходимыми для json-схемы ключами
-        имеет вид
+        :return:
         {
             'article_ga': '19000002015',
             'name': 'CLINIQUE Moisture Surge 100h',
@@ -59,18 +52,7 @@ class JsonProcessingData:
             'product_type_detailed': 'Интенсивно увлажняющий гель на 100 часов',
             'task_type': SelectionTaskType.COMPOSITION_ANALYSIS,
             'Шаг задачи последний или нет': False/True,
-            'Элементы состава для шага задачи': ['Water',
-                                                 'Dimethicone',
-                                                 'Butylene Glycol',
-                                                 'Glycerin',
-                                                 'Trisiloxane',
-                                                 'Trehalose',
-                                                 'Sucrose',
-                                                 'Ammonium Acryloyldimethyltaurate/vp '
-                                                 'Copolymer',
-                                                 'Hydroxyethyl Urea',
-                                                 'Camellia Sinensis (green Tea) Leaf '
-                                                 'Extract'],
+            'Элементы состава для шага задачи': ['Water', 'Dimethicone', ..., 'Extract'],
         }
         """
 

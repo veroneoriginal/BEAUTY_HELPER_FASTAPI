@@ -2,7 +2,8 @@
 
 class OpenAIGenTextContentException(Exception):
     """
-    OpenAI ошибка генерации тестового контента
+    Ошибка генерации текстового контента через OpenAI API.
+    Возникает при любой ошибке во время отправки запроса или получения ответа.
     """
 
     def __str__(self):
@@ -11,5 +12,6 @@ class OpenAIGenTextContentException(Exception):
 
 class OpenAIInsufficientQuotaError(Exception):
     """
-    Фатальная ошибка: у аккаунта OpenAI закончилась квота
+    Фатальная ошибка: у аккаунта OpenAI закончилась квота.
+    Требует пополнения баланса или смены аккаунта.
     """

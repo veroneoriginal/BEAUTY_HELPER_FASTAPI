@@ -7,12 +7,12 @@ from apps.selection.models import (
 
 class JsonCreator:
     """
-    Класс, внутри которого создается json-схема для
-    текущей подборки в зависимости от кода задачи.
+        Класс для динамического создания JSON-схемы для structured output OpenAI.
+        Схема формируется в зависимости от типа задачи и состава продукта.
 
-    :param data_collection: Словарь с информацией по текущей подборке
-    :return: json-схема для текущей подборки в зависимости от кода задачи.
-    """
+        :param data_collection: словарь с данными текущего шага подборки
+        :param product_categories: словарь с категориями продуктов
+        """
 
     def __init__(
             self,
@@ -23,32 +23,32 @@ class JsonCreator:
         self.product_categories = product_categories
 
         self.method_for_task_code = {
-            # код задачи - Подробный анализ каждого элемента состава
+            # Подробный анализ каждого элемента состава
             SelectionTaskType.COMPOSITION_ANALYSIS:
                 self.create_js_detailed_analysis_each_element_of_composition,
-            # "Общий анализ групп элементов состава":
-            # self.create_json_scheme_detailed_analysis_composition,
+            # "Общий анализ элементов состава": self.create_json_scheme_detailed_analysis_composition,
             # "Аналог": self.create_json_scheme_for_analogue_product,
-            # "Лучшее средство": self.create_json_scheme_for_best_product,
-            # "Лучшее средство без канцерогенов":
-            #     self.create_json_scheme_for_best_product_carcinogen_free,
-            # "Лучшая пара": self.create_json_scheme_for_best_couple,
-            # "Лучшее сочетание": self.create_json_scheme_for_best_combination,
+
         }
 
     def get_json_scheme_for_current_task(self):
         """
-        С помощью этого метода определяю какую функцию для создания json вызывать
+        Определяет и вызывает метод создания JSON-схемы в зависимости от типа задачи.
+        :return: JSON-схема для текущей задачи
         """
+
         task = self.data_collection["task_type"]
         return self.method_for_task_code[task]()
 
     def create_js_detailed_analysis_each_element_of_composition(self) -> dict:
         """
-        Метод для динамического формирования json-схемы для кода задачи
-        "Подробный анализ каждого элемента состава" средства для передачи в OPENAI.
+        Динамически формирует JSON-схему для задачи COMPOSITION_ANALYSIS.
+        Для каждого ингредиента создаёт объект с полями:
+        element_title, what_is_element_used_for, element_danger_text,
+        is_element_danger, element_stop_in_country.
+        Для последнего шага добавляет поле result с итоговым выводом.
 
-        :return: Готовый JSON для отправки в OpenAI.
+        :return: JSON-схема для отправки в OpenAI
         """
 
         schema = {

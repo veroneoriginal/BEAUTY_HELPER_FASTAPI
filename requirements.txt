@@ -24,3 +24,5 @@ PyJWT==2.12.1
 pydantic[email]==2.12.5
 redis==7.4.0
 aioboto3==15.5.0
+tiktoken==0.13.0
+openai==2.37.0

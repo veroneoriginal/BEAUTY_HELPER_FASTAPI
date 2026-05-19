@@ -15,11 +15,11 @@ from apps.selection.models import (
 
 class PromptProcessingData:
     """
-    Класс, внутри которого расшифровываются все данные текущей подборки
-    в зависимости от кода задачи.
+    Класс для расшифровки данных текущей подборки в зависимости от типа задачи.
+    Преобразует сырые данные продукта в структуру необходимую для построения промпта.
 
-    :param data_collection: Данные подборки
-    :param task_type: Тип задачи, по которой создается подборка
+    :param data_collection: словарь с данными текущего шага подборки
+    :param task_type: тип задачи подборки
     """
 
     def __init__(
@@ -39,8 +39,7 @@ class PromptProcessingData:
             self,
     ) -> dict:
         """
-        Функция, внутри которой выбирается рабочая функция
-        для расшифровки данных в зависимости от кода задачи.
+        Выбирает и вызывает метод расшифровки в зависимости от типа задачи.
 
         :return: Словарь с расшифрованными данными по текущей подборке вида
         {
@@ -70,17 +69,14 @@ class PromptProcessingData:
         }
         """
 
-        # Вызываем метод, который соответствует задаче
-        # В этом методе все расшифровывается и результат возвращается
         return self.method_for_task_code[self.task_type]()
 
     def decrypting_info_code_detailed_analysis_composition(
             self,
     ) -> dict:
         """
-        Функция для расшифровки данных и формирования словаря
-        для кода задачи SelectionTaskType.COMPOSITION_ANALYSIS,
-        то есть - Подробный анализ каждого элемента состава.
+        Расшифровывает данные для задачи SelectionTaskType.COMPOSITION_ANALYSIS
+        (Подробный анализ каждого элемента состава).
 
         :return dict: Возвращает словарь с данными,
         которые необходимы для формирования промпта
@@ -88,8 +84,7 @@ class PromptProcessingData:
         # формируем новый словарь
         decrypting_data_collection = {}
 
-        # 1 определяем специалиста, который пойдет в system_prompt,
-        # для этого получаем тип средства и обращаемся к словарю
+        # 1. Определяем специалиста по типу продукта
         product_type = self.data_collection['product_type']
         specialist = get_specialist_by_product_type(product_type)
 
@@ -101,6 +96,7 @@ class PromptProcessingData:
 
         # 3 Получаем элементы состава
         composition_elements = self.data_collection['Элементы состава для шага задачи']
+
         # Пронумеровываем их и конвертируем список в строку
         start_index = self.data_collection.get('Смещение для нумерации', 1)
         formatted_string = format_composition_elements(
@@ -144,5 +140,8 @@ class PromptProcessingData:
 
         # 10 добавляем полный список элементов состава
         decrypting_data_collection['ingredients_list'] = self.data_collection['ingredients_list']
+
+        print("Функция decrypting_info_code_detailed_analysis_composition")
+        print(decrypting_data_collection)
 
         return decrypting_data_collection

@@ -21,15 +21,16 @@ def generate_text_content_openai(
         json_scheme: dict,
 ) -> ChatCompletion:
     """
-    Функция для отправки запроса на генерацию контента в OpenAI.
+    Отправляет запрос на генерацию текстового контента в OpenAI.
 
-    :param api_key: Ключ доступа к аккаунту
-    :param context: контекст запроса
-    :param settings: настройки для запроса
-    :param model: название модели OpenAI, которая будет использована для генерации
-    :param json_scheme: json-схема запроса
+    :param api_key: Ключ доступа к аккаунту OpenAI
+    :param context: контекст запроса в формате списка словарей
+    :param settings: настройки запроса (temperature, max_tokens)
+    :param model: название модели OpenAI
+    :param json_scheme: json-схема для structured output
 
-    :return: объект ChatCompletion
+    :return: объект ChatCompletion с ответом от OpenAI
+    :raises OpenAIGenTextContentException: при любой ошибке запроса
     """
     try:
         client = OpenAI(api_key=api_key)
@@ -66,9 +67,10 @@ def generate_text_content_openai(
 def to_decimal(price: float | int) -> Decimal:
     """
     Приводит число (стоимость) к Decimal с высокой точностью дробной части.
+    Используется для расчёта стоимости запросов к OpenAI.
 
-    :param price: Стоимость запроса, ответа или соотношение доллара к рублю
-    :return: стоимость в формате Decimal с высокой точностью дробной части.
+    :param price: стоимость в float или int
+    :return: стоимость в формате Decimal с точностью 1e-15 (дробной части)
     """
     decimal_precision = Decimal('1e-15')
 

@@ -1,12 +1,10 @@
 # apps/content_generation/openai/prompt_constructor/data_task.py
-# pylint: skip-file
-# apps/content_generation/openai/prompt_constructor/data_task.py
 
 from apps.selection.models import (
     SelectionTaskType,
 )
 
-# Как анализировать в зависимости от кода задачи
+# Инструкции для OpenAI в зависимости от типа задачи
 full_data_task = {
     # Подробный анализ каждого элемента состава
     SelectionTaskType.COMPOSITION_ANALYSIS: "Тебе дано средство и часть элементов его состава."
