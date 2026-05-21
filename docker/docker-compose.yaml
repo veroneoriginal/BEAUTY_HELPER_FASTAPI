@@ -79,6 +79,28 @@ services:
     networks:
       - bh_network
 
+  # === Celery Beat ===
+  celery_beat:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    container_name: bh_celery_beat
+    command: celery -A infrastructure.celery.app beat --loglevel=info
+    volumes:
+      - ..:/app
+    env_file:
+      - ../.env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - bh_network
+
   # === FastAPI-приложение ===
   app:
     build:
@@ -96,6 +118,8 @@ services:
       db:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     networks:
       - bh_network

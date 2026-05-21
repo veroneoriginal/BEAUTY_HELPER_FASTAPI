@@ -23,3 +23,10 @@ celery_app.conf.update(
     task_acks_late=True,
     worker_prefetch_multiplier=1,
 )
+
+celery_app.conf.beat_schedule = {
+    "run-waiting-task-every-30-seconds": {
+        "task": "infrastructure.celery.tasks.run_waiting_task",
+        "schedule": 30.0,
+    },
+}
