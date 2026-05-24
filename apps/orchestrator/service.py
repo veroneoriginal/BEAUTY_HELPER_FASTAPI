@@ -20,15 +20,17 @@ logger = logging.getLogger(__name__)
 
 async def try_reserve_spin_or_return_message(
         balance_service,
+        user_id: int,
 ) -> tuple[bool, str | None]:
     """
     Пытается зарезервировать генерацию через BalanceService.
     Если не удалось — возвращает сообщение об ошибке.
 
     :param balance_service: экземпляр BalanceService
+    :param user_id: ID пользователя
     :return: кортеж (успех, сообщение об ошибке или None)
     """
-    reserved = await balance_service.reserve_spin_on_balance()
+    reserved = await balance_service.reserve_spins(user_id=user_id)
     if not reserved:
         return (
             False,
@@ -92,12 +94,15 @@ async def get_or_prepare_selection(
             }
 
         # Пользователь новый — резервируем крутку и сразу отдаём PDF
-        success, error_message = await try_reserve_spin_or_return_message(balance_service)
+        success, error_message = await try_reserve_spin_or_return_message(
+            balance_service=balance_service,
+            user_id=user.id,
+        )
         if not success:
             return {"status": "error", "message": error_message}
 
         await selection_service.add_user_to_selection(selection=selection, user=user)
-        await balance_service.confirm_reserved_spin()
+        await balance_service.confirm_spins(user_id=user.id)
 
         logger.info(
             "[ORCHESTRATOR] Отправляем готовую подборку %s пользователю %s",
@@ -127,9 +132,15 @@ async def get_or_prepare_selection(
             }
 
         # Резервируем крутку и добавляем в ожидание
-        success, error_message = await try_reserve_spin_or_return_message(balance_service)
+        success, error_message = await try_reserve_spin_or_return_message(
+            balance_service=balance_service,
+            user_id=user.id,
+        )
         if not success:
-            return {"status": "error", "message": error_message}
+            return {
+                "status": "error",
+                "message": error_message,
+            }
 
         await selection_service.add_user_to_selection(selection=selection, user=user)
         await waiting_service.get_or_create_waiting(
@@ -148,7 +159,7 @@ async def get_or_prepare_selection(
 
     # 4. Подборки нет — создаём с нуля
     # 4.1 Ищем продукт в БД
-    product = await product_repo.get_by_link(link_ga=product_link)
+    product = await product_repo.get_by_link_ga(link=product_link)
 
     # 4.2 Если продукта нет — заглушка парсера
     if not product:
@@ -162,7 +173,10 @@ async def get_or_prepare_selection(
         }
 
     # 4.3 Резервируем крутку
-    success, error_message = await try_reserve_spin_or_return_message(balance_service)
+    success, error_message = await try_reserve_spin_or_return_message(
+        balance_service=balance_service,
+        user_id=user.id,
+    )
     if not success:
         return {"status": "error", "message": error_message}
 

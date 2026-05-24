@@ -1,3 +1,4 @@
+# infrastructure/s3/decorators.py
 from functools import wraps
 
 from botocore.exceptions import BotoCoreError, ClientError, EndpointConnectionError

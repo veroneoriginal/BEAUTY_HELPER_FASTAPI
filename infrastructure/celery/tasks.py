@@ -7,8 +7,10 @@ from contextlib import contextmanager
 from redis import Redis
 
 from apps.content_generation.openai.task_processing.main import TaskProcessing
-from apps.content_generation.openai.utils.utils_errors import OpenAIInsufficientQuotaError
-from apps.control_manager.utils.utils import CustomJSONEncoder
+from apps.content_generation.openai.utils.utils_errors import (
+    OpenAIInsufficientQuotaError,
+)
+from apps.orchestrator.encoders import CustomJSONEncoder
 from apps.pdf_generation.main import generate_selection_pdf
 from apps.pdf_generation.utils import (
     calculate_price_full_request,
@@ -49,7 +51,10 @@ def redis_lock(lock_name: str, expire: int = 55):
         pass
 
 
-def _get_selection_with_product(session, selection_id: int) -> Selection | None:
+def _get_selection_with_product(
+        session,
+        selection_id: int,
+) -> Selection | None:
     """
     Получает подборку вместе с продуктом по ID через синхронную сессию.
 
@@ -57,8 +62,8 @@ def _get_selection_with_product(session, selection_id: int) -> Selection | None:
     :param selection_id: ID подборки
     :return: объект Selection или None
     """
-    from sqlalchemy.orm import joinedload
     from sqlalchemy import select
+    from sqlalchemy.orm import joinedload
 
     result = session.execute(
         select(Selection)
@@ -160,6 +165,7 @@ def _complete_waitings_for_selection(session, selection: Selection) -> None:
     :param selection: завершённая подборка
     """
     from sqlalchemy import select
+
     from apps.balance.models import UserBalance
 
     waitings = session.execute(
@@ -264,6 +270,7 @@ def run_waiting_task() -> None:
         with sync_session() as session:
             from sqlalchemy import select
             from sqlalchemy.orm import joinedload
+
             from apps.balance.models import UserBalance
 
             waitings = session.execute(

@@ -10,6 +10,7 @@ from fastapi import FastAPI
 from api.auth import router as auth_router
 from apps.balance.models import BalanceOperation, UserBalance  # noqa: F401
 from apps.balance.routes import router as balance_router
+from apps.orchestrator.router import router as analysis_router
 from apps.package.models import Package, UserPackage  # noqa: F401
 from apps.package.routes import router as package_router
 from apps.package.seed import seed_packages
@@ -17,7 +18,6 @@ from apps.products.models import Product  # noqa: F401
 from apps.selection.models import Selection, selection_users  # noqa: F401
 from apps.users.models import User  # noqa: F401
 from apps.waiting.models import Waiting  # noqa: F401
-from apps.orchestrator.router import router as analysis_router
 from core.database import Base, async_session, engine
 
 

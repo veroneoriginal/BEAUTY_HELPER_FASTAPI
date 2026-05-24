@@ -12,9 +12,15 @@ from datetime import datetime, timedelta, timezone
 
 import bcrypt
 import jwt
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import settings
+from core.database import get_session
 from infrastructure.redis import redis_client
+
+bearer_scheme = HTTPBearer()
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +74,7 @@ async def verify_password_async(
     return await loop.run_in_executor(
         None, verify_password, plain_password, hashed_password,
     )
+
 
 # === JWT-токены ===
 
@@ -185,6 +192,7 @@ async def blacklist_token(
             "revoked",
         )
 
+
 def create_confirmation_token(
         user_id: int,
         expires_delta: timedelta | None = None,
@@ -206,3 +214,56 @@ def create_confirmation_token(
         settings.SECRET_KEY,
         algorithm=settings.ALGORITHM,
     )
+
+
+async def get_current_user(
+        credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+        session: AsyncSession = Depends(get_session),
+):
+    """
+    FastAPI dependency для защищённых эндпоинтов.
+    Извлекает JWT токен из заголовка Authorization: Bearer <token>,
+    проверяет подпись, проверяет blacklist, возвращает объект пользователя.
+
+    :raises HTTPException 401: если токен невалидный, просрочен или в blacklist
+    :raises HTTPException 404: если пользователь не найден
+    """
+    from apps.users.repository import UserRepository
+
+    token = credentials.credentials
+
+    # Проверяем blacklist
+    if await is_token_blacklisted(token=token, token_type="access"):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Токен отозван. Пожалуйста, войдите снова.",
+        )
+
+    # Декодируем токен
+    try:
+        payload = decode_token(token)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Невалидный или просроченный токен.",
+        )
+
+    # Получаем user_id из payload
+    user_id = payload.get("sub")
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Невалидный токен: отсутствует sub.",
+        )
+
+    # Получаем пользователя из БД
+    repo = UserRepository(session)
+    user = await repo.get_by_id(int(user_id))
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Пользователь не найден.",
+        )
+
+    return user

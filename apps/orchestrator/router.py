@@ -1,11 +1,9 @@
 # apps/orchestrator/router.py
 
-
-# apps/orchestrator/router.py
-
 import logging
 
 from fastapi import APIRouter, Depends
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.orchestrator.service import get_or_prepare_selection
@@ -13,7 +11,6 @@ from apps.selection.models import SelectionTaskType
 from apps.users.models import User
 from core.database import get_session
 from core.security import get_current_user
-from pydantic import BaseModel, HttpUrl
 
 logger = logging.getLogger(__name__)
 
