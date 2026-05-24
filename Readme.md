@@ -21,3 +21,29 @@ PDF: ReportLab
 Оркестратор — два движка (sync + async)
 FastAPI использует asyncpg,
 Celery использует psycopg2.
+
+
+[1] FastAPI (async HTTP)
+Принял запрос, проверил БД, ответил "принято" — быстро
+
+[2] Celery Worker — OpenAI (I/O)
+Отправляет запросы к OpenAI
+Пока один воркер работает с продуктом А,
+другой воркер берёт продукт Б — параллельно
+
+[3] Celery Worker — PDF (CPU)
+Когда OpenAI вернул ответ — генерируем PDF
+Это отдельный процесс, не блокирует этап 2
+
+
+task_run_openai(selection_id)
+→ OpenAI отработал
+→ сохранили ответ в БД
+→ вызвали task_generate_pdf.delay(selection_id)
+
+task_generate_pdf(selection_id)
+→ взяли данные из БД
+→ сгенерировали PDF
+→ загрузили на S3
+→ закрыли waitings, списали крутки
+→ статус DONE
