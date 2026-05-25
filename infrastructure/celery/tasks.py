@@ -5,7 +5,11 @@ import logging
 from contextlib import contextmanager
 
 from redis import Redis
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 
+from apps.balance.sync_repository import SyncBalanceRepository
+from apps.balance.sync_services import SyncBalanceService
 from apps.content_generation.openai.task_processing.main import TaskProcessing
 from apps.content_generation.openai.utils.utils_errors import (
     OpenAIInsufficientQuotaError,
@@ -125,6 +129,9 @@ def _create_selection_on_task(session, selection: Selection) -> None:
     logger.info("[OPENAI] Saved request and response to selection")
 
     # 5. Считаем стоимость
+    if not selection.final_analysis:
+        raise ValueError("final_analysis пустой — OpenAI не вернул ответ")
+
     answer_from_openai = convert_json_openai_to_list(
         analysis_data=selection.final_analysis,
     )
@@ -158,15 +165,14 @@ def _create_selection_on_task(session, selection: Selection) -> None:
 
 def _complete_waitings_for_selection(session, selection: Selection) -> None:
     """
-    После завершения подборки находит все открытые ожидания
+    После завершения создания подборки находит все открытые ожидания
     и закрывает их — списывает крутку каждому пользователю.
 
     :param session: синхронная сессия SQLAlchemy
     :param selection: завершённая подборка
     """
-    from sqlalchemy import select
 
-    from apps.balance.models import UserBalance
+    balance_service = SyncBalanceService(SyncBalanceRepository(session))
 
     waitings = session.execute(
         select(Waiting).where(
@@ -177,20 +183,14 @@ def _complete_waitings_for_selection(session, selection: Selection) -> None:
 
     for waiting in waitings:
         # Списываем зарезервированную крутку
-        balance = session.execute(
-            select(UserBalance).where(UserBalance.user_id == waiting.user_id)
-        ).scalar_one_or_none()
-
-        if balance:
-            balance.confirm_reserved_spin()
-            session.flush()
+        balance_service.confirm_spins(user_id=waiting.user_id)
 
         # Закрываем ожидание
         waiting.status = WaitingStatus.CLOSED
         session.flush()
 
         logger.info(
-            "[WAITING] Closed waiting_id=%s for user_id=%s",
+            "[WAITING] Закрыто ожидание waiting_id=%s для user_id=%s",
             waiting.id,
             waiting.user_id,
         )
@@ -218,7 +218,7 @@ def run_create_selection_on_task(self, selection_id: int) -> None:
         selection = _get_selection_with_product(session, selection_id)
 
         if not selection:
-            logger.error("[TASK] Selection %s not found", selection_id)
+            logger.error("[TASK] Подборка %s не найдена", selection_id)
             return
 
         # Меняем статус на PROCESS
@@ -230,7 +230,7 @@ def run_create_selection_on_task(self, selection_id: int) -> None:
             _complete_waitings_for_selection(session=session, selection=selection)
             session.commit()
 
-            logger.info("[TASK] Selection %s completed successfully", selection_id)
+            logger.info("[TASK] Подборка %s успешно завершена", selection_id)
 
         except OpenAIInsufficientQuotaError:
             logger.critical("❌ На балансе OpenAI закончились деньги")
@@ -240,7 +240,7 @@ def run_create_selection_on_task(self, selection_id: int) -> None:
 
         except Exception as exc:
             logger.error(
-                "[TASK] Failed selection_id=%s error=%s",
+                "[TASK] Ошибка генерации подборки selection_id=%s error=%s",
                 selection_id,
                 exc,
             )
@@ -264,65 +264,49 @@ def run_waiting_task() -> None:
     """
     with redis_lock("waiting_lock", expire=55) as acquired:
         if not acquired:
-            logger.info("[WAITING_TASK] Already running, skip")
+            logger.info("[WAITING_TASK] Задача уже выполняется.")
             return
 
         with sync_session() as session:
-            from sqlalchemy import select
-            from sqlalchemy.orm import joinedload
-
-            from apps.balance.models import UserBalance
 
             waitings = session.execute(
                 select(Waiting)
                 .options(
                     joinedload(Waiting.selection),
-                )
-                .where(Waiting.status == WaitingStatus.OPEN)
+                ).where(Waiting.status == WaitingStatus.OPEN)
             ).scalars().all()
 
-            logger.info("[WAITING_TASK] Found %s open waitings", len(waitings))
+            logger.info(
+                "[WAITING_TASK] Найдено %s открытых ожиданий",
+                len(waitings),
+            )
+
+            balance_service = SyncBalanceService(SyncBalanceRepository(session))
 
             for waiting in waitings:
                 selection = waiting.selection
 
                 if selection.selection_status == SelectionStatus.DONE:
                     # Списываем крутку
-                    balance = session.execute(
-                        select(UserBalance).where(
-                            UserBalance.user_id == waiting.user_id
-                        )
-                    ).scalar_one_or_none()
-
-                    if balance:
-                        balance.confirm_reserved_spin()
-                        session.flush()
+                    balance_service.confirm_spins(user_id=waiting.user_id)
 
                     waiting.status = WaitingStatus.CLOSED
                     session.flush()
 
                     logger.info(
-                        "[WAITING_TASK] Closed waiting_id=%s selection DONE",
+                        "[WAITING_TASK] Закрыто ожидание %s, статус подборки - DONE",
                         waiting.id,
                     )
 
                 elif selection.selection_status == SelectionStatus.FAILED:
                     # Возвращаем крутку
-                    balance = session.execute(
-                        select(UserBalance).where(
-                            UserBalance.user_id == waiting.user_id
-                        )
-                    ).scalar_one_or_none()
-
-                    if balance:
-                        balance.release_reserved_spin()
-                        session.flush()
+                    balance_service.release_spins(user_id=waiting.user_id)
 
                     waiting.status = WaitingStatus.CLOSED
                     session.flush()
 
                     logger.info(
-                        "[WAITING_TASK] Closed waiting_id=%s selection FAILED",
+                        "[WAITING_TASK] Закрыто ожидание %s, статус подборки - FAILED",
                         waiting.id,
                     )
 
@@ -332,7 +316,7 @@ def run_waiting_task() -> None:
                         selection_id=selection.id,
                     )
                     logger.info(
-                        "[WAITING_TASK] Restarted selection_id=%s",
+                        "[WAITING_TASK] Перегенерация подборки - id=%s",
                         selection.id,
                     )
 
