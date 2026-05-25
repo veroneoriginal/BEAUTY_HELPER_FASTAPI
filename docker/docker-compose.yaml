@@ -1,3 +1,5 @@
+name: beauty_helper_fastapi
+
 services:
   # === PostgreSQL ===
   db:

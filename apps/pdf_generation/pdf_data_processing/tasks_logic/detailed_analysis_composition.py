@@ -1,14 +1,10 @@
 # apps/pdf_generation/pdf_data_processing/tasks_logic/detailed_analysis_composition.py
-# pylint: skip-file
-# apps/pdf_generation/pdf_data_processing/tasks_logic/detailed_analysis_composition.py
 
 """
 Создание PDF-документов для задачи "Подробный анализ каждого элемента состава"
 """
 
-from shared.source.structure_folders import (
-    ORANGE_LIGHT_VERTICAL_BRAND_LINE_PATH,
-)
+from core.assets import ORANGE_LIGHT_VERTICAL_BRAND_LINE_PATH
 
 from apps.pdf_generation.pdf_data_processing.tasks_logic.base_task import (
     get_base_info_by_product,

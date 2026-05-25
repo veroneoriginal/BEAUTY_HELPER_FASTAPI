@@ -1,6 +1,6 @@
 # core/repository/sync_sqlalchemy.py
 
-from typing import Optional, Sequence, Type, TypeVar
+from typing import Generic, Optional, Sequence, Type, TypeVar
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 T = TypeVar("T")
 
 
-class SyncSQLAlchemyRepository:
+class SyncSQLAlchemyRepository(Generic[T]):
     """
     Синхронная реализация базового репозитория через SQLAlchemy 2.0.
     Используется в Celery-воркерах где нет event loop.
