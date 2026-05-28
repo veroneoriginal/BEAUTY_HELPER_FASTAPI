@@ -7,7 +7,6 @@
 
 from typing import Sequence
 
-from apps.products.dto import ProductData
 from apps.products.models import Product, ProductFillStatus
 from apps.products.repository import ProductRepository
 
@@ -73,20 +72,3 @@ class ProductService:
         """Заполнены ли все данные продукта."""
         return product.fill_status == ProductFillStatus.DONE
 
-    @staticmethod
-    def get_data_about_product(product: Product) -> ProductData:
-        """
-        Возвращает DTO с данными продукта для анализа и подборок.
-        Отвязывает бизнес-логику от ORM.
-        """
-        return ProductData(
-            name=product.name,
-            article_ga=product.article_ga,
-            image_key=product.image_key,
-            product_type=product.product_type,
-            product_type_detailed=product.product_type_detailed,
-            measure_value=product.measure_value if product.measure_value is not None else None,
-            measure_unit=product.measure_unit,
-            price_rub=product.price_rub,
-            ingredients_list=product.ingredients_list,
-        )

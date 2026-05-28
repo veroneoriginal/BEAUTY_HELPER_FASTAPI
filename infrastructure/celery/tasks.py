@@ -3,6 +3,7 @@
 import json
 import logging
 from contextlib import contextmanager
+from dataclasses import asdict
 
 from redis import Redis
 from sqlalchemy import select
@@ -90,7 +91,6 @@ def _create_selection_on_task(session, selection: Selection) -> None:
     :param session: синхронная сессия SQLAlchemy
     :param selection: объект подборки
     """
-    from dataclasses import asdict
 
     # 1. Получаем DTO продукта
     product = selection.product

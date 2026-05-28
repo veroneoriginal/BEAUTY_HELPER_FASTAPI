@@ -1,27 +1,24 @@
 # apps/products/models.py
 
-
 # Модель продукта (косметического средства).
 # Содержит все данные, полученные при парсинге карточки товара
 # из Золотого Яблока: название, состав, цена, бренд и т.д.
 
 import enum
-from datetime import datetime
 from decimal import Decimal
 
 from sqlalchemy import (
     JSON,
     BigInteger,
-    DateTime,
     Enum,
     Integer,
     Numeric,
     String,
     Text,
-    func,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
+from apps.products.dto import ProductData
 from core.database import Base
 
 
@@ -30,10 +27,10 @@ class ProductFillStatus(str, enum.Enum):
     Статус заполнения данных продукта.
     Отслеживает, на каком этапе находится парсинг карточки товара.
     """
-    EMPTY = "empty"           # Не заполнено
+    EMPTY = "empty"  # Не заполнено
     IN_PROGRESS = "in_progress"  # В процессе
-    DONE = "done"             # Заполнено
-    FAILED = "failed"         # Ошибка
+    DONE = "done"  # Заполнено
+    FAILED = "failed"  # Ошибка
 
 
 class Product(Base):
@@ -206,6 +203,22 @@ class Product(Base):
         nullable=False,
         comment="Статус заполнения данных",
     )
+
+    def get_data_about_product(self) -> ProductData:
+        """
+        Возвращает DTO с данными продукта для анализа и генерации PDF.
+        """
+        return ProductData(
+            name=self.name,
+            article_ga=self.article_ga,
+            image_key=self.image_key,
+            product_type=self.product_type,
+            product_type_detailed=self.product_type_detailed,
+            measure_value=self.measure_value if self.measure_value is not None else None,
+            measure_unit=self.measure_unit,
+            price_rub=self.price_rub,
+            ingredients_list=self.ingredients_list,
+        )
 
     def __repr__(self) -> str:
         return f"Product(id={self.id}, name={self.name}, article={self.article_ga})"
