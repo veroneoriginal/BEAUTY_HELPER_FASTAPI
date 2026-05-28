@@ -16,6 +16,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from apps.users.repository import UserRepository
 from core.config import settings
 from core.database import get_session
 from infrastructure.redis import redis_client
@@ -228,7 +229,6 @@ async def get_current_user(
     :raises HTTPException 401: если токен невалидный, просрочен или в blacklist
     :raises HTTPException 404: если пользователь не найден
     """
-    from apps.users.repository import UserRepository
 
     token = credentials.credentials
 

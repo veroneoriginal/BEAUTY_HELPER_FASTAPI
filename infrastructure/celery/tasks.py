@@ -53,7 +53,8 @@ def redis_lock(lock_name: str, expire: int = 55):
     try:
         yield lock_acquired
     finally:
-        pass
+        if lock_acquired:
+            redis_client.delete(lock_name)
 
 
 def _get_selection_with_product(
@@ -67,8 +68,6 @@ def _get_selection_with_product(
     :param selection_id: ID подборки
     :return: объект Selection или None
     """
-    from sqlalchemy import select
-    from sqlalchemy.orm import joinedload
 
     result = session.execute(
         select(Selection)
