@@ -27,6 +27,7 @@ class ProductFillStatus(str, enum.Enum):
     Статус заполнения данных продукта.
     Отслеживает, на каком этапе находится парсинг карточки товара.
     """
+
     EMPTY = "empty"  # Не заполнено
     IN_PROGRESS = "in_progress"  # В процессе
     DONE = "done"  # Заполнено
@@ -214,7 +215,9 @@ class Product(Base):
             image_key=self.image_key,
             product_type=self.product_type,
             product_type_detailed=self.product_type_detailed,
-            measure_value=self.measure_value if self.measure_value is not None else None,
+            measure_value=self.measure_value
+            if self.measure_value is not None
+            else None,
             measure_unit=self.measure_unit,
             price_rub=self.price_rub,
             ingredients_list=self.ingredients_list,

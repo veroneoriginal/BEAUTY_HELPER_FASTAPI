@@ -12,33 +12,39 @@ from pydantic import BaseModel, EmailStr
 
 # === Схемы для создания пользователя ===
 
+
 class UserCreate(BaseModel):
     """
     Данные для регистрации нового пользователя.
     Приходят от клиента (сайт, Postman).
     """
+
     email: EmailStr
     password: str
 
 
 # === Схемы для обновления пользователя ===
 
+
 class UserUpdate(BaseModel):
     """
     Данные для обновления профиля.
     Все поля опциональные — клиент отправляет только то, что меняет.
     """
+
     username: Optional[str] = None
     language_code: Optional[str] = None
 
 
 # === Схемы для ответа клиенту ===
 
+
 class UserRead(BaseModel):
     """
     Данные пользователя, которые отдаём клиенту.
     Пароль сюда НЕ входит — никогда не отдаём наружу.
     """
+
     id: int
     email: str
     username: Optional[str] = None

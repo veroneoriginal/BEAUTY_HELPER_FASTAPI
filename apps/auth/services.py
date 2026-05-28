@@ -47,8 +47,8 @@ class AuthService:
         self.repository = repository
 
     async def register(
-            self,
-            data: RegisterRequest,
+        self,
+        data: RegisterRequest,
     ) -> dict:
         """
         Регистрация нового пользователя.
@@ -67,11 +67,12 @@ class AuthService:
             raise UserAlreadyExistsError(f"Email {data.email} уже зарегистрирован")
 
         # Создаём юзера (email не подтверждён)
-        user = await self.repository.create({
-            "email": data.email,
-            "password": await hash_password_async(data.password),
-            "email_confirmed": False,
-        }
+        user = await self.repository.create(
+            {
+                "email": data.email,
+                "password": await hash_password_async(data.password),
+                "email_confirmed": False,
+            }
         )
 
         # Генерируем токен подтверждения (живёт 24 часа)
@@ -92,8 +93,8 @@ class AuthService:
         }
 
     async def confirm_email(
-            self,
-            token: str,
+        self,
+        token: str,
     ) -> dict:
         """
         Подтверждение email по токену из ссылки.
@@ -132,8 +133,8 @@ class AuthService:
         return {"message": "Email успешно подтверждён. Теперь вы можете войти."}
 
     async def login(
-            self,
-            data: LoginRequest,
+        self,
+        data: LoginRequest,
     ) -> dict:
         """
         Аутентификация пользователя.
@@ -149,15 +150,13 @@ class AuthService:
             raise InvalidCredentialsError("Неверный email или пароль")
 
         if not await verify_password_async(
-                plain_password=data.password,
-                hashed_password=user.password,
+            plain_password=data.password,
+            hashed_password=user.password,
         ):
             raise InvalidCredentialsError("Неверный email или пароль")
 
         if not user.email_confirmed:
-            raise EmailNotConfirmedError(
-                "Email не подтверждён. Проверьте почту."
-            )
+            raise EmailNotConfirmedError("Email не подтверждён. Проверьте почту.")
 
         if user.is_banned:
             raise UserBannedError("Аккаунт заблокирован")
@@ -177,8 +176,8 @@ class AuthService:
         }
 
     async def refresh_tokens(
-            self,
-            refresh_token: str,
+        self,
+        refresh_token: str,
     ) -> dict:
         """
         Обновление пары токенов по refresh-токену.
@@ -224,9 +223,9 @@ class AuthService:
         }
 
     async def logout(
-            self,
-            access_token: str,
-            refresh_token: str,
+        self,
+        access_token: str,
+        refresh_token: str,
     ) -> dict:
         """
         Выход из аккаунта.

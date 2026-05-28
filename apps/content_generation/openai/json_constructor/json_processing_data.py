@@ -13,17 +13,16 @@ class JsonProcessingData:
     """
 
     def __init__(
-            self,
-            data_collection: dict,
-            task_type: SelectionTaskType,
+        self,
+        data_collection: dict,
+        task_type: SelectionTaskType,
     ):
         self.data_collection = data_collection
         self.task_type = task_type
 
         self.method_for_task_code = {
             # Подробный анализ каждого элемента состава
-            SelectionTaskType.COMPOSITION_ANALYSIS:
-                self.conversion_dict_for_task_each_element_composition,
+            SelectionTaskType.COMPOSITION_ANALYSIS: self.conversion_dict_for_task_each_element_composition,
             # "Общий анализ элементов состава": self.decryption_task_detailed_analysis_composition,
             # "Аналог": self.decryption_analogue_product,
         }
@@ -38,7 +37,7 @@ class JsonProcessingData:
         return self.method_for_task_code[self.task_type]()
 
     def conversion_dict_for_task_each_element_composition(
-            self,
+        self,
     ) -> dict:
         """
         Формирует словарь для задачи COMPOSITION_ANALYSIS /
@@ -67,8 +66,11 @@ class JsonProcessingData:
         data["product_type"] = self.data_collection["product_type"]
         data["product_type_detailed"] = self.data_collection["product_type_detailed"]
         data["article_ga"] = self.data_collection["article_ga"]
-        data['Элементы состава для шага задачи'] = self.data_collection[
-            'Элементы состава для шага задачи']
-        data["Шаг задачи последний или нет"] = self.data_collection["Шаг задачи последний или нет"]
+        data["Элементы состава для шага задачи"] = self.data_collection[
+            "Элементы состава для шага задачи"
+        ]
+        data["Шаг задачи последний или нет"] = self.data_collection[
+            "Шаг задачи последний или нет"
+        ]
 
         return data

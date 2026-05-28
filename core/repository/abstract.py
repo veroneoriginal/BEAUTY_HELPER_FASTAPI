@@ -26,38 +26,38 @@ class AbstractRepository(ABC, Generic[T]):
 
     @abstractmethod
     async def get_by_id(
-            self,
-            entity_id: int,
+        self,
+        entity_id: int,
     ) -> Optional[T]:
-        """ Получить запись по ID. """
+        """Получить запись по ID."""
         ...
 
     @abstractmethod
     async def get_all(self) -> Sequence[T]:
-        """ Получить все записи. """
+        """Получить все записи."""
         ...
 
     @abstractmethod
     async def create(
-            self,
-            data: dict,
+        self,
+        data: dict,
     ) -> T:
-        """ Создать новую запись. """
+        """Создать новую запись."""
         ...
 
     @abstractmethod
     async def update(
-            self,
-            entity_id: int,
-            data: dict,
+        self,
+        entity_id: int,
+        data: dict,
     ) -> Optional[T]:
-        """ Обновить запись по ID. """
+        """Обновить запись по ID."""
         ...
 
     @abstractmethod
     async def delete(
-            self,
-            entity_id: int,
+        self,
+        entity_id: int,
     ) -> bool:
         """
         Удалить запись по ID. Возвращает True если удалено.

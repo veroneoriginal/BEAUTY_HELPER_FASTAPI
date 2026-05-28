@@ -10,10 +10,10 @@ from apps.content_generation.openai.limiter.limiter_errors import (
 
 
 def get_connect_to_redis(
-        host: str,
-        port: int,
-        db: int,
-        password: str,
+    host: str,
+    port: int,
+    db: int,
+    password: str,
 ) -> Redis:
     """
     Функция создаёт и возвращает подключение к Redis.
@@ -56,7 +56,7 @@ def calculate_time_to_next_minute() -> int:
 
 
 def creating_dict_with_info_from_query(
-        query_details: dict,
+    query_details: dict,
 ) -> dict:
     """
     Функция для формирования словаря с лимитами на основе запроса.
@@ -68,21 +68,22 @@ def creating_dict_with_info_from_query(
              - IPM: Images Per Minute
     """
 
-    match query_details['target']:
-
+    match query_details["target"]:
         case "text":
             return {
-                'RPM': 1,
-                'TPM': query_details['count_tokens'],
-                'IPM': 0,
+                "RPM": 1,
+                "TPM": query_details["count_tokens"],
+                "IPM": 0,
             }
 
         case "imagine":
             return {
-                'RPM': query_details['pictures'],
-                'TPM': 0,
-                'IPM': query_details['pictures'],
+                "RPM": query_details["pictures"],
+                "TPM": 0,
+                "IPM": query_details["pictures"],
             }
 
         case _:
-            raise LimiterTargetException(f"Неподдерживаемый таргет - {query_details['target']}")
+            raise LimiterTargetException(
+                f"Неподдерживаемый таргет - {query_details['target']}"
+            )

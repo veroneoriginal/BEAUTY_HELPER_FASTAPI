@@ -45,7 +45,10 @@ class UserBalance(Base):
         nullable=False,
         comment="ID пользователя",
     )
-    user: Mapped["User"] = relationship("User", lazy="joined", )
+    user: Mapped["User"] = relationship(
+        "User",
+        lazy="joined",
+    )
 
     # === Генерации ===
     spins: Mapped[int] = mapped_column(
@@ -72,6 +75,7 @@ class BalanceOperationType(str, enum.Enum):
     """
     Тип операции с балансом.
     """
+
     ADD = "ADD"  # Начисление (покупка пакета, промокод)
     RESERVE = "RESERVE"  # Резерв (перед запуском анализа)
     CONFIRM = "CONFIRM"  # Списание (анализ завершён успешно)

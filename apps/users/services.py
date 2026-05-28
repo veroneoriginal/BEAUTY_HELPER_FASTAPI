@@ -60,9 +60,9 @@ class UserService:
         return await self.repository.get_all()
 
     async def update_user(
-            self,
-            user_id: int,
-            data: UserUpdate,
+        self,
+        user_id: int,
+        data: UserUpdate,
     ) -> Optional[User]:
         """
         Обновить профиль пользователя.
@@ -80,8 +80,8 @@ class UserService:
         return user
 
     async def delete_user(
-            self,
-            user_id: int,
+        self,
+        user_id: int,
     ) -> bool:
         """
         Удалить пользователя.

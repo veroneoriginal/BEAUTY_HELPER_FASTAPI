@@ -1,10 +1,17 @@
 #!/bin/bash
 set -e
 
-echo "Uploading images to S3..."
-python scripts/upload_images_to_s3.py
+# Инициализацию запускаем только для основного сервиса (uvicorn).
+# Celery-контейнеры используют тот же образ, им это не нужно.
+if [ "${1}" = "uvicorn" ]; then
+    echo "Running migrations..."
+    alembic upgrade head
 
-echo "Importing products into database..."
-python scripts/import_products.py
+    echo "Uploading images to S3..."
+    python scripts/upload_images_to_s3.py
 
-exec uvicorn main:app --host 0.0.0.0 --port 8000
+    echo "Importing products into database..."
+    python scripts/import_products.py
+fi
+
+exec "$@"

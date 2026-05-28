@@ -111,7 +111,9 @@ def import_products() -> None:
             try:
                 with session.begin_nested():  # savepoint — ошибка не откатит всё
                     existing = session.execute(
-                        select(Product).where(Product.link_ga == product_data["link_ga"])
+                        select(Product).where(
+                            Product.link_ga == product_data["link_ga"]
+                        )
                     ).scalar_one_or_none()
 
                     if existing:

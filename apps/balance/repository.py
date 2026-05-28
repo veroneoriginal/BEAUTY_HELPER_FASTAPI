@@ -30,8 +30,8 @@ class BalanceRepository(SQLAlchemyRepository[UserBalance]):
         super().__init__(session)
 
     async def get_by_user_id(
-            self,
-            user_id: int,
+        self,
+        user_id: int,
     ) -> UserBalance | None:
         """
         Получить баланс пользователя (без блокировки).
@@ -43,8 +43,8 @@ class BalanceRepository(SQLAlchemyRepository[UserBalance]):
         return result.scalar_one_or_none()
 
     async def get_locked_by_user_id(
-            self,
-            user_id: int,
+        self,
+        user_id: int,
     ) -> UserBalance | None:
         """
         Получить баланс пользователя С БЛОКИРОВКОЙ строки.
@@ -55,19 +55,17 @@ class BalanceRepository(SQLAlchemyRepository[UserBalance]):
         Должен вызываться внутри транзакции (до commit).
         """
         result = await self.session.execute(
-            select(UserBalance)
-            .where(UserBalance.user_id == user_id)
-            .with_for_update()
+            select(UserBalance).where(UserBalance.user_id == user_id).with_for_update()
         )
         return result.scalar_one_or_none()
 
     async def create_operation(
-            self,
-            user_id: int,
-            type_operation: BalanceOperationType,
-            count: int,
-            balance_after: int,
-            description: str = "",
+        self,
+        user_id: int,
+        type_operation: BalanceOperationType,
+        count: int,
+        balance_after: int,
+        description: str = "",
     ) -> BalanceOperation:
         """
         Создать запись в истории операций.
@@ -86,8 +84,8 @@ class BalanceRepository(SQLAlchemyRepository[UserBalance]):
         return operation
 
     async def get_operations_by_user_id(
-            self,
-            user_id: int,
+        self,
+        user_id: int,
     ) -> list[BalanceOperation]:
         """
         Получить историю операций пользователя.

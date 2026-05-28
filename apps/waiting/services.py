@@ -13,9 +13,9 @@ class WaitingService:
         self.repository = repository
 
     async def get_or_create_waiting(
-            self,
-            user_id: int,
-            selection_id: int,
+        self,
+        user_id: int,
+        selection_id: int,
     ) -> tuple[Waiting, bool]:
         """
         Создаёт или возвращает существующее ожидание для пары (user_id, selection_id).
@@ -33,9 +33,9 @@ class WaitingService:
         return waiting, created
 
     async def get_open_waiting(
-            self,
-            user_id: int,
-            selection_id: int,
+        self,
+        user_id: int,
+        selection_id: int,
     ) -> Waiting | None:
         """
         Возвращает открытое ожидание для пары (user_id, selection_id).
@@ -50,8 +50,8 @@ class WaitingService:
         )
 
     async def close_waiting(
-            self,
-            waiting_id: int,
+        self,
+        waiting_id: int,
     ) -> Waiting | None:
         """
         Закрывает ожидание — переводит статус в CLOSED.

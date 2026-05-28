@@ -14,11 +14,11 @@ from apps.content_generation.openai.utils.utils_errors import (
 
 
 def generate_text_content_openai(
-        api_key: str,
-        context: list,
-        settings: dict,
-        model: Literal["gpt-4o-mini", "gpt-3.5-turbo"],
-        json_scheme: dict,
+    api_key: str,
+    context: list,
+    settings: dict,
+    model: Literal["gpt-4o-mini", "gpt-3.5-turbo"],
+    json_scheme: dict,
 ) -> ChatCompletion:
     """
     Отправляет запрос на генерацию текстового контента в OpenAI.
@@ -42,16 +42,16 @@ def generate_text_content_openai(
                     "type": "function",
                     "function": {
                         "name": json_scheme["name"],
-                        "parameters": json_scheme["schema"]
-                    }
+                        "parameters": json_scheme["schema"],
+                    },
                 }
             ]
 
         return client.chat.completions.create(
             model=model,
             messages=context,
-            temperature=settings['temperature'],
-            max_tokens=settings['max_tokens'],
+            temperature=settings["temperature"],
+            max_tokens=settings["max_tokens"],
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0,
@@ -72,6 +72,6 @@ def to_decimal(price: float | int) -> Decimal:
     :param price: стоимость в float или int
     :return: стоимость в формате Decimal с точностью 1e-15 (дробной части)
     """
-    decimal_precision = Decimal('1e-15')
+    decimal_precision = Decimal("1e-15")
 
     return Decimal(str(price)).quantize(decimal_precision, rounding=ROUND_UP)

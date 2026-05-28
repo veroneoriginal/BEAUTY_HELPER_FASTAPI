@@ -26,8 +26,8 @@ class SQLAlchemyRepository(AbstractRepository[T]):
     model: Type[T]
 
     def __init__(
-            self,
-            session: AsyncSession,
+        self,
+        session: AsyncSession,
     ):
         """
         Принимает сессию как зависимость.
@@ -36,8 +36,8 @@ class SQLAlchemyRepository(AbstractRepository[T]):
         self.session = session
 
     async def get_by_id(
-            self,
-            entity_id: int,
+        self,
+        entity_id: int,
     ) -> Optional[T]:
         """
         Получить запись по ID.
@@ -53,8 +53,8 @@ class SQLAlchemyRepository(AbstractRepository[T]):
         return result.scalars().all()
 
     async def create(
-            self,
-            data: dict,
+        self,
+        data: dict,
     ) -> T:
         """
         Создать новую запись.
@@ -64,14 +64,14 @@ class SQLAlchemyRepository(AbstractRepository[T]):
         """
         instance = self.model(**data)
         self.session.add(instance)
-        await self.session.flush()       # отправляет INSERT в БД, но без commit
+        await self.session.flush()  # отправляет INSERT в БД, но без commit
         await self.session.refresh(instance)  # подтягивает id, created_at и т.д.
         return instance
 
     async def update(
-            self,
-            entity_id: int,
-            data: dict,
+        self,
+        entity_id: int,
+        data: dict,
     ) -> Optional[T]:
         """
         Обновить запись по ID.
@@ -88,8 +88,8 @@ class SQLAlchemyRepository(AbstractRepository[T]):
         return instance
 
     async def delete(
-            self,
-            entity_id: int,
+        self,
+        entity_id: int,
     ) -> bool:
         """
         Удалить запись по ID. Возвращает True если удалено.

@@ -1,5 +1,6 @@
 # apps/content_generation/openai/utils/utils_errors.py
 
+
 class OpenAIGenTextContentException(Exception):
     """
     Ошибка генерации текстового контента через OpenAI API.

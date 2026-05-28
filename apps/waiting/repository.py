@@ -18,9 +18,9 @@ class WaitingRepository(SQLAlchemyRepository[Waiting]):
         super().__init__(session)
 
     async def get_open_by_user_and_selection(
-            self,
-            user_id: int,
-            selection_id: int,
+        self,
+        user_id: int,
+        selection_id: int,
     ) -> Waiting | None:
         """
         Возвращает открытое ожидание для пары (user_id, selection_id).
@@ -34,14 +34,14 @@ class WaitingRepository(SQLAlchemyRepository[Waiting]):
                 Waiting.user_id == user_id,
                 Waiting.selection_id == selection_id,
                 Waiting.status == WaitingStatus.OPEN,
-                )
+            )
         )
         return result.scalar_one_or_none()
 
     async def get_or_create(
-            self,
-            user_id: int,
-            selection_id: int,
+        self,
+        user_id: int,
+        selection_id: int,
     ) -> tuple[Waiting, bool]:
         """
         Возвращает существующее ожидание или создаёт новое.
@@ -54,16 +54,18 @@ class WaitingRepository(SQLAlchemyRepository[Waiting]):
             select(Waiting).where(
                 Waiting.user_id == user_id,
                 Waiting.selection_id == selection_id,
-                )
+            )
         )
         waiting = result.scalar_one_or_none()
 
         if waiting:
             return waiting, False
 
-        waiting = await self.create({
-            "user_id": user_id,
-            "selection_id": selection_id,
-            "status": WaitingStatus.OPEN,
-        })
+        waiting = await self.create(
+            {
+                "user_id": user_id,
+                "selection_id": selection_id,
+                "status": WaitingStatus.OPEN,
+            }
+        )
         return waiting, True

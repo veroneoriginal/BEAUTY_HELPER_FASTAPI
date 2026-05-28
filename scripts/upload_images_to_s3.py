@@ -34,11 +34,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
 async def upload_single_image(
-        row: tuple[Cell, ...],
-        row_index: int,
-        image_col_idx: int,
-        s3_key_col_idx: int,
-        s3: S3Service,
+    row: tuple[Cell, ...],
+    row_index: int,
+    image_col_idx: int,
+    s3_key_col_idx: int,
+    s3: S3Service,
 ) -> None:
     """
     :param row: Строка Excel-файла (объект openpyxl).

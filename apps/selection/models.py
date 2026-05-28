@@ -49,11 +49,13 @@ selection_users = Table(
 # === Enum-классы ===
 # Классы, в которых заранее определены все допустимые значения.
 
+
 class SelectionStatus(str, enum.Enum):
     """
     Статус генерации подборки.
     Отслеживает, на каком этапе находится процесс создания.
     """
+
     QUEUE = "queue"  # Задача поставлена, воркер ещё не взял
     PROCESS = "process"  # Подборка создаётся (запросы, PDF)
     DONE = "done"  # Прошла модерацию, можно отправлять
@@ -64,12 +66,14 @@ class SelectionTaskType(str, enum.Enum):
     """
     Тип задачи, по которой создаётся подборка.
     """
+
     COMPOSITION_ANALYSIS = "detailed_analysis"  # Подробный анализ состава
     BEST_CHOICE = "best"  # Лучшее средство
     ANALOG = "analog"  # Аналог
 
 
 # === Модель ===
+
 
 class Selection(Base):
     """

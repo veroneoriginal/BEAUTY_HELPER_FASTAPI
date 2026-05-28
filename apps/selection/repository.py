@@ -29,9 +29,9 @@ class SelectionRepository(SQLAlchemyRepository[Selection]):
         super().__init__(session)
 
     async def get_by_product_and_task_type(
-            self,
-            link_ga: str,
-            task_type: str | SelectionTaskType,
+        self,
+        link_ga: str,
+        task_type: str | SelectionTaskType,
     ) -> Selection | None:
         """
         Найти подборку по ссылке на продукт и типу задачи.
@@ -43,14 +43,14 @@ class SelectionRepository(SQLAlchemyRepository[Selection]):
             .where(
                 Product.link_ga == link_ga,
                 Selection.task_type == task_type,
-                )
+            )
         )
         return result.scalar_one_or_none()
 
     async def has_user(
-            self,
-            selection_id: int,
-            user_id: int,
+        self,
+        selection_id: int,
+        user_id: int,
     ) -> bool:
         """
         Проверить, привязан ли пользователь к подборке.
@@ -59,14 +59,14 @@ class SelectionRepository(SQLAlchemyRepository[Selection]):
             select(selection_users.c.user_id).where(
                 selection_users.c.selection_id == selection_id,
                 selection_users.c.user_id == user_id,
-                )
+            )
         )
         return result.scalar_one_or_none() is not None
 
     async def add_user(
-            self,
-            selection: Selection,
-            user: User,
+        self,
+        selection: Selection,
+        user: User,
     ) -> None:
         """
         Привязать пользователя к подборке.

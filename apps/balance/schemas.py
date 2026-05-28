@@ -10,10 +10,12 @@ from pydantic import BaseModel
 
 # === Баланс ===
 
+
 class BalanceRead(BaseModel):
     """
     Текущий баланс пользователя.
     """
+
     user_id: int
     spins: int
     reserved_spins: int
@@ -23,10 +25,12 @@ class BalanceRead(BaseModel):
 
 # === История операций ===
 
+
 class OperationRead(BaseModel):
     """
     Одна запись из истории операций.
     """
+
     id: int
     type_operation: str
     count: int
@@ -41,5 +45,6 @@ class OperationListResponse(BaseModel):
     """
     Список операций пользователя.
     """
+
     user_id: int
     operations: list[OperationRead]

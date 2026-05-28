@@ -20,8 +20,8 @@ logger = logging.getLogger(__name__)
 
 
 async def try_reserve_spin_or_return_message(
-        balance_service,
-        user_id: int,
+    balance_service,
+    user_id: int,
 ) -> tuple[bool, str | None]:
     """
     Пытается зарезервировать генерацию через BalanceService.
@@ -41,10 +41,10 @@ async def try_reserve_spin_or_return_message(
 
 
 async def get_or_prepare_selection(
-        user: User,
-        product_link: str,
-        task_type: SelectionTaskType,
-        session: AsyncSession,
+    user: User,
+    product_link: str,
+    task_type: SelectionTaskType,
+    session: AsyncSession,
 ) -> dict:
     """
     Главная функция оркестратора.
@@ -76,7 +76,6 @@ async def get_or_prepare_selection(
 
     # 2. Подборка есть и готова (DONE)
     if selection and selection.selection_status == SelectionStatus.DONE:
-
         # Проверяем есть ли уже у пользователя эта подборка
         ready_response = await selection_service.get_ready_selection_for_user(
             selection=selection,
@@ -86,7 +85,8 @@ async def get_or_prepare_selection(
         if ready_response:
             logger.info(
                 "[ORCHESTRATOR] Пользователь %s уже имеет подборку %s",
-                user.id, selection.id,
+                user.id,
+                selection.id,
             )
             return {
                 "status": "done",
@@ -107,7 +107,8 @@ async def get_or_prepare_selection(
 
         logger.info(
             "[ORCHESTRATOR] Отправляем готовую подборку %s пользователю %s",
-            selection.id, user.id,
+            selection.id,
+            user.id,
         )
         return {
             "status": "done",
@@ -117,8 +118,8 @@ async def get_or_prepare_selection(
 
     # 3. Подборка есть, но ещё в процессе
     if selection and selection.selection_status in (
-            SelectionStatus.QUEUE,
-            SelectionStatus.PROCESS,
+        SelectionStatus.QUEUE,
+        SelectionStatus.PROCESS,
     ):
         # Проверяем есть ли уже ожидание этого пользователя
         existing_waiting = await waiting_service.get_open_waiting(
@@ -150,7 +151,8 @@ async def get_or_prepare_selection(
 
         logger.info(
             "[ORCHESTRATOR] Пользователь %s добавлен в ожидание подборки %s",
-            user.id, selection.id,
+            user.id,
+            selection.id,
         )
         return {
             "status": "pending",
@@ -203,7 +205,8 @@ async def get_or_prepare_selection(
 
     logger.info(
         "[ORCHESTRATOR] Создана подборка %s для пользователя %s, задача отправлена в Celery",
-        new_selection.id, user.id,
+        new_selection.id,
+        user.id,
     )
 
     return {

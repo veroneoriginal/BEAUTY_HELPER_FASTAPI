@@ -29,7 +29,7 @@ from apps.pdf_generation.utils import replace_emoji_html
 
 
 def _pixels_to_points(
-        pixels: int | float,
+    pixels: int | float,
 ) -> int | float:
     """
     Конвертирование пикселей в поинты.
@@ -53,10 +53,10 @@ class PDFPageTemplateandFrameBuilder:
     """
 
     def _create_frame(
-            self,
-            x1_y1: Tuple[float, float],
-            width_height: Tuple[float, float],
-            frame_id: str,
+        self,
+        x1_y1: Tuple[float, float],
+        width_height: Tuple[float, float],
+        frame_id: str,
     ) -> Frame:
         """
         Создает и добавляет в список объект Frame, который определяет
@@ -83,8 +83,8 @@ class PDFPageTemplateandFrameBuilder:
         )
 
     def _create_frames(
-            self,
-            frames_data: tuple,
+        self,
+        frames_data: tuple,
     ) -> list[Frame]:
         """
         Создаёт фреймы для шаблона страниц
@@ -102,9 +102,9 @@ class PDFPageTemplateandFrameBuilder:
         return frames
 
     def _create_page_template(
-            self,
-            frames: list[Frame],
-            template_id: str,
+        self,
+        frames: list[Frame],
+        template_id: str,
     ) -> PageTemplate:
         """
         Создание шаблона страницы.
@@ -119,10 +119,7 @@ class PDFPageTemplateandFrameBuilder:
             frames=frames,
         )
 
-    def create_doc_templates(
-            self,
-            templates_data: dict
-    ) -> list[PageTemplate]:
+    def create_doc_templates(self, templates_data: dict) -> list[PageTemplate]:
         """
         Создаёт шаблоны страниц с фреймами.
 
@@ -134,8 +131,7 @@ class PDFPageTemplateandFrameBuilder:
         for template_id, frames_data in templates_data.items():
             frames = self._create_frames(frames_data=frames_data)
             template = self._create_page_template(
-                frames=frames,
-                template_id=template_id
+                frames=frames, template_id=template_id
             )
             templates.append(template)
 
@@ -153,13 +149,13 @@ class PDFBaseDocTemplateWithBrandLine(BaseDocTemplate):
     # pylint: disable=R0917 too-many-positional-argument
     # pylint: disable=R0913 too-many-arguments
     def __init__(
-            self,
-            filename: str,
-            doc_width_height: tuple,
-            brand_line_width_height: tuple,
-            path_to_brandline_file: Path,
-            brand_line_coords: list[tuple[int, int], ...],
-            **kwargs
+        self,
+        filename: str,
+        doc_width_height: tuple,
+        brand_line_width_height: tuple,
+        path_to_brandline_file: Path,
+        brand_line_coords: list[tuple[int, int], ...],
+        **kwargs,
     ):
         """
         :param filename: имя PDF-документа
@@ -179,14 +175,14 @@ class PDFBaseDocTemplateWithBrandLine(BaseDocTemplate):
                 _pixels_to_points(self.doc_width_height[0]),
                 _pixels_to_points(self.doc_width_height[1]),
             ),
-            **kwargs
+            **kwargs,
         )
 
     # pylint: disable=W0613: unused-argument
     def _add_brandline(
-            self,
-            canvas: Canvas,
-            doc: BaseDocTemplate,
+        self,
+        canvas: Canvas,
+        doc: BaseDocTemplate,
     ):
         """
         Рисует бренд-линию на канве
@@ -215,9 +211,9 @@ class PDFFlowablesCreator:
     """
 
     def __init__(
-            self,
-            data: dict,
-            image_in_bytes: bytes,
+        self,
+        data: dict,
+        image_in_bytes: bytes,
     ):
         self.data = data
         self.flowables: list[Flowable] = []
@@ -229,87 +225,88 @@ class PDFFlowablesCreator:
 
         :return: Список flowables-элементов.
         """
-        flowables_structure = self.data['Элементы и стили']
+        flowables_structure = self.data["Элементы и стили"]
         for flowable_object in flowables_structure:
             flowable_type = flowable_object[0]
             flowable_data = flowable_object[1]
             match flowable_type:
-                case 'Image':
+                case "Image":
                     self._create_image(
                         img_bytes=self.image_in_bytes,
-                        width=_pixels_to_points(flowable_data['width']),
-                        height=_pixels_to_points(flowable_data['height']),
+                        width=_pixels_to_points(flowable_data["width"]),
+                        height=_pixels_to_points(flowable_data["height"]),
                     )
-                case 'Paragraph':
+                case "Paragraph":
                     text = (
-                            flowable_data.get('Текст', None)
-                            or self.data[flowable_data['Ключ в подборке']]
+                        flowable_data.get("Текст", None)
+                        or self.data[flowable_data["Ключ в подборке"]]
                     )
                     self._create_paragraph(
                         text=text,
-                        style=self._get_style(flowable_data['Стиль']),
-                        upper=flowable_data.get('Заглавными', False)
+                        style=self._get_style(flowable_data["Стиль"]),
+                        upper=flowable_data.get("Заглавными", False),
                     )
-                case 'Spacer':
+                case "Spacer":
                     self._create_spacer(
-                        width=_pixels_to_points(flowable_data['width']),
-                        height=_pixels_to_points(flowable_data['height']),
+                        width=_pixels_to_points(flowable_data["width"]),
+                        height=_pixels_to_points(flowable_data["height"]),
                     )
-                case 'NextPageTemplate':
-                    self.flowables.append(NextPageTemplate(
-                        pt=flowable_data['template_id']
-                    ))
-                case 'PageBreak':
+                case "NextPageTemplate":
+                    self.flowables.append(
+                        NextPageTemplate(pt=flowable_data["template_id"])
+                    )
+                case "PageBreak":
                     self.flowables.append(PageBreak())
-                case 'FrameBreak':
+                case "FrameBreak":
                     self.flowables.append(FrameBreak())
-                case 'FreeImage':
+                case "FreeImage":
                     self.flowables.append(
                         FreeImage(
-                            path=self.data[flowable_data.get('Ключ в подборке')],
-                            x=_pixels_to_points(flowable_data.get('x')),
-                            y=_pixels_to_points(flowable_data.get('y')),
-                            width=_pixels_to_points(flowable_data.get('width')),
-                            height=_pixels_to_points(flowable_data.get('height')),
-                            preserve_aspect_ratio=flowable_data.get('preserve_aspect_ratio'),
+                            path=self.data[flowable_data.get("Ключ в подборке")],
+                            x=_pixels_to_points(flowable_data.get("x")),
+                            y=_pixels_to_points(flowable_data.get("y")),
+                            width=_pixels_to_points(flowable_data.get("width")),
+                            height=_pixels_to_points(flowable_data.get("height")),
+                            preserve_aspect_ratio=flowable_data.get(
+                                "preserve_aspect_ratio"
+                            ),
                         )
                     )
-                case 'FreeRect':
+                case "FreeRect":
                     self.flowables.append(
                         FreeRect(
-                            x=_pixels_to_points(flowable_data.get('x')),
-                            y=_pixels_to_points(flowable_data.get('y')),
-                            width=_pixels_to_points(flowable_data.get('width')),
-                            height=_pixels_to_points(flowable_data.get('height')),
-                            fill_color=flowable_data.get('fill_color'),
+                            x=_pixels_to_points(flowable_data.get("x")),
+                            y=_pixels_to_points(flowable_data.get("y")),
+                            width=_pixels_to_points(flowable_data.get("width")),
+                            height=_pixels_to_points(flowable_data.get("height")),
+                            fill_color=flowable_data.get("fill_color"),
                         )
                     )
-                case 'FreeText':
+                case "FreeText":
                     text = (
-                            flowable_data.get('Текст', None)
-                            or self.data[flowable_data['Ключ в подборке']]
+                        flowable_data.get("Текст", None)
+                        or self.data[flowable_data["Ключ в подборке"]]
                     )
                     self.flowables.append(
                         FreeText(
                             text=text,
-                            x=_pixels_to_points(flowable_data.get('x')),
-                            y=_pixels_to_points(flowable_data.get('y')),
-                            font_name=flowable_data.get('font_name'),
-                            font_size=flowable_data.get('font_size'),
-                            font_color=flowable_data.get('font_color'),
-                            bold=flowable_data.get('bold'),
-                            align=flowable_data.get('align'),
+                            x=_pixels_to_points(flowable_data.get("x")),
+                            y=_pixels_to_points(flowable_data.get("y")),
+                            font_name=flowable_data.get("font_name"),
+                            font_size=flowable_data.get("font_size"),
+                            font_color=flowable_data.get("font_color"),
+                            bold=flowable_data.get("bold"),
+                            align=flowable_data.get("align"),
                         )
                     )
 
         return self.flowables
 
     def _create_paragraph(
-            self,
-            text: str,
-            style: ParagraphStyle,
-            upper: bool,
-
+        self,
+        text: str,
+        style: ParagraphStyle,
+        upper: bool,
     ) -> None:
         """
         Создаёт параграф с текстом и добавляет в общий список
@@ -328,20 +325,15 @@ class PDFFlowablesCreator:
         self.flowables.append(paragraph)
 
     def _get_style(
-            self,
-            style_name,
+        self,
+        style_name,
     ):
         """
         Возвращает объект стиля по имени
         """
         return PDF_STYLE[style_name]
 
-    def _create_image(
-            self,
-            img_bytes: bytes,
-            width: int,
-            height: int
-    ) -> None:
+    def _create_image(self, img_bytes: bytes, width: int, height: int) -> None:
         """
         Создаёт изображение и добавляет в общий список
         :param img_bytes: изображение в байтах
@@ -350,17 +342,10 @@ class PDFFlowablesCreator:
         :return: None
         """
         img_stream = BytesIO(img_bytes)
-        img = Image(img_stream,
-                    width=width,
-                    height=height,
-                    kind='proportional')
+        img = Image(img_stream, width=width, height=height, kind="proportional")
         self.flowables.append(img)
 
-    def _create_spacer(
-            self,
-            width: int,
-            height: int
-    ) -> None:
+    def _create_spacer(self, width: int, height: int) -> None:
         """
         Создаёт spacer и добавляет в общий список
         :param width: ширина spacer
@@ -372,5 +357,5 @@ class PDFFlowablesCreator:
 
 
 TEMPLATE_CLASS = {
-    'PDFBaseDocTemplateWithBrandLine': PDFBaseDocTemplateWithBrandLine,
+    "PDFBaseDocTemplateWithBrandLine": PDFBaseDocTemplateWithBrandLine,
 }

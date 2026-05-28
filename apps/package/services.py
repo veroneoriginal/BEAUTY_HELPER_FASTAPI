@@ -31,8 +31,8 @@ class PackageService:
     # === Создание ===
 
     async def create_package(
-            self,
-            data: dict,
+        self,
+        data: dict,
     ) -> Package:
         """
         Создать новый пакет генераций.
@@ -46,8 +46,8 @@ class PackageService:
     # === Чтение ===
 
     async def get_package_by_id(
-            self,
-            package_id: int,
+        self,
+        package_id: int,
     ) -> Package | None:
         """Получить пакет по ID."""
         return await self.repository.get_by_id(package_id)
@@ -64,9 +64,9 @@ class PackageService:
     # === Обновление (с защитой) ===
 
     async def update_package(
-            self,
-            package_id: int,
-            data: dict,
+        self,
+        package_id: int,
+        data: dict,
     ) -> Package | None:
         """
         Обновить пакет.
@@ -88,8 +88,8 @@ class PackageService:
     # === Удаление (запрещено) ===
 
     async def delete_package(
-            self,
-            package_id: int,
+        self,
+        package_id: int,
     ) -> None:
         """
         Удаление пакета запрещено.
@@ -101,10 +101,10 @@ class PackageService:
     # === Выдача пакета пользователю ===
 
     async def add_package_to_user(
-            self,
-            user_id: int,
-            package_id: int,
-            delivery_type: str = UserPackageDelivery.PURCHASE,
+        self,
+        user_id: int,
+        package_id: int,
+        delivery_type: str = UserPackageDelivery.PURCHASE,
     ) -> UserPackage:
         """
         Выдать пакет пользователю.
@@ -134,9 +134,7 @@ class PackageService:
 
         # Начисляем генерации на баланс
         # Используем ту же сессию — одна транзакция
-        balance_service = BalanceService(
-            BalanceRepository(self.repository.session)
-        )
+        balance_service = BalanceService(BalanceRepository(self.repository.session))
         await balance_service.add_spins_no_commit(
             user_id=user_id,
             count=package.spins_count,
@@ -149,8 +147,8 @@ class PackageService:
     # === История пакетов пользователя ===
 
     async def get_user_packages(
-            self,
-            user_id: int,
+        self,
+        user_id: int,
     ) -> list[UserPackage]:
         """Получить все пакеты пользователя."""
         return await self.repository.get_user_packages(user_id)

@@ -26,8 +26,8 @@ class ProductRepository(SQLAlchemyRepository[Product]):
         super().__init__(session)
 
     async def get_by_link_ga(
-            self,
-            link: str,
+        self,
+        link: str,
     ) -> Product | None:
         """
         Найти продукт по ссылке из Золотого Яблока.

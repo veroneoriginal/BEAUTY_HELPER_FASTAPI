@@ -40,19 +40,17 @@ class SyncBalanceRepository(SyncSQLAlchemyRepository[UserBalance]):
         :return: объект UserBalance или None
         """
         result = self.session.execute(
-            select(UserBalance)
-            .where(UserBalance.user_id == user_id)
-            .with_for_update()
+            select(UserBalance).where(UserBalance.user_id == user_id).with_for_update()
         )
         return result.scalar_one_or_none()
 
     def create_operation(
-            self,
-            user_id: int,
-            type_operation: BalanceOperationType,
-            count: int,
-            balance_after: int,
-            description: str = "",
+        self,
+        user_id: int,
+        type_operation: BalanceOperationType,
+        count: int,
+        balance_after: int,
+        description: str = "",
     ) -> BalanceOperation:
         """
         Создать запись в истории операций баланса.

@@ -12,15 +12,15 @@ class FreeText(Flowable):
     """
 
     def __init__(
-            self,
-            text: str,
-            x: float,
-            y: float,
-            font_name: str = "DejaVuSans",
-            font_size: float = 10,
-            font_color: str = "#FFFFFFDD",
-            bold: bool = False,
-            align: str = "left"  # left, center, right
+        self,
+        text: str,
+        x: float,
+        y: float,
+        font_name: str = "DejaVuSans",
+        font_size: float = 10,
+        font_color: str = "#FFFFFFDD",
+        bold: bool = False,
+        align: str = "left",  # left, center, right
     ):
         super().__init__()
         self.absolute = 1
@@ -69,15 +69,15 @@ class FreeRect(Flowable):
     """
 
     def __init__(
-            self,
-            x: int | float,
-            y: int | float,
-            width: int | float,
-            height: int | float,
-            fill_color: str | Color = HexColor('#F2F2F2'),
-            stroke_color: str | Color = None,
-            stroke_width: int | float = 0,
-            radius: float = 0,
+        self,
+        x: int | float,
+        y: int | float,
+        width: int | float,
+        height: int | float,
+        fill_color: str | Color = HexColor("#F2F2F2"),
+        stroke_color: str | Color = None,
+        stroke_width: int | float = 0,
+        radius: float = 0,
     ):
         super().__init__()
         self.x = x
@@ -110,9 +110,18 @@ class FreeRect(Flowable):
 
         # Прямоугольник с радиусом (скругление)
         if self.radius > 0:
-            c.roundRect(self.x, self.y, self.width, self.height, self.radius, stroke=1, fill=1)
+            c.roundRect(
+                self.x, self.y, self.width, self.height, self.radius, stroke=1, fill=1
+            )
         else:
-            c.rect(self.x, self.y, self.width, self.height, stroke=1 if self.stroke_color else 0, fill=1)
+            c.rect(
+                self.x,
+                self.y,
+                self.width,
+                self.height,
+                stroke=1 if self.stroke_color else 0,
+                fill=1,
+            )
 
         c.restoreState()
 
@@ -125,13 +134,13 @@ class FreeImage(Flowable):
     """
 
     def __init__(
-            self,
-            path: str,
-            x: int | float,
-            y: int | float,
-            width: int | float | None = None,
-            height: int | float | None = None,
-            preserve_aspect_ratio: bool = False,
+        self,
+        path: str,
+        x: int | float,
+        y: int | float,
+        width: int | float | None = None,
+        height: int | float | None = None,
+        preserve_aspect_ratio: bool = False,
     ):
         super().__init__()
         self.path = path
@@ -144,11 +153,11 @@ class FreeImage(Flowable):
         self._fixedWidth = 0
 
     def wrap(self, availWidth: float | int, availHeight: float | int):
-        """ Возвращаем 0, чтобы он не влиял на layout """
+        """Возвращаем 0, чтобы он не влиял на layout"""
         return (0, 0)
 
     def check_image_size(self) -> tuple:
-        """ Автоматическое определение размеров изображения"""
+        """Автоматическое определение размеров изображения"""
         img = ImageReader(self.path)
         img_width, img_height = img.getSize()
 
@@ -170,9 +179,10 @@ class FreeImage(Flowable):
 
         self.canv.drawImage(
             self.path,
-            self.x, self.y,
+            self.x,
+            self.y,
             width=draw_width,
             height=draw_height,
-            mask='auto',
+            mask="auto",
             preserveAspectRatio=self.preserve_aspect_ratio,
         )

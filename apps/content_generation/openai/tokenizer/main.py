@@ -15,7 +15,7 @@ from apps.content_generation.openai.settings import (
 
 
 def checking_type_data_context(
-        context: list,
+    context: list,
 ) -> list:
     """
     Проверяет тип данных контекста перед подсчётом токенов.
@@ -26,8 +26,9 @@ def checking_type_data_context(
     """
 
     if not isinstance(context, list):
-        raise TypeError(f"Аргумент {context} должен быть списком, "
-                        f"а не {type(context).__name__}.")
+        raise TypeError(
+            f"Аргумент {context} должен быть списком, а не {type(context).__name__}."
+        )
 
     if not all(isinstance(item, dict) for item in context):
         raise TypeError("Все элементы списка должны быть словарями.")
@@ -36,7 +37,7 @@ def checking_type_data_context(
 
 
 def checking_type_data_json_scheme(
-        json_scheme: dict,
+    json_scheme: dict,
 ) -> dict:
     """
     Проверяет что json_scheme является словарём.
@@ -47,14 +48,16 @@ def checking_type_data_json_scheme(
     """
 
     if not isinstance(json_scheme, dict):
-        raise TypeError(f"Аргумент json_scheme должен быть словарём, "
-                        f"а не {type(json_scheme).__name__}.")
+        raise TypeError(
+            f"Аргумент json_scheme должен быть словарём, "
+            f"а не {type(json_scheme).__name__}."
+        )
 
     return json_scheme
 
 
 def checking_relevance_model_name(
-        model: Literal["gpt-4o-mini",],
+    model: Literal["gpt-4o-mini",],
 ) -> tiktoken.Encoding:
     """
     Подбирает энкодер tiktoken для указанной модели GPT.
@@ -73,7 +76,7 @@ def checking_relevance_model_name(
 
 
 def prepares_text_for_counting(
-        context: list,
+    context: list,
 ) -> str:
     """
     Преобразует контекст в строку для подсчёта токенов.
@@ -88,20 +91,20 @@ def prepares_text_for_counting(
     # Проходим по каждому словарю в списке content
     for message in context:
         # Проверяем, есть ли ключ 'content' в словаре
-        if 'content' in message:
-            full_text_list.append(message['content'])
+        if "content" in message:
+            full_text_list.append(message["content"])
 
     result_list = []
 
     for item in full_text_list:
         for elements_dict in item:
-            result_list.append(elements_dict['text'])
+            result_list.append(elements_dict["text"])
 
-    return ' '.join(result_list)
+    return " ".join(result_list)
 
 
 def prepares_json_for_counting(
-        json_scheme: dict,
+    json_scheme: dict,
 ) -> str:
     """
     Преобразует json_scheme в строку для подсчёта токенов.
@@ -114,8 +117,8 @@ def prepares_json_for_counting(
 
 
 def count_tokens(
-        entity_count: str,
-        encoding: tiktoken.Encoding,
+    entity_count: str,
+    encoding: tiktoken.Encoding,
 ) -> int:
     """
     Подсчитывает количество токенов в строке.
@@ -129,9 +132,9 @@ def count_tokens(
 
 
 def main_count_tokens(
-        context: List[Dict[str, str]],
-        model: Literal["gpt-4o-mini",],
-        json_scheme: dict | None,
+    context: List[Dict[str, str]],
+    model: Literal["gpt-4o-mini",],
+    json_scheme: dict | None,
 ) -> int:
     """
     Главная функция модуля. Считает итоговое количество токенов
@@ -170,7 +173,6 @@ def main_count_tokens(
 
         # Считаем токены в json-схеме
         json_count = count_tokens(entity_count=json_scheme_str, encoding=encoding)
-
 
     # Примерные скрытые служебные токены OPENAI
     service_tokens = (original_context_len + ADD_INDENTATION) * HEADER_TOKENS_COUNT

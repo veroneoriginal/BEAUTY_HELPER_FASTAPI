@@ -26,12 +26,7 @@ FONTS_NAME = [
 FONTS = tuple((fontname, f"{FONTS_DIR}/{fontname}.ttf") for fontname in FONTS_NAME)
 
 for font in FONTS:
-    pdfmetrics.registerFont(
-        TTFont(
-            name=font[0],
-            filename=font[1]
-        )
-    )
+    pdfmetrics.registerFont(TTFont(name=font[0], filename=font[1]))
 
 PDF_STYLE = {}
 PDF_ADDITIONAL_STYLES = (

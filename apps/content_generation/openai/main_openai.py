@@ -43,7 +43,7 @@ class OpenAIClient:
 
     @staticmethod
     def _generate_if_failed(
-            exception: Optional[Exception],
+        exception: Optional[Exception],
     ) -> Dict:
         """
         Формирует словарь с информацией об ошибке.
@@ -53,17 +53,17 @@ class OpenAIClient:
         """
 
         return {
-            'status': "failed",
-            'message': "Ошибка запроса при обращении к OpenAI",
-            'error': True,
-            'cost_interaction': None,
-            'exception': str(exception),
-            'traceback': traceback.format_exc(),
+            "status": "failed",
+            "message": "Ошибка запроса при обращении к OpenAI",
+            "error": True,
+            "cost_interaction": None,
+            "exception": str(exception),
+            "traceback": traceback.format_exc(),
         }
 
     def _extract_content(
-            self,
-            response: ChatCompletion,
+        self,
+        response: ChatCompletion,
     ) -> str:
         """
         Извлекает контент из объекта ChatCompletion.
@@ -79,8 +79,8 @@ class OpenAIClient:
         return json.loads(tool_call.function.arguments)
 
     def calculates_cost(
-            self,
-            response: ChatCompletion,
+        self,
+        response: ChatCompletion,
     ) -> Dict:
         """
         Рассчитывает стоимость запроса в USD и RUB.
@@ -99,19 +99,25 @@ class OpenAIClient:
         total_tokens = prompt_tokens + completion_tokens
 
         # Получаем словарь с ценами
-        dict_with_price = self.settings['cost']
+        dict_with_price = self.settings["cost"]
 
         # Преобразуем цены и курс в Decimal
-        price_one_token_prompt_usd = to_decimal(dict_with_price['PRICE_ONE_TOKEN_PROMPT_USD'])
-        price_one_token_completion_usd = to_decimal(dict_with_price['PRICE_ONE_TOKEN_RESPONSE_USD'])
-        usd_to_rub = to_decimal(dict_with_price['USD_TO_RUB'])
+        price_one_token_prompt_usd = to_decimal(
+            dict_with_price["PRICE_ONE_TOKEN_PROMPT_USD"]
+        )
+        price_one_token_completion_usd = to_decimal(
+            dict_with_price["PRICE_ONE_TOKEN_RESPONSE_USD"]
+        )
+        usd_to_rub = to_decimal(dict_with_price["USD_TO_RUB"])
 
         # Рассчитываем стоимость токенов запроса (prompt)
         prompt_cost_usd = to_decimal(prompt_tokens) * price_one_token_prompt_usd
         prompt_cost_rub = prompt_cost_usd * usd_to_rub
 
         # Рассчитываем стоимость токенов ответа (completion)
-        completion_token_cost_usd = to_decimal(completion_tokens) * price_one_token_completion_usd
+        completion_token_cost_usd = (
+            to_decimal(completion_tokens) * price_one_token_completion_usd
+        )
         completion_cost_rub = completion_token_cost_usd * usd_to_rub
 
         # Общая стоимость
@@ -120,26 +126,26 @@ class OpenAIClient:
 
         # словарь с количеством токенов и их ценами в долларах и рублях
         return {
-            'prompt': {
-                'prompt_tokens': prompt_tokens,
-                'USD': prompt_cost_usd,
-                'RUB': prompt_cost_rub,
+            "prompt": {
+                "prompt_tokens": prompt_tokens,
+                "USD": prompt_cost_usd,
+                "RUB": prompt_cost_rub,
             },
-            'completion': {
-                'completion_tokens': completion_tokens,
-                'USD': completion_token_cost_usd,
-                'RUB': completion_cost_rub,
+            "completion": {
+                "completion_tokens": completion_tokens,
+                "USD": completion_token_cost_usd,
+                "RUB": completion_cost_rub,
             },
-            'total': {
-                'total_tokens': total_tokens,
-                'USD': total_cost_usd,
-                'RUB': total_cost_rub,
+            "total": {
+                "total_tokens": total_tokens,
+                "USD": total_cost_usd,
+                "RUB": total_cost_rub,
             },
         }
 
     def _generate_if_success(
-            self,
-            response: ChatCompletion,
+        self,
+        response: ChatCompletion,
     ) -> Dict:
         """
         Формирует словарь с успешным ответом от OpenAI.
@@ -148,15 +154,15 @@ class OpenAIClient:
         :return: словарь с ключами status, message, error, cost_interaction
         """
         return {
-            'status': 'success',
-            'message': self._extract_content(response),
-            'error': False,
-            'cost_interaction': self.calculates_cost(response),
+            "status": "success",
+            "message": self._extract_content(response),
+            "error": False,
+            "cost_interaction": self.calculates_cost(response),
         }
 
     def get_access_key(
-            self,
-            request_details: dict,
+        self,
+        request_details: dict,
     ) -> str:
         """
         Считает токены запроса и получает ключ доступа через KeyManager.
@@ -167,23 +173,23 @@ class OpenAIClient:
 
         # количество токенов в этом контексте - int
         count_tokens = main_count_tokens(
-            context=request_details['context'],
-            model=request_details['model'],
-            json_scheme=request_details['json_scheme'],
+            context=request_details["context"],
+            model=request_details["model"],
+            json_scheme=request_details["json_scheme"],
         )
 
         # обновляю значение в словаре
-        request_details['count_tokens'] = count_tokens
+        request_details["count_tokens"] = count_tokens
 
         # возвращаю ключ доступа
         return self.key_manager.get_key(query_details=request_details)
 
     def send_text_request_to_openai(
-            self,
-            api_key: str,
-            context: list,
-            model: Literal["gpt-4o-mini"],
-            json_scheme: dict,
+        self,
+        api_key: str,
+        context: list,
+        model: Literal["gpt-4o-mini"],
+        json_scheme: dict,
     ) -> Dict:
         """
         Отправляет текстовый запрос в OpenAI API.
@@ -212,8 +218,8 @@ class OpenAIClient:
             return self._generate_if_failed(exc)
 
     def main_request(
-            self,
-            request_details: dict,
+        self,
+        request_details: dict,
     ) -> dict:
         """
         Главный метод, в котором: проверяем контент, получаем ключ доступа,
@@ -251,7 +257,7 @@ class OpenAIClient:
         :return: ответ от OpenAI в виде словаря
         """
 
-        if request_details['target'] != 'text':
+        if request_details["target"] != "text":
             return {
                 "error": f"Неподдерживаемый тип таргета: {request_details['target']}"
             }
@@ -261,8 +267,8 @@ class OpenAIClient:
 
         # отправляю реальный запрос на API OPENAI
         return self.send_text_request_to_openai(
-            context=request_details['context'],
+            context=request_details["context"],
             api_key=access_key,
-            model=request_details['model'],
-            json_scheme=request_details['json_scheme'],
+            model=request_details["model"],
+            json_scheme=request_details["json_scheme"],
         )

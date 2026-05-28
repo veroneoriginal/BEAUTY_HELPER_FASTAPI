@@ -15,9 +15,9 @@ class PDFCreator:
     """
 
     def __init__(
-            self,
-            data_for_pdf: list,
-            image_in_bytes: bytes,
+        self,
+        data_for_pdf: list,
+        image_in_bytes: bytes,
     ):
         """
         :param data_for_pdf: список с данными для генерации PDF
@@ -35,28 +35,27 @@ class PDFCreator:
 
         # 1. Создаём временный файл для PDF
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
-
             # Абсолютный путь до файла
             pdf_path = tmp_file.name
 
         try:
             # 2. Итерируемся по data-шагам
             for data in self.data_for_pdf:
-                template_class = TEMPLATE_CLASS[data['Класс шаблона']]
+                template_class = TEMPLATE_CLASS[data["Класс шаблона"]]
 
                 # Создаём документ
                 doc = template_class(
                     filename=pdf_path,
-                    path_to_brandline_file=data['Путь к изображению бренд-линии'],
+                    path_to_brandline_file=data["Путь к изображению бренд-линии"],
                     doc_width_height=(
-                        data['Размеры документа'][0],
-                        data['Размеры документа'][1]
+                        data["Размеры документа"][0],
+                        data["Размеры документа"][1],
                     ),
                     brand_line_width_height=(
-                        data['Размеры бренд-линии'][0],
-                        data['Размеры бренд-линии'][1]
+                        data["Размеры бренд-линии"][0],
+                        data["Размеры бренд-линии"][1],
                     ),
-                    brand_line_coords=data['Координаты вставки бренд-линии']
+                    brand_line_coords=data["Координаты вставки бренд-линии"],
                 )
 
                 # Создаём flowables-элементы документа
@@ -69,7 +68,7 @@ class PDFCreator:
                 # Создаём шаблоны страниц с фреймами
                 page_templates_builder = PDFPageTemplateandFrameBuilder()
                 templates = page_templates_builder.create_doc_templates(
-                    templates_data=data['Шаблоны страниц с фреймами']
+                    templates_data=data["Шаблоны страниц с фреймами"]
                 )
 
                 # добавление шаблона страницы в документ

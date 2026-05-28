@@ -26,8 +26,8 @@ class GenerationManager:
     """
 
     def __init__(
-            self,
-            data_request: dict,
+        self,
+        data_request: dict,
     ):
         # Инициализация доступных сервисов
         self.services: dict[tuple[str, str], Callable] = {
@@ -51,21 +51,22 @@ class GenerationManager:
 
         for role, text in messages:
             context_from_user.append(
-                {"role": role,
-                 "content": [
-                     {
-                         "type": "text",
-                         "text": text,
-                     },
-                 ],
-                 },
+                {
+                    "role": role,
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": text,
+                        },
+                    ],
+                },
             )
 
         # в исходном словаре обновляем значение по ключу messages
         self.data["context"] = context_from_user
 
     def _generate_text_with_openai(
-            self,
+        self,
     ) -> dict:
         """
         Отправляет запрос на генерацию текстового ответа от OpenAI.
@@ -76,7 +77,7 @@ class GenerationManager:
         return self.openai.main_request(request_details=self.data)
 
     def process_request(
-            self,
+        self,
     ) -> dict:
         """
         Главный метод класса.

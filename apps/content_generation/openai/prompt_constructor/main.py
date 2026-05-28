@@ -12,8 +12,8 @@ from apps.selection.models import (
 
 
 def get_prompts(
-        task_type: SelectionTaskType,
-        data_collection: dict,
+    task_type: SelectionTaskType,
+    data_collection: dict,
 ) -> dict:
     """
     Главная функция модуля. Создаёт промпт для отправки в OpenAI.

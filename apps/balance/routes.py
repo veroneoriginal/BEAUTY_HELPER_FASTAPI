@@ -15,7 +15,7 @@ router = APIRouter(prefix="/balance", tags=["Balance"])
 
 
 def get_balance_service(
-        session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_session),
 ) -> BalanceService:
     """
     Dependency для создания BalanceService.
@@ -34,11 +34,11 @@ def get_balance_service(
     response_model=BalanceRead,
     summary="Просмотр баланса",
     description="Возвращает текущий баланс пользователя: "
-                "доступные и зарезервированные генерации.",
+    "доступные и зарезервированные генерации.",
 )
 async def get_balance(
-        user_id: int,
-        service: BalanceService = Depends(get_balance_service),
+    user_id: int,
+    service: BalanceService = Depends(get_balance_service),
 ):
     balance = await service.get_balance(user_id)
     if balance is None:
@@ -54,11 +54,11 @@ async def get_balance(
     response_model=OperationListResponse,
     summary="История операций",
     description="Возвращает список всех операций с балансом пользователя. "
-                "Сортировка — от новых к старым.",
+    "Сортировка — от новых к старым.",
 )
 async def get_operations(
-        user_id: int,
-        service: BalanceService = Depends(get_balance_service),
+    user_id: int,
+    service: BalanceService = Depends(get_balance_service),
 ):
     operations = await service.get_operations(user_id)
     return OperationListResponse(

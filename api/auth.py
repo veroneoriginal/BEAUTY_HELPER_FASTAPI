@@ -33,7 +33,7 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 def get_auth_service(
-        session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_session),
 ) -> AuthService:
     """
     Dependency для создания AuthService.
@@ -50,11 +50,11 @@ def get_auth_service(
     status_code=status.HTTP_201_CREATED,
     summary="Регистрация нового пользователя",
     description="Создаёт аккаунт (email + пароль). "
-                "На почту отправляется ссылка для подтверждения email.",
+    "На почту отправляется ссылка для подтверждения email.",
 )
 async def register(
-        data: RegisterRequest,
-        service: AuthService = Depends(get_auth_service),
+    data: RegisterRequest,
+    service: AuthService = Depends(get_auth_service),
 ):
     try:
         result = await service.register(data=data)
@@ -71,11 +71,11 @@ async def register(
     response_model=ConfirmEmailResponse,
     summary="Подтверждение email",
     description="Пользователь переходит по ссылке из письма. "
-                "Токен из URL проверяется, email подтверждается.",
+    "Токен из URL проверяется, email подтверждается.",
 )
 async def confirm_email(
-        token: str,
-        service: AuthService = Depends(get_auth_service),
+    token: str,
+    service: AuthService = Depends(get_auth_service),
 ):
     try:
         result = await service.confirm_email(token)
@@ -92,11 +92,11 @@ async def confirm_email(
     response_model=TokenResponse,
     summary="Вход в аккаунт",
     description="Email + пароль → пара токенов (access + refresh). "
-                "Email должен быть подтверждён.",
+    "Email должен быть подтверждён.",
 )
 async def login(
-        data: LoginRequest,
-        service: AuthService = Depends(get_auth_service),
+    data: LoginRequest,
+    service: AuthService = Depends(get_auth_service),
 ):
     try:
         result = await service.login(data)
@@ -113,16 +113,21 @@ async def login(
     response_model=TokenResponse,
     summary="Обновление токенов",
     description="Отправляем refresh_token → получаем новую пару "
-                "(access + refresh). Используется когда access_token протух.",
+    "(access + refresh). Используется когда access_token протух.",
 )
 async def refresh(
-        data: RefreshRequest,
-        service: AuthService = Depends(get_auth_service),
+    data: RefreshRequest,
+    service: AuthService = Depends(get_auth_service),
 ):
     try:
         result = await service.refresh_tokens(data.refresh_token)
         return result
-    except (InvalidTokenError, TokenRevokedError, UserNotFoundError, UserBannedError) as e:
+    except (
+        InvalidTokenError,
+        TokenRevokedError,
+        UserNotFoundError,
+        UserBannedError,
+    ) as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e),
@@ -134,11 +139,11 @@ async def refresh(
     response_model=LogoutResponse,
     summary="Выход из аккаунта",
     description="Инвалидирует access и refresh токены. "
-                "После logout токены перестают работать.",
+    "После logout токены перестают работать.",
 )
 async def logout(
-        data: LogoutRequest,
-        service: AuthService = Depends(get_auth_service),
+    data: LogoutRequest,
+    service: AuthService = Depends(get_auth_service),
 ):
     result = await service.logout(data.access_token, data.refresh_token)
     return result

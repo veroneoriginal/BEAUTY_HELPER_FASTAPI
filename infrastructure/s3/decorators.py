@@ -15,6 +15,7 @@ def s3_safe_call(func):
     - etag: идентификатор версии объекта
     - error: None если успех, иначе строка с описанием ошибки
     """
+
     @wraps(func)
     async def wrapper(*args, **kwargs):
         try:
@@ -31,4 +32,5 @@ def s3_safe_call(func):
                 "etag": None,
                 "error": f"Неизвестная ошибка: {e}",
             }
+
     return wrapper

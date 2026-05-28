@@ -7,28 +7,26 @@ from apps.selection.models import (
 
 class JsonCreator:
     """
-        Класс для динамического создания JSON-схемы для structured output OpenAI.
-        Схема формируется в зависимости от типа задачи и состава продукта.
+    Класс для динамического создания JSON-схемы для structured output OpenAI.
+    Схема формируется в зависимости от типа задачи и состава продукта.
 
-        :param data_collection: словарь с данными текущего шага подборки
-        :param product_categories: словарь с категориями продуктов
-        """
+    :param data_collection: словарь с данными текущего шага подборки
+    :param product_categories: словарь с категориями продуктов
+    """
 
     def __init__(
-            self,
-            data_collection: dict,
-            product_categories: dict,
+        self,
+        data_collection: dict,
+        product_categories: dict,
     ):
         self.data_collection = data_collection
         self.product_categories = product_categories
 
         self.method_for_task_code = {
             # Подробный анализ каждого элемента состава
-            SelectionTaskType.COMPOSITION_ANALYSIS:
-                self.create_js_detailed_analysis_each_element_of_composition,
+            SelectionTaskType.COMPOSITION_ANALYSIS: self.create_js_detailed_analysis_each_element_of_composition,
             # "Общий анализ элементов состава": self.create_json_scheme_detailed_analysis_composition,
             # "Аналог": self.create_json_scheme_for_analogue_product,
-
         }
 
     def get_json_scheme_for_current_task(self):
@@ -58,14 +56,11 @@ class JsonCreator:
                 "type": "object",
                 "properties": {},
                 "required": [],
-                "additionalProperties": False
-            }
+                "additionalProperties": False,
+            },
         }
 
-        result = {
-            "type": "string",
-            "description": "Итоговая рекомендация, вывод"
-        }
+        result = {"type": "string", "description": "Итоговая рекомендация, вывод"}
 
         # Получаем название продукта
         name_product = self.data_collection["name"]
@@ -87,7 +82,7 @@ class JsonCreator:
                     },
                 },
                 "required": ["title", "article"],
-                "additionalProperties": False
+                "additionalProperties": False,
             },
         }
 
@@ -98,7 +93,7 @@ class JsonCreator:
         schema["schema"]["required"].extend(product.keys())
 
         # Получаем элементы, входящие в состав средства
-        ingredients = self.data_collection['Элементы состава для шага задачи']
+        ingredients = self.data_collection["Элементы состава для шага задачи"]
 
         # Идем по списку элементов состава и добавляем в словарь
         elements = {}
@@ -111,31 +106,31 @@ class JsonCreator:
                 "properties": {
                     "element_title": {
                         "type": "string",
-                        "description": f"Название элемента - {element}"
+                        "description": f"Название элемента - {element}",
                     },
                     "what_is_element_used_for": {
                         "type": "string",
                         "description": f"Что такое элемент {element} и для чего он "
-                                       f"используется в составе средства."
+                        f"используется в составе средства.",
                     },
                     "element_danger_text": {
                         "type": "string",
                         "description": f"Является ли элемент {element} канцерогеном или "
-                                       f"опасным веществом? Если элемент опасен,"
-                                       f" то скажи, чем конкретно."
+                        f"опасным веществом? Если элемент опасен,"
+                        f" то скажи, чем конкретно.",
                     },
                     "is_element_danger": {
                         "type": "boolean",
                         "description": f"Если элемент {element} вызывает аллергию,"
-                                       f" является канцерогеном или опасен по другой причине -"
-                                       f" поставь True, иначе - False"
+                        f" является канцерогеном или опасен по другой причине -"
+                        f" поставь True, иначе - False",
                     },
                     "element_stop_in_country": {
                         "type": "string",
                         "description": f"Если элемент {element} запрещён в каких-то "
-                                       f"странах (или регулируется) - сообщи "
-                                       f"об этом, если нет - просто напиши 'Не запрещён.' "
-                    }
+                        f"странах (или регулируется) - сообщи "
+                        f"об этом, если нет - просто напиши 'Не запрещён.' ",
+                    },
                 },
                 "required": [
                     "element_title",
@@ -144,7 +139,7 @@ class JsonCreator:
                     "is_element_danger",
                     "element_stop_in_country",
                 ],
-                "additionalProperties": False
+                "additionalProperties": False,
             }
 
         # Добавляем элементы в свойства схемы
@@ -154,7 +149,7 @@ class JsonCreator:
         schema["schema"]["required"].extend(elements.keys())
 
         # Добавляем result ТОЛЬКО если шаг последний
-        if self.data_collection.get('Шаг задачи последний или нет'):
+        if self.data_collection.get("Шаг задачи последний или нет"):
             schema["schema"]["properties"]["result"] = result
             schema["schema"]["required"].append("result")
 

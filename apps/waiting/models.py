@@ -12,7 +12,8 @@ class WaitingStatus(str, enum.Enum):
     """
     Статусы модели Ожидание.
     """
-    OPEN = "open"      # Ожидание открыто
+
+    OPEN = "open"  # Ожидание открыто
     CLOSED = "closed"  # Ожидание завершено
 
 

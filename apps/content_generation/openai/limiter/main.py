@@ -43,8 +43,8 @@ class Limiter:
         self.storing_current_request = STORE_CURRENT_REQUEST
 
     def checking_key_in_redis(
-            self,
-            key_with_time: str,
+        self,
+        key_with_time: str,
     ) -> dict:
         """
         Проверяет наличие ключа в Redis.
@@ -65,9 +65,9 @@ class Limiter:
         return self.storing_current_request.copy()
 
     def _saving_to_database(
-            self,
-            key_with_time: str,
-            dict_from_redis_with_keytime: dict,
+        self,
+        key_with_time: str,
+        dict_from_redis_with_keytime: dict,
     ) -> None:
         """
         Сохраняет обновлённые данные в Redis с TTL до конца текущей минуты.
@@ -83,14 +83,14 @@ class Limiter:
             # Преобразуем словарь в строку JSON
             json.dumps(dict_from_redis_with_keytime),
             # Устанавливаем TimeToLive
-            ex=calculate_time_to_next_minute()
+            ex=calculate_time_to_next_minute(),
         )
 
     def _select_account_for_generating(
-            self,
-            data_with_info: dict,
-            key_with_time: str,
-            dict_from_redis_with_keytime: dict,
+        self,
+        data_with_info: dict,
+        key_with_time: str,
+        dict_from_redis_with_keytime: dict,
     ) -> Optional[str] | None:
         """
         Ищет аккаунт у которого не превышены лимиты RPM/TPM/IPM.
@@ -103,18 +103,20 @@ class Limiter:
         """
 
         for account, limits in self.accounts_limits.items():
-
             # Проверяем лимиты для всех метрик (RPM, TPM, IPM)
             if all(
-                    dict_from_redis_with_keytime[account].get(metric, 0) + data_with_info[metric] <= limits[metric]
-                    for metric in data_with_info
-                    if data_with_info[metric] > 0  # Проверяем только релевантные метрики
+                dict_from_redis_with_keytime[account].get(metric, 0)
+                + data_with_info[metric]
+                <= limits[metric]
+                for metric in data_with_info
+                if data_with_info[metric] > 0  # Проверяем только релевантные метрики
             ):
                 # Если лимиты не превышены, обновляем данные
                 for metric in data_with_info:
                     dict_from_redis_with_keytime[account][metric] = (
-                            dict_from_redis_with_keytime[account].get(metric, 0)
-                            + data_with_info[metric])
+                        dict_from_redis_with_keytime[account].get(metric, 0)
+                        + data_with_info[metric]
+                    )
 
                 # Сохраняем обновленные данные в Redis
                 self._saving_to_database(
@@ -129,10 +131,10 @@ class Limiter:
         return None
 
     def _choose_account(
-            self,
-            query_details: dict,
-            key_with_time: str,
-            dict_from_redis_with_keytime: dict,
+        self,
+        query_details: dict,
+        key_with_time: str,
+        dict_from_redis_with_keytime: dict,
     ) -> str:
         """
         Запускает цикл поиска доступного аккаунта с ожиданием между попытками.
@@ -155,7 +157,6 @@ class Limiter:
         data_with_info = creating_dict_with_info_from_query(query_details=query_details)
 
         while retries < max_retries:
-
             # Пытаемся выбрать аккаунт
             selected_account = self._select_account_for_generating(
                 data_with_info=data_with_info,
@@ -173,12 +174,13 @@ class Limiter:
             retries += 1
 
         # Если после использования max_retries не удалось найти подходящий аккаунт
-        raise LimiterChooseAccountException(f"Аккаунт для генерации "
-                                            f"{query_details['target']} контента не найден")
+        raise LimiterChooseAccountException(
+            f"Аккаунт для генерации {query_details['target']} контента не найден"
+        )
 
     def main_get_account_name(
-            self,
-            query_details: dict,
+        self,
+        query_details: dict,
     ) -> str:
         """
         Главный метод класса.
@@ -197,7 +199,9 @@ class Limiter:
 
         with lock:
             # Проверяем есть ли ключ в Redis
-            dict_from_redis_with_keytime = self.checking_key_in_redis(key_with_time=key_with_time)
+            dict_from_redis_with_keytime = self.checking_key_in_redis(
+                key_with_time=key_with_time
+            )
 
             # Выбор аккаунта, через который дальше будет отправляться запрос
             return self._choose_account(

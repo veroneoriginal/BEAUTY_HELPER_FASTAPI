@@ -22,8 +22,8 @@ class KeyManager:
         self.account_keys = ACCOUNT_KEYS
 
     def get_key(
-            self,
-            query_details: dict,
+        self,
+        query_details: dict,
     ) -> str:
         """
         Проверяет лимиты, выбирает доступный аккаунт и возвращает его ключ.

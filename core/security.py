@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 # === Хеширование паролей ===
 
+
 def hash_password(password: str) -> str:
     """
     Хеширует пароль через bcrypt.
@@ -40,8 +41,8 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(
-        plain_password: str,
-        hashed_password: str,
+    plain_password: str,
+    hashed_password: str,
 ) -> bool:
     """
     Проверяет, совпадает ли введённый пароль с хешем из БД.
@@ -67,21 +68,25 @@ async def hash_password_async(password: str) -> str:
 
 
 async def verify_password_async(
-        plain_password: str,
-        hashed_password: str,
+    plain_password: str,
+    hashed_password: str,
 ) -> bool:
     """Асинхронная обёртка над verify_password."""
     loop = asyncio.get_running_loop()
     return await loop.run_in_executor(
-        None, verify_password, plain_password, hashed_password,
+        None,
+        verify_password,
+        plain_password,
+        hashed_password,
     )
 
 
 # === JWT-токены ===
 
+
 def create_access_token(
-        data: dict,
-        expires_delta: timedelta | None = None,
+    data: dict,
+    expires_delta: timedelta | None = None,
 ) -> str:
     """
     Создаёт JWT access-токен.
@@ -110,8 +115,8 @@ def create_access_token(
 
 
 def create_refresh_token(
-        data: dict,
-        expires_delta: timedelta | None = None,
+    data: dict,
+    expires_delta: timedelta | None = None,
 ) -> str:
     """
     Создаёт JWT refresh-токен (долгоживущий).
@@ -132,10 +137,12 @@ def create_refresh_token(
             days=settings.REFRESH_TOKEN_EXPIRE_DAYS
         )
 
-    to_encode.update({
-        "exp": expire,
-        "type": "refresh",  # помечаем тип токена
-    })
+    to_encode.update(
+        {
+            "exp": expire,
+            "type": "refresh",  # помечаем тип токена
+        }
+    )
 
     return jwt.encode(
         to_encode,
@@ -159,8 +166,8 @@ def decode_token(token: str) -> dict:
 
 
 async def is_token_blacklisted(
-        token: str,
-        token_type: str = "access",
+    token: str,
+    token_type: str = "access",
 ) -> bool:
     """
     Проверяет, находится ли токен в blacklist (Redis).
@@ -171,8 +178,8 @@ async def is_token_blacklisted(
 
 
 async def blacklist_token(
-        token: str,
-        token_type: str = "access",
+    token: str,
+    token_type: str = "access",
 ) -> None:
     """
     Добавляет токен в blacklist (Redis).
@@ -195,16 +202,14 @@ async def blacklist_token(
 
 
 def create_confirmation_token(
-        user_id: int,
-        expires_delta: timedelta | None = None,
+    user_id: int,
+    expires_delta: timedelta | None = None,
 ) -> str:
     """
     Создаёт токен подтверждения email.
     Тип 'email_confirmation' зашит внутри — нельзя подменить.
     """
-    expire = datetime.now(timezone.utc) + (
-            expires_delta or timedelta(hours=24)
-    )
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(hours=24))
     to_encode = {
         "sub": str(user_id),
         "type": "email_confirmation",
@@ -218,8 +223,8 @@ def create_confirmation_token(
 
 
 async def get_current_user(
-        credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-        session: AsyncSession = Depends(get_session),
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    session: AsyncSession = Depends(get_session),
 ):
     """
     FastAPI dependency для защищённых эндпоинтов.

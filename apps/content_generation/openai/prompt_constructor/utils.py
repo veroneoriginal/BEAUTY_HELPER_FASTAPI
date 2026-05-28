@@ -6,7 +6,7 @@ from apps.content_generation.openai.prompt_constructor.data_task import (
 
 
 def get_specialist_by_product_type(
-        product_type: str,
+    product_type: str,
 ) -> str | None:
     """
     Определяет категорию специалиста по типу продукта.
@@ -22,8 +22,8 @@ def get_specialist_by_product_type(
 
 
 def format_composition_elements(
-        elements: list[str],
-        start_index: int = 1,
+    elements: list[str],
+    start_index: int = 1,
 ) -> str:
     """
     Форматирует список элементов состава в строку
@@ -38,4 +38,4 @@ def format_composition_elements(
     for element in elements:
         result.append(f"{current_index}_{element}")
         current_index += 1
-    return ', '.join(result)
+    return ", ".join(result)

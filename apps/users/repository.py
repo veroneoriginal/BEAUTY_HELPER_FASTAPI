@@ -26,8 +26,8 @@ class UserRepository(SQLAlchemyRepository[User]):
         super().__init__(session)
 
     async def get_by_email(
-            self,
-            email: str,
+        self,
+        email: str,
     ) -> User | None:
         """
         Найти пользователя по email (для авторизации).
@@ -38,8 +38,8 @@ class UserRepository(SQLAlchemyRepository[User]):
         return result.scalar_one_or_none()
 
     async def get_by_telegram_id(
-            self,
-            telegram_id: int,
+        self,
+        telegram_id: int,
     ) -> User | None:
         """
         Найти пользователя по telegram_id (для интеграции с ботом).
@@ -50,8 +50,8 @@ class UserRepository(SQLAlchemyRepository[User]):
         return result.scalar_one_or_none()
 
     async def exists_by_email(
-            self,
-            email: str,
+        self,
+        email: str,
     ) -> bool:
         """
         Проверить, занят ли email.

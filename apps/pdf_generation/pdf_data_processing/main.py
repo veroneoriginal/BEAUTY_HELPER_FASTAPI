@@ -17,10 +17,10 @@ class PDFDataProcessor:
     """
 
     def __init__(
-            self,
-            product_data: dict,
-            analys: dict,
-            task_type: SelectionTaskType,
+        self,
+        product_data: dict,
+        analys: dict,
+        task_type: SelectionTaskType,
     ) -> None:
         """
         :param product_data: DTO-продукта, преобразованный в словарь

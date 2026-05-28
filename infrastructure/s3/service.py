@@ -22,10 +22,10 @@ class S3Service:
 
     @s3_safe_call
     async def upload_file(
-            self,
-            file_data: bytes,
-            object_key: str,
-            extension: str,
+        self,
+        file_data: bytes,
+        object_key: str,
+        extension: str,
     ) -> dict:
         """
         Загружает файл в S3.
@@ -66,8 +66,8 @@ class S3Service:
 
     @s3_safe_call
     async def get_file(
-            self,
-            object_key: str,
+        self,
+        object_key: str,
     ) -> dict:
         """
         Получает файл из S3 по ключу.
@@ -94,8 +94,8 @@ class S3Service:
 
     @s3_safe_call
     async def delete_file(
-            self,
-            object_key: str,
+        self,
+        object_key: str,
     ) -> dict:
         """
         Удаляет файл из S3 по ключу.
@@ -114,7 +114,9 @@ class S3Service:
         return {
             "status_code": status_code,
             "etag": None,
-            "error": None if status_code == 204 else f"Неожиданный статус: {status_code}",
+            "error": None
+            if status_code == 204
+            else f"Неожиданный статус: {status_code}",
         }
 
     @staticmethod

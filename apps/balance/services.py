@@ -28,8 +28,8 @@ class BalanceService:
     # === Создание баланса ===
 
     async def create_balance_no_commit(
-            self,
-            user_id: int,
+        self,
+        user_id: int,
     ) -> UserBalance:
         """
         Создать баланс без commit.
@@ -37,18 +37,20 @@ class BalanceService:
         другой транзакции (например, при регистрации).
         Commit делает вызывающий код.
         """
-        balance = await self.repository.create({
-            "user_id": user_id,
-            "spins": 0,
-            "reserved_spins": 0,
-        })
+        balance = await self.repository.create(
+            {
+                "user_id": user_id,
+                "spins": 0,
+                "reserved_spins": 0,
+            }
+        )
         return balance
 
     # === Чтение ===
 
     async def get_balance(
-            self,
-            user_id: int,
+        self,
+        user_id: int,
     ) -> UserBalance | None:
         """
         Получить баланс пользователя (без блокировки).
@@ -57,8 +59,8 @@ class BalanceService:
         return await self.repository.get_by_user_id(user_id)
 
     async def get_operations(
-            self,
-            user_id: int,
+        self,
+        user_id: int,
     ) -> list:
         """
         Получить историю операций пользователя.
@@ -68,10 +70,10 @@ class BalanceService:
     # === Пополнение ===
 
     async def add_spins_no_commit(
-            self,
-            user_id: int,
-            count: int,
-            description: str = "Начисление генераций",
+        self,
+        user_id: int,
+        count: int,
+        description: str = "Начисление генераций",
     ) -> bool:
         """
         Пополнить баланс без commit.
@@ -98,10 +100,10 @@ class BalanceService:
     # === Резервирование ===
 
     async def reserve_spins(
-            self,
-            user_id: int,
-            count: int = 1,
-            description: str = "Резервирование генераций перед запуском анализа",
+        self,
+        user_id: int,
+        count: int = 1,
+        description: str = "Резервирование генераций перед запуском анализа",
     ) -> bool:
         """
         Резервировать генерации перед запуском анализа.
@@ -133,10 +135,10 @@ class BalanceService:
     # === Списание ===
 
     async def confirm_spins(
-            self,
-            user_id: int,
-            count: int = 1,
-            description: str = "Списание генераций после завершения анализа",
+        self,
+        user_id: int,
+        count: int = 1,
+        description: str = "Списание генераций после завершения анализа",
     ) -> bool:
         """
         Списать зарезервированные генерации.
@@ -164,10 +166,10 @@ class BalanceService:
     # === Возврат ===
 
     async def release_spins(
-            self,
-            user_id: int,
-            count: int = 1,
-            description: str = "Возврат генераций из резерва (анализ завершился с ошибкой)",
+        self,
+        user_id: int,
+        count: int = 1,
+        description: str = "Возврат генераций из резерва (анализ завершился с ошибкой)",
     ) -> bool:
         """
         Вернуть зарезервированные генерации обратно в доступные.

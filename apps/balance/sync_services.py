@@ -15,10 +15,10 @@ class SyncBalanceService:
         self.repository = repository
 
     def confirm_spins(
-            self,
-            user_id: int,
-            count: int = 1,
-            description: str = "Списание генераций после завершения анализа",
+        self,
+        user_id: int,
+        count: int = 1,
+        description: str = "Списание генераций после завершения анализа",
     ) -> bool:
         """
         Списать зарезервированные генерации после успешного анализа.
@@ -46,10 +46,10 @@ class SyncBalanceService:
         return True
 
     def release_spins(
-            self,
-            user_id: int,
-            count: int = 1,
-            description: str = "Возврат генераций из резерва (анализ завершился с ошибкой)",
+        self,
+        user_id: int,
+        count: int = 1,
+        description: str = "Возврат генераций из резерва (анализ завершился с ошибкой)",
     ) -> bool:
         """
         Вернуть зарезервированные генерации обратно в доступные.

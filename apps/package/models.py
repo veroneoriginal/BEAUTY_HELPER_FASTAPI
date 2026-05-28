@@ -26,9 +26,10 @@ class UserPackageDelivery(str, enum.Enum):
     """
     Способ получения пакета пользователем.
     """
-    PURCHASE = "PURCHASE"   # Покупка
-    PROMO = "PROMO"         # Промокод
-    MANUAL = "MANUAL"       # Ручное начисление
+
+    PURCHASE = "PURCHASE"  # Покупка
+    PROMO = "PROMO"  # Промокод
+    MANUAL = "MANUAL"  # Ручное начисление
 
 
 class Package(Base):

@@ -14,9 +14,9 @@ from infrastructure.s3.service import S3Service
 
 
 def generate_selection_pdf(
-        product_data: dict,
-        analys: dict,
-        task_type: SelectionTaskType,
+    product_data: dict,
+    analys: dict,
+    task_type: SelectionTaskType,
 ) -> str | None:
     """
     Общая функция с логикой генерации PDF.
@@ -54,15 +54,16 @@ def generate_selection_pdf(
         prefix="pdf",
         extension="pdf",
         task_type=task_type,
-        article=product_data['article_ga'],
+        article=product_data["article_ga"],
     )
 
     # 5. Созданную PDF в виде bytes загружаем на S3.
-    upload_pdf = asyncio.run(s3.upload_file(
-        file_data=bytes_pdf,
-        object_key=s3_key,
-        extension="pdf",
-    )
+    upload_pdf = asyncio.run(
+        s3.upload_file(
+            file_data=bytes_pdf,
+            object_key=s3_key,
+            extension="pdf",
+        )
     )
 
     if upload_pdf["status_code"] == 200:

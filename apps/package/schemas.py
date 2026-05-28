@@ -10,10 +10,12 @@ from pydantic import BaseModel
 
 # === Пакеты (витрина) ===
 
+
 class PackageRead(BaseModel):
     """
     Пакет генераций для отображения на витрине.
     """
+
     id: int
     title: str
     description: str | None = None
@@ -25,11 +27,13 @@ class PackageRead(BaseModel):
 
 # === Покупка ===
 
+
 class BuyPackageRequest(BaseModel):
     """
     Запрос на покупку пакета.
     Пользователь выбирает пакет — генерации начисляются на баланс.
     """
+
     user_id: int
     package_id: int
 
@@ -38,15 +42,18 @@ class BuyPackageResponse(BaseModel):
     """
     Ответ после покупки пакета.
     """
+
     message: str
 
 
 # === История покупок ===
 
+
 class UserPackageRead(BaseModel):
     """
     Запись о покупке пакета пользователем.
     """
+
     id: int
     package_id: int | None
     delivery_type: str
@@ -59,6 +66,6 @@ class UserPackageListResponse(BaseModel):
     """
     Список покупок пользователя.
     """
+
     user_id: int
     packages: list[UserPackageRead]
-    

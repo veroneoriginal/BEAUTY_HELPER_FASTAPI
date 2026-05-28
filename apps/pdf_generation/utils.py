@@ -15,10 +15,10 @@ from core.assets import EMOJI_IMAGE_DIR
 
 
 def create_object_key(
-        prefix: str,
-        extension: str,
-        task_type: SelectionTaskType,
-        article: str,
+    prefix: str,
+    extension: str,
+    task_type: SelectionTaskType,
+    article: str,
 ) -> str:
     """
     Генерирует ключ файла внутри S3 бакета.
@@ -34,7 +34,7 @@ def create_object_key(
 
 
 def convert_json_openai_to_list(
-        analysis_data: str,
+    analysis_data: str,
 ) -> list:
     """
     Преобразование Json c ответами от Openai в список словарей
@@ -46,7 +46,7 @@ def convert_json_openai_to_list(
 
 
 def convert_analysis_to_pdf_data(
-        answer_from_openai: list,
+    answer_from_openai: list,
 ) -> dict:
     """
     Преобразует список словарей c ответами от Openai в словарь с элементами,
@@ -66,7 +66,6 @@ def convert_analysis_to_pdf_data(
         dict_message = step["answer_openai_to_final"]["message"]
 
         for key, value in dict_message.items():
-
             if key.startswith("element_"):
                 # Преобразуем к element_1, element_2 и т.д.
                 new_key = f"element_{element_counter}"
@@ -79,7 +78,7 @@ def convert_analysis_to_pdf_data(
 
 
 def calculate_price_full_request(
-        answer_from_openai: list,
+    answer_from_openai: list,
 ) -> dict:
     """
     Преобразует список словарей c ответами от Openai в словарь,
@@ -121,8 +120,8 @@ def calculate_price_full_request(
 
 
 def translate_keys_to_rus(
-        data: dict,
-        mapping: MappingProxyType = MAPPING_KEYS,
+    data: dict,
+    mapping: MappingProxyType = MAPPING_KEYS,
 ) -> dict:
     """
     Заменяет ключи во вложенных словарях, опираясь на MAPPING_KEYS.
@@ -140,9 +139,9 @@ def translate_keys_to_rus(
 
 
 def calculate_price_per_standard_unit(
-        quantity: str,
-        unit: str,
-        price_rub: int | float,
+    quantity: str,
+    unit: str,
+    price_rub: int | float,
 ) -> str:
     """
     Рассчитывает стоимость за стандартный объем (100 или 50) в зависимости
@@ -182,11 +181,11 @@ def calculate_price_per_standard_unit(
 
     # Рассчитываем цену за стандартное количество
     price_per_standard = (price_rub / base_quantity) * standard_quantity
-    return f'{standard_quantity} {base_unit} / {int(price_per_standard)} р.'
+    return f"{standard_quantity} {base_unit} / {int(price_per_standard)} р."
 
 
 def extract_product_name(
-        title: str,
+    title: str,
 ) -> str:
     """
     Удаляет из строки (артикул: 123456)
@@ -195,7 +194,7 @@ def extract_product_name(
 
 
 def calc_base_price_ratio(
-        product: dict,
+    product: dict,
 ) -> str:
     """
     Готовит строку 'Количество мера / цена'
@@ -206,25 +205,25 @@ def calc_base_price_ratio(
     """
 
     return (
-        f'{product.get("measure_value")} '
-        f'{product.get("measure_unit")} / {product.get("price_rub")} руб'
+        f"{product.get('measure_value')} "
+        f"{product.get('measure_unit')} / {product.get('price_rub')} руб"
     )
 
 
 def capitalize_first_letter(
-        text: str,
+    text: str,
 ) -> str:
     """
     Делает первую букву заглавной
     """
     for i, char in enumerate(text):
         if char.isalpha():
-            return text[:i] + char.upper() + text[i + 1:]
+            return text[:i] + char.upper() + text[i + 1 :]
     return text  # если букв вообще нет
 
 
 def unicode_to_twemoji_codepoint(
-        char: str,
+    char: str,
 ) -> str:
     """
     Преобразует emoji в codepoint-строку, исключая FE0F, если надо
@@ -233,27 +232,27 @@ def unicode_to_twemoji_codepoint(
     codepoints = [f"{ord(c):x}" for c in char]
 
     # Если последний элемент FE0F — пробуем без него
-    if codepoints[-1] == 'fe0f':
+    if codepoints[-1] == "fe0f":
         test_path = EMOJI_IMAGE_DIR / f"{'-'.join(codepoints[:-1])}.png"
         if test_path.exists():
             codepoints = codepoints[:-1]
 
-    return '-'.join(codepoints)
+    return "-".join(codepoints)
 
 
 def replace_emoji_html(
-        text: str,
-        size=16,
+    text: str,
+    size=16,
 ) -> str:
     """
     Заменяет emoji символы на <img> с реальным путем, понятным ReportLab.
     """
-    new_text = ''
+    new_text = ""
     last_index = 0
 
     for e in emoji.emoji_list(text):
-        start = e['match_start']
-        end = e['match_end']
+        start = e["match_start"]
+        end = e["match_end"]
         emoji_char = text[start:end]
         codepoint = unicode_to_twemoji_codepoint(emoji_char)
 

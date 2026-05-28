@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     # === Redis URL (для Celery backend) ===
     @property
     def REDIS_URL(self) -> str:
-        return f"redis://:${self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/0"
+        return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/0"
 
     # === RabbitMQ ===
     RABBITMQ_USER: str = "verone26"

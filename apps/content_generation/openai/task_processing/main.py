@@ -20,6 +20,7 @@ from apps.selection.models import SelectionTaskType
 
 logger = logging.getLogger(__name__)
 
+
 class TaskProcessing:
     """
     Класс для выполнения задач по разбору состава средств.
@@ -32,9 +33,9 @@ class TaskProcessing:
     """
 
     def __init__(
-            self,
-            collection_data: dict,
-            task_type: SelectionTaskType,
+        self,
+        collection_data: dict,
+        task_type: SelectionTaskType,
     ):
         self.collection_data = collection_data
         self.task_type = task_type
@@ -57,10 +58,10 @@ class TaskProcessing:
         MAX_ELEMENTS_IN_STEP = 10
 
         # Получаем список самих ингредиентов состава
-        full_ingredients_list = self.collection_data['ingredients_list']
+        full_ingredients_list = self.collection_data["ingredients_list"]
 
         # Получаем количество элементов состава
-        total_count = len(self.collection_data['ingredients_list'])
+        total_count = len(self.collection_data["ingredients_list"])
 
         # Вычисляем, сколько шагов нужно, чтобы обработать весь состав
         task_steps_count = math.ceil(total_count / MAX_ELEMENTS_IN_STEP)
@@ -83,16 +84,18 @@ class TaskProcessing:
             step_data = deepcopy(self.collection_data)
 
             # Добавляем в словарь ингредиенты для текущего шага
-            step_data['Элементы состава для шага задачи'] = step_ingredients
+            step_data["Элементы состава для шага задачи"] = step_ingredients
 
             # Добавляем номер текущего шага (начиная с 1)
-            step_data['Номер шага задачи'] = step_number + 1
+            step_data["Номер шага задачи"] = step_number + 1
 
             # Добавляем булевый флаг, последний ли это шаг
-            step_data['Шаг задачи последний или нет'] = step_number == task_steps_count - 1
+            step_data["Шаг задачи последний или нет"] = (
+                step_number == task_steps_count - 1
+            )
 
             # Добавляем смещение для нумерации элементов
-            step_data['Смещение для нумерации'] = start_index + 1
+            step_data["Смещение для нумерации"] = start_index + 1
 
             # Добавляем подготовленный шаг в общий список всех шагов
             task_steps.append(step_data)
@@ -101,8 +104,8 @@ class TaskProcessing:
         self.run_all_task_steps(task_steps)
 
     def run_task_step(
-            self,
-            step_collection_data: dict,
+        self,
+        step_collection_data: dict,
     ) -> None:
         """
         Выполняет один шаг задачи:
@@ -117,7 +120,7 @@ class TaskProcessing:
         # полный словарь включая шаг из средств внутри step_collection_data
         # apps/content_generation/openai/task_processing/example_data.py
 
-        task_step_number = step_collection_data['Номер шага задачи']
+        task_step_number = step_collection_data["Номер шага задачи"]
 
         # 1. # Определяю json-схему
         json_scheme = get_json_scheme(
@@ -159,10 +162,10 @@ class TaskProcessing:
         )
 
     def save_step_result(
-            self,
-            step_number: int,
-            request_details: dict,
-            answer_openai_to_final: dict,
+        self,
+        step_number: int,
+        request_details: dict,
+        answer_openai_to_final: dict,
     ) -> None:
         """
         Сохраняет данные одного шага в списки request_data и response_data.
@@ -172,19 +175,23 @@ class TaskProcessing:
         :param answer_openai_to_final: словарь с ответом от OpenAI
         """
 
-        self.request_data.append({
-            "step_number": step_number,
-            "request_details": request_details,
-        })
+        self.request_data.append(
+            {
+                "step_number": step_number,
+                "request_details": request_details,
+            }
+        )
 
-        self.response_data.append({
-            "step_number": step_number,
-            "answer_openai_to_final": answer_openai_to_final,
-        })
+        self.response_data.append(
+            {
+                "step_number": step_number,
+                "answer_openai_to_final": answer_openai_to_final,
+            }
+        )
 
     def run_all_task_steps(
-            self,
-            all_task_steps: list,
+        self,
+        all_task_steps: list,
     ) -> None:
         """
         Выполняет все шаги задачи последовательно.
@@ -196,7 +203,7 @@ class TaskProcessing:
             self.run_task_step(step_collection_data=step_data)
 
     def run_task_processing(
-            self,
+        self,
     ) -> None:
         """
         Главный метод класса.

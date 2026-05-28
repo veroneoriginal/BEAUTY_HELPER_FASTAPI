@@ -34,15 +34,15 @@ class PackageRepository(SQLAlchemyRepository[Package]):
             select(Package).where(
                 Package.is_active == True,
                 Package.for_sale == True,
-                )
+            )
         )
         return list(result.scalars().all())
 
     async def create_user_package(
-            self,
-            user_id: int,
-            package_id: int,
-            delivery_type: str,
+        self,
+        user_id: int,
+        package_id: int,
+        delivery_type: str,
     ) -> UserPackage:
         """
         Создать запись о выдаче пакета пользователю.
@@ -58,8 +58,8 @@ class PackageRepository(SQLAlchemyRepository[Package]):
         return user_package
 
     async def get_user_packages(
-            self,
-            user_id: int,
+        self,
+        user_id: int,
     ) -> list[UserPackage]:
         """
         Получить все пакеты пользователя.

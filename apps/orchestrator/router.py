@@ -21,6 +21,7 @@ class AnalysisRequest(BaseModel):
     """
     Схема запроса на анализ косметического продукта.
     """
+
     product_link: str
     task_type: SelectionTaskType = SelectionTaskType.COMPOSITION_ANALYSIS
 
@@ -29,6 +30,7 @@ class AnalysisResponse(BaseModel):
     """
     Схема ответа на запрос анализа.
     """
+
     status: str
     message: str
     pdf_url: str | None = None
@@ -41,9 +43,9 @@ class AnalysisResponse(BaseModel):
     description="Принимает ссылку на продукт, запускает анализ состава через OpenAI и возвращает PDF-отчёт.",
 )
 async def analyze_product(
-        request: AnalysisRequest,
-        current_user: User = Depends(get_current_user),
-        session: AsyncSession = Depends(get_session),
+    request: AnalysisRequest,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
 ) -> AnalysisResponse:
     """
     Главный эндпоинт для анализа продукта.

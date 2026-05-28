@@ -8,7 +8,7 @@ from apps.pdf_generation.utils import (
 
 
 def get_base_info_by_product(
-        product_data: dict,
+    product_data: dict,
 ) -> dict:
     """
     Получает базовые данные по средству.
@@ -19,15 +19,11 @@ def get_base_info_by_product(
 
     return {
         # одинаково для всех средств:
-        'Название средства': extract_product_name(product_data['name']),
-
-        'Количество мера / цена': calc_base_price_ratio(product_data),
-
-        'Путь к изображению средства': product_data['image_key'],
-
-        'Тип продукта': capitalize_first_letter(
-            product_data['product_type']
-            or product_data['product_type_detailed']
+        "Название средства": extract_product_name(product_data["name"]),
+        "Количество мера / цена": calc_base_price_ratio(product_data),
+        "Путь к изображению средства": product_data["image_key"],
+        "Тип продукта": capitalize_first_letter(
+            product_data["product_type"] or product_data["product_type_detailed"]
         ),
-        'Артикул': f'артикул: {product_data["article_ga"]}'
+        "Артикул": f"артикул: {product_data['article_ga']}",
     }

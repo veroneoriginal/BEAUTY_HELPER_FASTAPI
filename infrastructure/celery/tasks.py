@@ -58,8 +58,8 @@ def redis_lock(lock_name: str, expire: int = 55):
 
 
 def _get_selection_with_product(
-        session,
-        selection_id: int,
+    session,
+    selection_id: int,
 ) -> Selection | None:
     """
     Получает подборку вместе с продуктом по ID через синхронную сессию.
@@ -173,12 +173,16 @@ def _complete_waitings_for_selection(session, selection: Selection) -> None:
 
     balance_service = SyncBalanceService(SyncBalanceRepository(session))
 
-    waitings = session.execute(
-        select(Waiting).where(
-            Waiting.selection_id == selection.id,
-            Waiting.status == WaitingStatus.OPEN,
+    waitings = (
+        session.execute(
+            select(Waiting).where(
+                Waiting.selection_id == selection.id,
+                Waiting.status == WaitingStatus.OPEN,
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
 
     for waiting in waitings:
         # Списываем зарезервированную крутку
@@ -243,8 +247,9 @@ def run_create_selection_on_task(self, selection_id: int) -> None:
                 selection_id,
                 exc,
             )
-            selection.selection_status = SelectionStatus.FAILED
-            selection.error_message = str(exc)
+            if self.request.retries >= self.max_retries:
+                selection.selection_status = SelectionStatus.FAILED
+                selection.error_message = str(exc)
             session.commit()
 
             raise self.retry(exc=exc)
@@ -267,13 +272,17 @@ def run_waiting_task() -> None:
             return
 
         with sync_session() as session:
-
-            waitings = session.execute(
-                select(Waiting)
-                .options(
-                    joinedload(Waiting.selection),
-                ).where(Waiting.status == WaitingStatus.OPEN)
-            ).scalars().all()
+            waitings = (
+                session.execute(
+                    select(Waiting)
+                    .options(
+                        joinedload(Waiting.selection),
+                    )
+                    .where(Waiting.status == WaitingStatus.OPEN)
+                )
+                .scalars()
+                .all()
+            )
 
             logger.info(
                 "[WAITING_TASK] Найдено %s открытых ожиданий",
@@ -311,6 +320,7 @@ def run_waiting_task() -> None:
 
                 elif selection.selection_status == SelectionStatus.QUEUE:
                     # Перезапускаем если задача зависла
+                    selection.selection_status = SelectionStatus.PROCESS
                     run_create_selection_on_task.delay(
                         selection_id=selection.id,
                     )

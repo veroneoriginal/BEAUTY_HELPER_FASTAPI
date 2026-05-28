@@ -21,7 +21,7 @@ router = APIRouter(prefix="/packages", tags=["Packages"])
 
 
 def get_package_service(
-        session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_session),
 ) -> PackageService:
     """
     Dependency для создания PackageService.
@@ -37,7 +37,7 @@ def get_package_service(
     description="Возвращает список активных пакетов, доступных для покупки.",
 )
 async def get_packages(
-        service: PackageService = Depends(get_package_service),
+    service: PackageService = Depends(get_package_service),
 ):
     return await service.get_active_packages()
 
@@ -46,12 +46,11 @@ async def get_packages(
     "/buy",
     response_model=BuyPackageResponse,
     summary="Покупка пакета",
-    description="Пользователь выбирает пакет — "
-                "генерации начисляются на баланс.",
+    description="Пользователь выбирает пакет — генерации начисляются на баланс.",
 )
 async def buy_package(
-        data: BuyPackageRequest,
-        service: PackageService = Depends(get_package_service),
+    data: BuyPackageRequest,
+    service: PackageService = Depends(get_package_service),
 ):
     try:
         await service.add_package_to_user(
@@ -70,12 +69,11 @@ async def buy_package(
     "/{user_id}/history",
     response_model=UserPackageListResponse,
     summary="История покупок",
-    description="Возвращает список всех пакетов, "
-                "полученных пользователем.",
+    description="Возвращает список всех пакетов, полученных пользователем.",
 )
 async def get_user_packages(
-        user_id: int,
-        service: PackageService = Depends(get_package_service),
+    user_id: int,
+    service: PackageService = Depends(get_package_service),
 ):
     packages = await service.get_user_packages(user_id)
     return UserPackageListResponse(

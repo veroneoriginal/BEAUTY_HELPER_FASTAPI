@@ -27,34 +27,36 @@ class SelectionService:
     # === Создание ===
 
     async def create_selection(
-            self,
-            product_id: int,
-            task_type: SelectionTaskType,
+        self,
+        product_id: int,
+        task_type: SelectionTaskType,
     ) -> Selection:
         """
         Создаёт подборку в статусе QUEUE.
         """
-        selection = await self.repository.create({
-            "product_id": product_id,
-            "task_type": task_type,
-            "selection_status": SelectionStatus.QUEUE,
-        })
+        selection = await self.repository.create(
+            {
+                "product_id": product_id,
+                "task_type": task_type,
+                "selection_status": SelectionStatus.QUEUE,
+            }
+        )
         await self.repository.session.commit()
         return selection
 
     # === Получение ===
 
     async def get_selection_by_id(
-            self,
-            selection_id: int,
+        self,
+        selection_id: int,
     ) -> Selection | None:
         """Получить подборку по ID."""
         return await self.repository.get_by_id(selection_id)
 
     async def get_by_product_and_task_type(
-            self,
-            link_ga: str,
-            task_type: str | SelectionTaskType,
+        self,
+        link_ga: str,
+        task_type: str | SelectionTaskType,
     ) -> Selection | None:
         """
         Найти подборку по ссылке на продукт и типу задачи.
@@ -65,15 +67,15 @@ class SelectionService:
         )
 
     async def get_all_selections(self) -> Sequence[Selection]:
-        """ Получить все подборки."""
+        """Получить все подборки."""
         return await self.repository.get_all()
 
     # === Проверка готовности для пользователя ===
 
     async def get_ready_selection_for_user(
-            self,
-            selection: Selection | None,
-            user_id: int,
+        self,
+        selection: Selection | None,
+        user_id: int,
     ) -> str | None:
         """
         Проверяет, есть ли у пользователя готовая подборка,
@@ -85,8 +87,8 @@ class SelectionService:
             return None
 
         if (
-                selection.selection_status == SelectionStatus.DONE
-                and await self.repository.has_user(selection.id, user_id)
+            selection.selection_status == SelectionStatus.DONE
+            and await self.repository.has_user(selection.id, user_id)
         ):
             return "Эта подборка у Вас уже есть. Отправляем PDF."
 
@@ -95,9 +97,9 @@ class SelectionService:
     # === Привязка пользователя ===
 
     async def add_user_to_selection(
-            self,
-            selection: Selection,
-            user: User,
+        self,
+        selection: Selection,
+        user: User,
     ) -> None:
         """
         Привязать пользователя к подборке.
@@ -109,8 +111,8 @@ class SelectionService:
     # === Смена статуса ===
 
     async def mark_as_processing(
-            self,
-            selection_id: int,
+        self,
+        selection_id: int,
     ) -> Selection | None:
         """
         Перевести подборку в статус PROCESS.
@@ -124,9 +126,9 @@ class SelectionService:
         return selection
 
     async def finish(
-            self,
-            selection_id: int,
-            pdf_url: str,
+        self,
+        selection_id: int,
+        pdf_url: str,
     ) -> Selection | None:
         """
         Завершить подборку: записать ссылку на PDF,
@@ -143,9 +145,9 @@ class SelectionService:
         return selection
 
     async def mark_as_failed(
-            self,
-            selection_id: int,
-            error_message: str,
+        self,
+        selection_id: int,
+        error_message: str,
     ) -> Selection | None:
         """
         Пометить подборку как неудавшуюся.
@@ -164,9 +166,9 @@ class SelectionService:
     # === Сохранение данных OpenAI ===
 
     async def set_request_details(
-            self,
-            selection_id: int,
-            json_str: str,
+        self,
+        selection_id: int,
+        json_str: str,
     ) -> Selection | None:
         """
         Сохранить данные, отправленные в OpenAI.
@@ -179,9 +181,9 @@ class SelectionService:
         return selection
 
     async def set_final_analysis(
-            self,
-            selection_id: int,
-            json_str: str,
+        self,
+        selection_id: int,
+        json_str: str,
     ) -> Selection | None:
         """
         Принимает ответы от OPENAI в виде JSON-строки и
@@ -195,9 +197,9 @@ class SelectionService:
         return selection
 
     async def calculate_price(
-            self,
-            selection_id: int,
-            price_request: dict,
+        self,
+        selection_id: int,
+        price_request: dict,
     ) -> Selection | None:
         """
         Сохранить информацию о стоимости запроса к OpenAI.
@@ -212,8 +214,8 @@ class SelectionService:
     # === Удаление ===
 
     async def delete_selection(
-            self,
-            selection_id: int,
+        self,
+        selection_id: int,
     ) -> bool:
         """Удалить подборку."""
         result = await self.repository.delete(selection_id)
