@@ -1,4 +1,4 @@
-# apps/balance/services.py
+# apps/balance/schemas.py
 
 # Сервисный слой модуля balance.
 # Содержит бизнес-логику: пополнение, резервирование, списание, возврат.

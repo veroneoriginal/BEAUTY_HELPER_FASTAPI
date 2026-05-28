@@ -1,4 +1,4 @@
-# apps/products/services.py
+# apps/products/product_service.py
 
 
 # Сервисный слой модуля products.

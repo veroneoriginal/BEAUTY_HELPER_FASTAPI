@@ -1,6 +1,6 @@
 # apps/pdf_generation/debug_data/pdf_docs_data.py
 # pylint: skip-file
-# apps/pdf_generation/debug_data/pdf_docs_data.py
+
 result = [
     {
         'Соотношение цены': '10 мл / 1400 р.',

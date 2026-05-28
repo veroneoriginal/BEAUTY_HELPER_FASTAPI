@@ -1,4 +1,4 @@
-# apps/waiting/services.py
+# apps/waiting/schemas.py
 
 from apps.waiting.models import Waiting, WaitingStatus
 from apps.waiting.repository import WaitingRepository

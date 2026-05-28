@@ -1,4 +1,4 @@
-# apps/selection/services.py
+# apps/selection/schemas.py
 
 # Сервисный слой модуля selection.
 # Содержит бизнес-логику: создание подборки, смена статуса,

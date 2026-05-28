@@ -88,7 +88,7 @@ class GenerationManager:
         # Преобразовываем словарь запроса
         self._convert_user_request()
 
-        # Ищем соответствующий обработчик в self.services
+        # Ищем соответствующий обработчик в self.schemas
         key = (
             self.data.get("target"),
             self.data.get("service"),

@@ -1,4 +1,4 @@
-# apps/package/services.py
+# apps/package/schemas.py
 
 # Сервисный слой модуля package.
 # Содержит бизнес-логику: создание пакетов, выдача пользователю,
@@ -115,7 +115,7 @@ class PackageService:
         4. Один commit на всё — если что-то упадёт, откатится всё.
 
         Аналог функции add_package_to_user из Django
-        (apps/package/services/add_package_to_user.py).
+        (apps/package/schemas/add_package_to_user.py).
         """
         # Проверяем пакет
         package = await self.repository.get_by_id(package_id)

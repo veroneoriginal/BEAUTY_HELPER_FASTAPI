@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.balance.repository import BalanceRepository
 from apps.balance.services import BalanceService
+from apps.products.product_service import ProductService
 from apps.products.repository import ProductRepository
 from apps.selection.models import SelectionStatus, SelectionTaskType
 from apps.selection.repository import SelectionRepository
@@ -65,7 +66,7 @@ async def get_or_prepare_selection(
     selection_service = SelectionService(SelectionRepository(session))
     waiting_service = WaitingService(WaitingRepository(session))
     balance_service = BalanceService(BalanceRepository(session))
-    product_repo = ProductRepository(session)
+    product_service = ProductService(ProductRepository(session))
 
     # 1. Ищем подборку по ссылке и типу задачи
     selection = await selection_service.get_by_product_and_task_type(
@@ -114,11 +115,10 @@ async def get_or_prepare_selection(
             "pdf_url": selection.pdf_url,
         }
 
-    # 3. Подборка есть но ещё в процессе (QUEUE/PROCESS/ON_REVIEW)
+    # 3. Подборка есть, но ещё в процессе
     if selection and selection.selection_status in (
             SelectionStatus.QUEUE,
             SelectionStatus.PROCESS,
-            SelectionStatus.ON_REVIEW,
     ):
         # Проверяем есть ли уже ожидание этого пользователя
         existing_waiting = await waiting_service.get_open_waiting(
@@ -159,7 +159,7 @@ async def get_or_prepare_selection(
 
     # 4. Подборки нет — создаём с нуля
     # 4.1 Ищем продукт в БД
-    product = await product_repo.get_by_link_ga(link=product_link)
+    product = await product_service.get_product_by_link(link=product_link)
 
     # 4.2 Если продукта нет — заглушка парсера
     if not product:

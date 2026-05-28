@@ -6,7 +6,7 @@ from apps.content_generation.openai.json_constructor.json_creator import (
 from apps.content_generation.openai.json_constructor.json_processing_data import (
     JsonProcessingData,
 )
-from apps.products.services.structure_for_products import (
+from apps.products.schemas.structure_for_products import (
     PARAMETERS_DIF_PRODUCT_CATEGORIES,
 )
 from apps.selection.models import (

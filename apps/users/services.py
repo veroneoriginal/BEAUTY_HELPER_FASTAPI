@@ -1,4 +1,4 @@
-# apps/users/services.py
+# apps/users/schemas.py
 
 # Бизнес-логика, которая работает через репозиторий.
 

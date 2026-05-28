@@ -56,9 +56,7 @@ class SelectionStatus(str, enum.Enum):
     """
     QUEUE = "queue"  # Задача поставлена, воркер ещё не взял
     PROCESS = "process"  # Подборка создаётся (запросы, PDF)
-    ON_REVIEW = "on_review"  # PDF готов, модератор не проверил
     DONE = "done"  # Прошла модерацию, можно отправлять
-    DEVIATION = "deviation"  # Отклонена модератором
     FAILED = "failed"  # Ошибка создания
 
 

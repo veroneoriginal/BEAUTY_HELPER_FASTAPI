@@ -1,4 +1,4 @@
-# apps/products/services/structure_for_products.py
+# apps/products/schemas/structure_for_products.py
 """
 В этом модуле описаны структуры, необходимые для формирования json-схемы
 и для передачи параметров при создании PDF-файлов.
