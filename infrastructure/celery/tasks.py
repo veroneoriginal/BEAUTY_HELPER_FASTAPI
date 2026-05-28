@@ -9,9 +9,13 @@ from redis import Redis
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
+from apps.balance.models import BalanceOperation, UserBalance  # noqa: F401
 from apps.balance.sync_repository import SyncBalanceRepository
 from apps.balance.sync_services import SyncBalanceService
 from apps.content_generation.openai.task_processing.main import TaskProcessing
+from apps.package.models import Package, UserPackage  # noqa: F401
+from apps.products.models import Product  # noqa: F401
+from apps.users.models import User  # noqa: F401
 from apps.content_generation.openai.utils.utils_errors import (
     OpenAIInsufficientQuotaError,
 )

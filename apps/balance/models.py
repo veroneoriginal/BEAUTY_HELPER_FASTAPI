@@ -47,7 +47,7 @@ class UserBalance(Base):
     )
     user: Mapped["User"] = relationship(
         "User",
-        lazy="joined",
+        lazy="select",
     )
 
     # === Генерации ===
@@ -110,7 +110,7 @@ class BalanceOperation(Base):
     )
     user: Mapped["User"] = relationship(
         "User",
-        lazy="joined",
+        lazy="select",
     )
 
     # === Данные операции ===

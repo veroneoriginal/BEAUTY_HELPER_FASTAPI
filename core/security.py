@@ -173,8 +173,12 @@ async def is_token_blacklisted(
     Проверяет, находится ли токен в blacklist (Redis).
     Вызывается при каждом защищённом запросе.
     """
-    result = await redis_client.get(f"blacklist:{token_type}:{token}")
-    return result is not None
+    try:
+        result = await redis_client.get(f"blacklist:{token_type}:{token}")
+        return result is not None
+    except Exception:
+        logger.warning("Redis недоступен, blacklist-проверка пропущена")
+        return False
 
 
 async def blacklist_token(
@@ -194,11 +198,14 @@ async def blacklist_token(
 
     ttl = payload["exp"] - int(time.time())
     if ttl > 0:
-        await redis_client.setex(
-            f"blacklist:{token_type}:{token}",
-            ttl,
-            "revoked",
-        )
+        try:
+            await redis_client.setex(
+                f"blacklist:{token_type}:{token}",
+                ttl,
+                "revoked",
+            )
+        except Exception:
+            logger.warning("Redis недоступен, токен не добавлен в blacklist")
 
 
 def create_confirmation_token(

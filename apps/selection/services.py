@@ -70,6 +70,13 @@ class SelectionService:
         """Получить все подборки."""
         return await self.repository.get_all()
 
+    async def get_user_selections(
+        self,
+        user_id: int,
+    ) -> list[Selection]:
+        """Получить все подборки пользователя."""
+        return await self.repository.get_by_user_id(user_id)
+
     # === Проверка готовности для пользователя ===
 
     async def get_ready_selection_for_user(

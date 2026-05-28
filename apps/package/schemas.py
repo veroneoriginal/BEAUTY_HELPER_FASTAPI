@@ -34,7 +34,6 @@ class BuyPackageRequest(BaseModel):
     Пользователь выбирает пакет — генерации начисляются на баланс.
     """
 
-    user_id: int
     package_id: int
 
 

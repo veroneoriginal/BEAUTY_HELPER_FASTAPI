@@ -63,6 +63,22 @@ class SelectionRepository(SQLAlchemyRepository[Selection]):
         )
         return result.scalar_one_or_none() is not None
 
+    async def get_by_user_id(
+        self,
+        user_id: int,
+    ) -> list[Selection]:
+        """
+        Получить все подборки пользователя через таблицу selection_users.
+        """
+        result = await self.session.execute(
+            select(Selection)
+            .join(selection_users, Selection.id == selection_users.c.selection_id)
+            .options(joinedload(Selection.product))
+            .where(selection_users.c.user_id == user_id)
+            .order_by(Selection.created_at.desc())
+        )
+        return list(result.scalars().unique().all())
+
     async def add_user(
         self,
         selection: Selection,
