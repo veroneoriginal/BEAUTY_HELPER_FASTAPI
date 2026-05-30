@@ -35,23 +35,11 @@ class PromptConstructor:
         # Определяем функцию для данной задачи
         func_for_work = self.prompts[task]
 
-        temporary_dict = {
+        return {
             "system_prompt": f"{data_decrypted['specialist']}",
             "prompt": f"""{func_for_work(data_decrypted=data_decrypted)}
     Ответ ты должен дать в следующем виде: {data_decrypted["decryption_task"]}""",
         }
-
-        print("Функция create_prompt_without_user_parameters")
-        print(temporary_dict)
-        print()
-
-        return temporary_dict
-
-    #     return {
-    #         'system_prompt': f"{data_decrypted['specialist']}",
-    #         'prompt': f"""{func_for_work(data_decrypted=data_decrypted)}
-    # Ответ ты должен дать в следующем виде: {data_decrypted["decryption_task"]}"""
-    #     }
 
     def products_for_detailed_analysis_composition(
         self,

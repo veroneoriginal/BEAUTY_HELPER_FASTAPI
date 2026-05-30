@@ -6,19 +6,16 @@
 # Связь с пользователями — Many-to-Many через промежуточную таблицу.
 
 import enum
-from datetime import datetime
 
 from sqlalchemy import (
     JSON,
     BigInteger,
     Column,
-    DateTime,
     Enum,
     ForeignKey,
     String,
     Table,
     Text,
-    func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 

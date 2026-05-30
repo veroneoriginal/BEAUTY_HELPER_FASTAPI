@@ -1,5 +1,6 @@
 # infrastructure/s3/service.py
 import aioboto3
+from botocore.config import Config
 
 from core.config import settings
 from infrastructure.s3.decorators import s3_safe_call
@@ -40,7 +41,14 @@ class S3Service:
         """
         content_type = self._get_content_type(extension)
 
-        async with self.session.client("s3", endpoint_url=self.endpoint_url) as s3:
+        async with self.session.client(
+            "s3",
+            endpoint_url=self.endpoint_url,
+            config=Config(
+                request_checksum_calculation="when_required",
+                response_checksum_validation="when_required",
+            ),
+        ) as s3:
             response = await s3.put_object(
                 Bucket=self.bucket_name,
                 Key=object_key,

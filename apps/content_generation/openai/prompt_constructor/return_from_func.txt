@@ -1,0 +1,74 @@
+В этом модуле информация, которая содержится в словарях, которые возвращают некоторые функции данного пакета
+Чтобы понимать суть - что они формируют и что происходит.
+
+Функция decrypting_info_code_detailed_analysis_composition
+Находится в apps/content_generation/openai/prompt_constructor/prompt_processing_data.py
+
+{'specialist': 'Ты высококвалифицированный врач-косметолог.
+Твоя задача подобрать максимально подходящее средство для человека. Данные человека будут даны.',
+'Элементы состава для шага задачи': '11_Trehalose, 12_Glyceryl Stearate, 13_PEG-100 Stearate,
+14_PEG-240/hdi Copolymer Bis-Decyltetradeceth-20 Ether, 15_Sorbitan Stearate, 16_Glyceryl Caprylate,
+17_Polyglyceryl-3 Methylglucose Distearate,
+18_Hydroxyethyl Acrylate/sodium Acryloyldimethyl Taurate Copolymer,
+19_Dimethicone/vinyl Dimethicone Crosspolymer, 20_Sodium Polyacrylate',
+'name': 'FRUDIA Pomegranate Nutri-Moisturizing Cream Mini',
+'article_ga': '9410400008',
+'task_type': <SelectionTaskType.COMPOSITION_ANALYSIS: 'detailed_analysis'>,
+'Номер шага задачи': 2, 'Шаг задачи последний или нет': False,
+'product_type_detailed': 'Питательный крем с гранатом',
+'decryption_task': 'Тебе дано средство и часть элементов его состава.
+Тебе надо разобрать каждый элемент состава средства.
+Внимательно изучаешь и выдаёшь результат в соответствии с json схемой.
+Ответы должны быть понятны человеку без медицинского образования, старайся отвечать понятно,
+без сложных формулировок. Отвечай всегда на русском языке.',
+'ingredients_list':
+['Punica Granatum Fruit Extract (63)', 'Glycerin', 'Butylene Glycol',
+'Caprylic/capric Triglyceride', 'Cyclopentasiloxane', 'Diisostearyl Malate',
+'Pentaerythrityl Tetraethylhexanoate', 'Dimethicone', 'Cyclohexasiloxane',
+'1.2-Hexanediol', 'Trehalose', 'Glyceryl Stearate', 'PEG-100 Stearate',
+'PEG-240/hdi Copolymer Bis-Decyltetradeceth-20 Ether', 'Sorbitan Stearate',
+'Glyceryl Caprylate', 'Polyglyceryl-3 Methylglucose Distearate',
+'Hydroxyethyl Acrylate/sodium Acryloyldimethyl Taurate Copolymer',
+'Dimethicone/vinyl Dimethicone Crosspolymer', 'Sodium Polyacrylate', 'Ethylhexyl Stearate',
+'Coco-Caprylate/caprate', 'Sucrose Cocoate', 'Adenosine', 'Glyceryl Acrylate/acrylic Acid Copolymer',
+'Disodium EDTA', 'Polysorbate 60', 'Sorbitan Isostearate', 'Prunus Armeniaca (apricot) Kernel Oil',
+'Vitis Vinifera (grape) Seed Oil', 'Trideceth-6', 'Citrus Paradisi (grapefruit) Seed Oil',
+'Mangifera Indica (mango) Seed Oil', 'Punica Granatum Seed Oil', 'Solanum Lycopersicum (tomato) Seed Oil',
+'Tocopherol', 'Water', 'Chlorphenesin', 'CI 14700', 'Fragrance']
+}
+
+Функция create_prompt_without_user_parameters
+Находится в apps/content_generation/openai/prompt_constructor/prompt_constructor.py
+{
+'system_prompt':
+'Ты высококвалифицированный врач-косметолог.
+Твоя задача подобрать максимально подходящее средство для человека. Данные человека будут даны.',
+
+'prompt':
+"Информация о средстве:
+Питательный крем с гранатом,\nназвание - FRUDIA Pomegranate Nutri-Moisturizing Cream Mini,
+артикул - 9410400008.\nИнформация о части состава этого средства:
+31_Trideceth-6, 32_Citrus Paradisi (grapefruit) Seed Oil, 33_Mangifera Indica (mango) Seed Oil,
+34_Punica Granatum Seed Oil, 35_Solanum Lycopersicum (tomato) Seed Oil, 36_Tocopherol, 37_Water,
+38_Chlorphenesin, 39_CI 14700, 40_Fragrance.\nУчти всю вышепредставленную информацию и проведи
+анализ каждого элемента состава.\nСохраняй нумерацию элементов.\nСделай вывод по всему средству,
+полагаясь на полный состав продукта: \n['Punica Granatum Fruit Extract (63)', 'Glycerin',
+'Butylene Glycol', 'Caprylic/capric Triglyceride', 'Cyclopentasiloxane', 'Diisostearyl Malate',
+'Pentaerythrityl Tetraethylhexanoate', 'Dimethicone', 'Cyclohexasiloxane', '1.2-Hexanediol',
+'Trehalose', 'Glyceryl Stearate', 'PEG-100 Stearate', 'PEG-240/hdi Copolymer Bis-Decyltetradeceth-20 Ether',
+'Sorbitan Stearate', 'Glyceryl Caprylate', 'Polyglyceryl-3 Methylglucose Distearate',
+'Hydroxyethyl Acrylate/sodium Acryloyldimethyl Taurate Copolymer', 'Dimethicone/vinyl Dimethicone Crosspolymer',
+'Sodium Polyacrylate', 'Ethylhexyl Stearate', 'Coco-Caprylate/caprate', 'Sucrose Cocoate',
+'Adenosine', 'Glyceryl Acrylate/acrylic Acid Copolymer', 'Disodium EDTA', 'Polysorbate 60',
+'Sorbitan Isostearate', 'Prunus Armeniaca (apricot) Kernel Oil', 'Vitis Vinifera (grape) Seed Oil',
+'Trideceth-6', 'Citrus Paradisi (grapefruit) Seed Oil', 'Mangifera Indica (mango) Seed Oil',
+'Punica Granatum Seed Oil', 'Solanum Lycopersicum (tomato) Seed Oil', 'Tocopherol', 'Water',
+'Chlorphenesin', 'CI 14700', 'Fragrance']\n    Ответ ты должен дать в следующем виде: Тебе дано средство
+и часть элементов его состава. Тебе надо разобрать каждый элемент состава средства.
+Внимательно изучаешь и выдаёшь результат в соответствии с json схемой.
+Ответы должны быть понятны человеку без медицинского образования, старайся отвечать понятно,
+без сложных формулировок. Отвечай всегда на русском языке.\n\nТакже добавь итоговый `result` —
+общий вывод по данному средству в целом, основываясь на полный состав продукта, который дан выше.
+Описывать все компоненты состава не нужно, только сделай краткий вывод о качестве этого состава в целом,
+кому может подойти/не подойти средство и т.д."
+}

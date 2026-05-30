@@ -1,6 +1,13 @@
-## Проверяем, что Analysis не работает без авторизации.
+https://goldapple.ru/19000002015-moisture-surge-100h
+https://goldapple.ru/9400200001-bamboo-creme-frappee
+https://goldapple.ru/19000044476-aloe-waterproof-sun-cream-spf-50-pa
+https://goldapple.ru/9410400008-pomegranate-nutri-moisturizing-cream
+
+
+
+## Проверяем, что Selection не работает без авторизации.
 {
-"product_link": "https://goldapple.ru/9400200001-bamboo-creme-frappee",
+"product_link": "https://goldapple.ru/19000044476-aloe-waterproof-sun-cream-spf-50-pa",
 "task_type": "detailed_analysis"
 }
 
@@ -9,12 +16,12 @@
 ## Регистрация пользователя
 {
 "email": "user_number1@example.com",
-"password": "123456n1"
+"password": "12379796n1"
 }
 ### Получаем 201 Response body
 {
 "message": "Пользователь зарегистрирован. Проверьте почту для подтверждения email.",
-"confirmation_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwidHlwZSI6ImVtYWlsX2NvbmZpcm1hdGlvbiIsImV4cCI6MTc4MDA4MjI0Nn0.ABJIqiwSLlssZB1tIO4_61QeDLpcO5G1EEojb-wpZvM"
+"confirmation_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwidHlwZSI6ImVtYWlsX2NvbmZpcm1hdGlvbiIsImV4cCI6MTc4MDI1NzEwMX0.nrlNbdo9T4khHSG39EzKtBAcQlTeRF7KwSTLdmMoozQ"
 }
 
 ## Подтверждение емейл
@@ -27,14 +34,14 @@
 
 ## Вход в акааунт
 {
-"email": "user_number1@example.com",
+"email": "user_number2@example.com",
 "password": "123456n1"
 }
 
 ### Получаем 200 Response body
 {
-"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzc5OTk4NDgxfQ.0Bi7xzUne9IE1Ig9PtS1nWcPm43YKV4yBhZdvScuByI",
-"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgwNjAxNDgxLCJ0eXBlIjoicmVmcmVzaCJ9.s4m1m9y8nwT0qH3qiekGS9aQSGodZyt-lmrfy3csfB0",
+"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgwMTcyNTM5fQ.E0hYpesFGEnr1oa3mzBC3-vqW8Ym3uzjiLMNMQw0YCY",
+"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgwNzc1NTM5LCJ0eXBlIjoicmVmcmVzaCJ9.r3eRxkr88LN_BaQkLweaQHfKVceGs60j2llMblwvOzY",
 "token_type": "bearer"
 }
 
@@ -64,4 +71,12 @@
 "status": "created",
 "message": "Анализируем средство. Мы пришлём PDF когда будет готово.",
 "pdf_url": null
+}
+
+
+### Когда подборка готова
+{
+"status": "done",
+"message": "Эта подборка у Вас уже есть. Отправляем PDF.",
+"pdf_url": "https://s3.ru1.storage.beget.cloud/181028092d1d-beauty-helper-media/pdf/detailed_analysis_9410400008_24115c6c-9bdc-4f59-a711-2a36a3bb06da.pdf"
 }

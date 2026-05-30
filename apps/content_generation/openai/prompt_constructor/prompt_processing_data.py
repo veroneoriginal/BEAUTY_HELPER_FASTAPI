@@ -43,21 +43,20 @@ class PromptProcessingData:
         :return: Словарь с расшифрованными данными по текущей подборке вида
         {
         'article_ga': '19000002015',
+        'name': 'CLINIQUE Moisture Surge 100h',
+        'task_type': SelectionTaskType.COMPOSITION_ANALYSIS,
+        'Номер шага задачи': 1,
+        'Шаг задачи последний или нет': False,
+        'product_type_detailed': 'Интенсивно увлажняющий гель на 100 часов',
         'decryption_task': 'Тебе дано средство и часть элементов его состава. Тебе '
                             'надо разобрать каждый элемент состава средства. '
                             'Внимательно изучаешь и выдаёшь результат в соответствии с '
                             'json схемой. Ответы должны быть понятны человеку без '
                             'медицинского образования, старайся отвечать понятно, без '
                             'сложных формулировок. Отвечай всегда на русском языке.',
-
-        'name': 'CLINIQUE Moisture Surge 100h',
-        'product_type_detailed': 'Интенсивно увлажняющий гель на 100 часов',
         'specialist': 'Ты высококвалифицированный врач. Твоя задача подобрать '
                         'максимально подходящее средство для человека. Данные человека '
                         'будут даны.',
-        'task_type': SelectionTaskType.COMPOSITION_ANALYSIS,
-        'Номер шага задачи': 1,
-        'Шаг задачи последний или нет': False,
         'Элементы состава для шага задачи': '1_Water, 2_Dimethicone, 3_Butylene '
                                             'Glycol, 4_Glycerin, 5_Trisiloxane, '
                                             '6_Trehalose, 7_Sucrose, 8_Ammonium '
@@ -147,8 +146,5 @@ class PromptProcessingData:
         decrypting_data_collection["ingredients_list"] = self.data_collection[
             "ingredients_list"
         ]
-
-        print("Функция decrypting_info_code_detailed_analysis_composition")
-        print(decrypting_data_collection)
 
         return decrypting_data_collection

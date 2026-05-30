@@ -4,6 +4,7 @@ import json
 import logging
 from contextlib import contextmanager
 from dataclasses import asdict
+from datetime import datetime, timezone
 
 from redis import Redis
 from sqlalchemy import select
@@ -13,24 +14,25 @@ from apps.balance.models import BalanceOperation, UserBalance  # noqa: F401
 from apps.balance.sync_repository import SyncBalanceRepository
 from apps.balance.sync_services import SyncBalanceService
 from apps.content_generation.openai.task_processing.main import TaskProcessing
-from apps.package.models import Package, UserPackage  # noqa: F401
-from apps.products.models import Product  # noqa: F401
-from apps.users.models import User  # noqa: F401
 from apps.content_generation.openai.utils.utils_errors import (
     OpenAIInsufficientQuotaError,
 )
 from apps.orchestrator.encoders import CustomJSONEncoder
+from apps.package.models import Package, UserPackage  # noqa: F401
 from apps.pdf_generation.main import generate_selection_pdf
 from apps.pdf_generation.utils import (
     calculate_price_full_request,
     convert_analysis_to_pdf_data,
     convert_json_openai_to_list,
 )
+from apps.products.models import Product  # noqa: F401
 from apps.selection.models import Selection, SelectionStatus, SelectionTaskType
+from apps.users.models import User  # noqa: F401
 from apps.waiting.models import Waiting, WaitingStatus
 from core.config import settings
 from core.database import sync_session
 from infrastructure.celery.app import celery_app
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -62,8 +64,8 @@ def redis_lock(lock_name: str, expire: int = 55):
 
 
 def _get_selection_with_product(
-    session,
-    selection_id: int,
+        session,
+        selection_id: int,
 ) -> Selection | None:
     """
     Получает подборку вместе с продуктом по ID через синхронную сессию.
@@ -158,6 +160,9 @@ def _create_selection_on_task(session, selection: Selection) -> None:
 
     logger.info("[PDF] Generated pdf_url=%s", pdf_url)
 
+    if not pdf_url:
+        raise RuntimeError("PDF не был загружен на S3 — pdf_url пустой")
+
     # 7. Сохраняем ссылку на PDF и меняем статус на DONE
     selection.pdf_url = pdf_url
     selection.selection_status = SelectionStatus.DONE
@@ -203,6 +208,35 @@ def _complete_waitings_for_selection(session, selection: Selection) -> None:
         )
 
 
+def _release_spins_for_selection(session, selection_id: int) -> None:
+    """
+    При финальном фейле задачи снимает резерв крутки
+    для всех пользователей с открытыми ожиданиями.
+    """
+    balance_service = SyncBalanceService(SyncBalanceRepository(session))
+
+    waitings = (
+        session.execute(
+            select(Waiting).where(
+                Waiting.selection_id == selection_id,
+                Waiting.status == WaitingStatus.OPEN,
+            )
+        )
+        .scalars()
+        .all()
+    )
+
+    for waiting in waitings:
+        balance_service.release_spins(user_id=waiting.user_id)
+        waiting.status = WaitingStatus.CLOSED
+        session.flush()
+        logger.info(
+            "[WAITING] Возвращена крутка waiting_id=%s для user_id=%s",
+            waiting.id,
+            waiting.user_id,
+        )
+
+
 @celery_app.task(
     bind=True,
     max_retries=3,
@@ -241,8 +275,11 @@ def run_create_selection_on_task(self, selection_id: int) -> None:
 
         except OpenAIInsufficientQuotaError:
             logger.critical("❌ На балансе OpenAI закончились деньги")
+            session.rollback()
+            selection = _get_selection_with_product(session, selection_id)
             selection.selection_status = SelectionStatus.FAILED
             selection.error_message = "Недостаточно средств на балансе OpenAI"
+            _release_spins_for_selection(session, selection_id)
             session.commit()
 
         except Exception as exc:
@@ -251,9 +288,12 @@ def run_create_selection_on_task(self, selection_id: int) -> None:
                 selection_id,
                 exc,
             )
+            session.rollback()
             if self.request.retries >= self.max_retries:
+                selection = _get_selection_with_product(session, selection_id)
                 selection.selection_status = SelectionStatus.FAILED
                 selection.error_message = str(exc)
+                _release_spins_for_selection(session, selection_id)
             session.commit()
 
             raise self.retry(exc=exc)
@@ -323,14 +363,25 @@ def run_waiting_task() -> None:
                     )
 
                 elif selection.selection_status == SelectionStatus.QUEUE:
+                    age_seconds = (
+                            datetime.now(timezone.utc) - selection.created_at
+                    ).total_seconds()
+
+                    if age_seconds < 60:
+                        logger.info(
+                            "[WAITING_TASK] Подборка id=%s в QUEUE только %s сек — пропускаем",
+                            selection.id,
+                            int(age_seconds),
+                        )
+                        continue
+
                     # Перезапускаем если задача зависла
                     selection.selection_status = SelectionStatus.PROCESS
-                    run_create_selection_on_task.delay(
-                        selection_id=selection.id,
-                    )
+                    run_create_selection_on_task.delay(selection_id=selection.id)
                     logger.info(
-                        "[WAITING_TASK] Перегенерация подборки - id=%s",
+                        "[WAITING_TASK] Перегенерация подборки id=%s (зависла %s сек)",
                         selection.id,
+                        int(age_seconds),
                     )
 
             session.commit()

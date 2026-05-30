@@ -182,7 +182,9 @@ class DetailedAnalysisCompositionPDFTemplateCreator:
         template_data.update(base_product_data)
         template_data.update(elements_data)
         template_data.update(PDF_STRUCTURE["Базовая категория"])
+        template_data["Элементы и стили"] = list(template_data["Элементы и стили"])
         template_data["Элементы и стили"].extend(composition_elements_data_for_template)
+        template_data["Элементы и стили"].extend(self.get_conclusion_page_elements())
 
         return template_data
 
@@ -249,6 +251,23 @@ class DetailedAnalysisCompositionPDFTemplateCreator:
             ),
             f"{element_name}_Опасность элемента": element_danger_text,
         }
+
+    def get_conclusion_page_elements(self) -> list:
+        """
+        Возвращает элементы для отдельной страницы с выводом по средству.
+        """
+        return [
+            ("Spacer", {"width": 1, "height": 30}),
+            (
+                "Paragraph",
+                {"Текст": "<b>Вывод по средству</b>", "Стиль": "ACOP_bold_2"},
+            ),
+            ("Spacer", {"width": 1, "height": 20}),
+            (
+                "Paragraph",
+                {"Ключ в подборке": "Вывод", "Стиль": "ACOP_normal_3"},
+            ),
+        ]
 
     def get_danger_level_smile(
         self,

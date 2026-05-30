@@ -57,7 +57,7 @@ class SelectionItem(BaseModel):
     response_model=AnalysisResponse,
     summary="Анализ косметического средства",
     description="Принимает ссылку на продукт, запускает анализ состава"
-                " через OpenAI и возвращает ссылку на PDF-отчёт.",
+    " через OpenAI и возвращает ссылку на PDF-отчёт.",
 )
 async def analyze_product(
     request: AnalysisRequest,

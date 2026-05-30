@@ -44,8 +44,9 @@ class SelectionRepository(SQLAlchemyRepository[Selection]):
                 Product.link_ga == link_ga,
                 Selection.task_type == task_type,
             )
+            .order_by(Selection.id.desc())
         )
-        return result.scalar_one_or_none()
+        return result.scalars().first()
 
     async def has_user(
         self,

@@ -116,6 +116,10 @@ def calculate_price_full_request(
             assembly_dict[part]["USD"] += Decimal(str(part_data.get("USD", 0)))
             assembly_dict[part]["RUB"] += Decimal(str(part_data.get("RUB", 0)))
 
+    for part in assembly_dict:
+        assembly_dict[part]["USD"] = float(assembly_dict[part]["USD"])
+        assembly_dict[part]["RUB"] = float(assembly_dict[part]["RUB"])
+
     return assembly_dict
 
 

@@ -33,6 +33,11 @@ async def try_reserve_spin_or_return_message(
     """
     reserved = await balance_service.reserve_spins(user_id=user_id)
     if not reserved:
+        logger.warning(
+            "[BALANCE] Недостаточно генераций для user_id=%s. "
+            "Пополните баланс и отправьте запрос заново.",
+            user_id,
+        )
         return (
             False,
             "Недостаточно генераций. Пополните баланс, чтобы продолжить.",
