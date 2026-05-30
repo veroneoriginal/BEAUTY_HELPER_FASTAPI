@@ -14,3 +14,10 @@ class LimiterChooseAccountException(Exception):
     Возникает когда за максимальное количество попыток не удалось найти
     аккаунт с доступными лимитами RPM/TPM/IPM.
     """
+
+
+class LimiterRedisUnavailableException(Exception):
+    """
+    Limiter — Redis недоступен.
+    Возникает когда не удаётся прочитать или записать данные в Redis.
+    """

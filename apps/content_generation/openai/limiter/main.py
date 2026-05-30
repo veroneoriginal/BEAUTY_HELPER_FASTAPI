@@ -4,9 +4,15 @@ import json
 import time as limiter_time
 from typing import Optional
 
+import logging
+
 from apps.content_generation.openai.limiter.limiter_errors import (
     LimiterChooseAccountException,
+    LimiterRedisUnavailableException,
 )
+
+logger = logging.getLogger(__name__)
+
 from apps.content_generation.openai.limiter.utils import (
     calculate_time_to_next_minute,
     creating_dict_with_info_from_query,
@@ -53,15 +59,15 @@ class Limiter:
         :return: словарь с данными из Redis или пустой шаблон если ключ отсутствует
         """
 
-        # Делаем запрос в базу
-        dict_from_redis_with_keytime = self.redis_client.get(key_with_time)
+        try:
+            dict_from_redis_with_keytime = self.redis_client.get(key_with_time)
+        except Exception as exc:
+            logger.error("[LIMITER] Redis недоступен при чтении ключа %s: %s", key_with_time, exc)
+            raise LimiterRedisUnavailableException(f"Redis недоступен: {exc}") from exc
 
-        # если ключ есть - значение ключа в виде байтовой строки
-        # будет обратно преобразовано в словарь
         if dict_from_redis_with_keytime:
             return json.loads(dict_from_redis_with_keytime.decode())
 
-        # если ключ отсутствует, возвращаем пустой словарь
         return self.storing_current_request.copy()
 
     def _saving_to_database(
@@ -77,14 +83,15 @@ class Limiter:
         :return: None
         """
 
-        # Сохранение сгенерированного словаря в Redis
-        self.redis_client.set(
-            key_with_time,
-            # Преобразуем словарь в строку JSON
-            json.dumps(dict_from_redis_with_keytime),
-            # Устанавливаем TimeToLive
-            ex=calculate_time_to_next_minute(),
-        )
+        try:
+            self.redis_client.set(
+                key_with_time,
+                json.dumps(dict_from_redis_with_keytime),
+                ex=calculate_time_to_next_minute(),
+            )
+        except Exception as exc:
+            logger.error("[LIMITER] Redis недоступен при записи ключа %s: %s", key_with_time, exc)
+            raise LimiterRedisUnavailableException(f"Redis недоступен: {exc}") from exc
 
     def _select_account_for_generating(
         self,

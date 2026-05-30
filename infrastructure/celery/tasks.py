@@ -32,7 +32,6 @@ from apps.waiting.models import Waiting, WaitingStatus
 from core.config import settings
 from core.database import sync_session
 from infrastructure.celery.app import celery_app
-from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -64,8 +63,8 @@ def redis_lock(lock_name: str, expire: int = 55):
 
 
 def _get_selection_with_product(
-        session,
-        selection_id: int,
+    session,
+    selection_id: int,
 ) -> Selection | None:
     """
     Получает подборку вместе с продуктом по ID через синхронную сессию.
@@ -364,7 +363,7 @@ def run_waiting_task() -> None:
 
                 elif selection.selection_status == SelectionStatus.QUEUE:
                     age_seconds = (
-                            datetime.now(timezone.utc) - selection.created_at
+                        datetime.now(timezone.utc) - selection.created_at
                     ).total_seconds()
 
                     if age_seconds < 60:

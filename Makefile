@@ -31,3 +31,6 @@ up-db: ## Запустить только PostgreSQL
 
 shell: ## Войти внутрь контейнера backend
 	docker exec -it bh_backend bash
+
+restart-worker: ## Перезапустить Celery worker после изменений кода
+	docker restart bh_celery
