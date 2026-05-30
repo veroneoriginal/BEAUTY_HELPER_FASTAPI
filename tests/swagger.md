@@ -40,8 +40,8 @@ https://goldapple.ru/9410400008-pomegranate-nutri-moisturizing-cream
 
 ### Получаем 200 Response body
 {
-"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgwMTcyNTM5fQ.E0hYpesFGEnr1oa3mzBC3-vqW8Ym3uzjiLMNMQw0YCY",
-"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgwNzc1NTM5LCJ0eXBlIjoicmVmcmVzaCJ9.r3eRxkr88LN_BaQkLweaQHfKVceGs60j2llMblwvOzY",
+"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgwMTc2MjE3fQ.5O6txG1wmcK1QvrbyhmEQfBxSZOvHMECEFJkHbp0Vcs",
+"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgwNzc5MjE3LCJ0eXBlIjoicmVmcmVzaCJ9.Msn0-y3ctSs-p-s4UAa0_N2eaxeN5q0zZLHyT-XFXdM",
 "token_type": "bearer"
 }
 
@@ -80,3 +80,7 @@ https://goldapple.ru/9410400008-pomegranate-nutri-moisturizing-cream
 "message": "Эта подборка у Вас уже есть. Отправляем PDF.",
 "pdf_url": "https://s3.ru1.storage.beget.cloud/181028092d1d-beauty-helper-media/pdf/detailed_analysis_9410400008_24115c6c-9bdc-4f59-a711-2a36a3bb06da.pdf"
 }
+
+## Чтобы продемонстрировать подборку, 
+нужно зайти в настрйоки Beget и сделать весь материал публичным,
+тогда эта ссылка в ответе будет работать
