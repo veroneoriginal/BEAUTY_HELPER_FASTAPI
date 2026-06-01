@@ -33,6 +33,9 @@ class SyncBalanceService:
         if balance is None:
             return False
 
+        if balance.reserved_spins < count:
+            return False
+
         balance.reserved_spins -= count
 
         self.repository.create_operation(
@@ -62,6 +65,9 @@ class SyncBalanceService:
         """
         balance = self.repository.get_locked_by_user_id(user_id)
         if balance is None:
+            return False
+
+        if balance.reserved_spins < count:
             return False
 
         balance.reserved_spins -= count

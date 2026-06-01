@@ -105,7 +105,7 @@ def create_access_token(
         )
 
     # exp — стандартное поле JWT, по нему библиотека проверяет срок
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "type": "access"})
 
     return jwt.encode(
         to_encode,
@@ -177,8 +177,11 @@ async def is_token_blacklisted(
         result = await redis_client.get(f"blacklist:{token_type}:{token}")
         return result is not None
     except Exception:
-        logger.warning("Redis недоступен, blacklist-проверка пропущена")
-        return False
+        logger.error("Redis недоступен, blacklist-проверка невозможна")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Сервис временно недоступен. Попробуйте позже.",
+        )
 
 
 async def blacklist_token(
@@ -258,6 +261,13 @@ async def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Невалидный или просроченный токен.",
+        )
+
+    # Проверяем тип токена — refresh не должен проходить как access
+    if payload.get("type") != "access":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Невалидный тип токена.",
         )
 
     # Получаем user_id из payload

@@ -8,7 +8,7 @@ OPENAI_ACCOUNT_2 = "account_2"
 
 SETTINGS_FOR_OPENAI_RESPONSE = {
     "temperature": 1,
-    "max_tokens": 2048,
+    "max_tokens": 4096,
     "cost": {
         "USD_TO_RUB": 79.89,
         "PRICE_ONE_TOKEN_PROMPT_USD": 0.00000015,

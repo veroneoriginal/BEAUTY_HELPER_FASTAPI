@@ -13,7 +13,7 @@ class Settings(BaseSettings):
 
     # === Приложение ===
     APP_TITLE: str = "Beauty Helper API"
-    DEBUG: bool = True
+    DEBUG: bool = False
 
     # === PostgreSQL ===
     POSTGRES_USER: str
@@ -45,12 +45,12 @@ class Settings(BaseSettings):
         return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/0"
 
     # === RabbitMQ ===
-    RABBITMQ_USER: str = "verone26"
-    RABBITMQ_PASSWORD: str = "verone26"
-    RABBITMQ_URL: str = "amqp://verone26:verone26@localhost:5672//"
+    RABBITMQ_USER: str
+    RABBITMQ_PASSWORD: str
+    RABBITMQ_URL: str
 
     # === JWT ===
-    SECRET_KEY: str = "change-me-in-production"
+    SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7

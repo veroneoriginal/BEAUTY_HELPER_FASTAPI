@@ -150,6 +150,9 @@ class BalanceService:
         if balance is None:
             return False
 
+        if balance.reserved_spins < count:
+            return False
+
         balance.reserved_spins -= count
 
         await self.repository.create_operation(
@@ -179,6 +182,9 @@ class BalanceService:
         """
         balance = await self.repository.get_locked_by_user_id(user_id)
         if balance is None:
+            return False
+
+        if balance.reserved_spins < count:
             return False
 
         balance.reserved_spins -= count

@@ -163,7 +163,7 @@ class DetailedAnalysisCompositionPDFTemplateCreator:
                 price_rub=self.product_data["price_rub"],  # Стоимость (руб.)
             ),
             "Путь к изображению бренд-линии": ORANGE_LIGHT_VERTICAL_BRAND_LINE_PATH,
-            "Вывод": one_product_data["Вывод"],
+            "Вывод": one_product_data.get("Вывод") or "Анализ состава выполнен.",
         }
 
         elements_data = self.get_composition_elements_data(

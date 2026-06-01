@@ -4,8 +4,6 @@
 # логин, обновление токенов.
 # Работает через UserRepository — не знает про SQLAlchemy напрямую.
 
-from datetime import timedelta
-
 from apps.auth.schemas import LoginRequest, RegisterRequest
 from apps.balance.repository import BalanceRepository
 from apps.balance.services import BalanceService
@@ -207,6 +205,9 @@ class AuthService:
 
         if user.is_banned:
             raise UserBannedError("Аккаунт заблокирован")
+
+        # Отзываем старый refresh перед выдачей новой пары
+        await blacklist_token(refresh_token, "refresh")
 
         # Генерация новой пары
         new_access = create_access_token(

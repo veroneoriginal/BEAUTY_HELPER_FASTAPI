@@ -3,6 +3,7 @@
 from decimal import ROUND_UP, Decimal
 from typing import Literal
 
+import openai
 from openai import OpenAI
 from openai.types.chat import (
     ChatCompletion,
@@ -10,6 +11,7 @@ from openai.types.chat import (
 
 from apps.content_generation.openai.utils.utils_errors import (
     OpenAIGenTextContentException,
+    OpenAIInsufficientQuotaError,
 )
 
 
@@ -58,6 +60,10 @@ def generate_text_content_openai(
             tools=tools if tools else None,
         )
 
+    except (openai.AuthenticationError, openai.PermissionDeniedError) as exc:
+        raise OpenAIInsufficientQuotaError(
+            "Недостаточно средств или нет доступа к аккаунту OpenAI"
+        ) from exc
     except Exception as exc:
         raise OpenAIGenTextContentException(
             "Ошибка обработки запроса в OpenAI API"

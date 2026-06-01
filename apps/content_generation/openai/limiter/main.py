@@ -1,10 +1,9 @@
 # apps/content_generation/openai/limiter/main.py
 
 import json
+import logging
 import time as limiter_time
 from typing import Optional
-
-import logging
 
 from apps.content_generation.openai.limiter.limiter_errors import (
     LimiterChooseAccountException,
@@ -62,7 +61,9 @@ class Limiter:
         try:
             dict_from_redis_with_keytime = self.redis_client.get(key_with_time)
         except Exception as exc:
-            logger.error("[LIMITER] Redis недоступен при чтении ключа %s: %s", key_with_time, exc)
+            logger.error(
+                "[LIMITER] Redis недоступен при чтении ключа %s: %s", key_with_time, exc
+            )
             raise LimiterRedisUnavailableException(f"Redis недоступен: {exc}") from exc
 
         if dict_from_redis_with_keytime:
@@ -90,7 +91,9 @@ class Limiter:
                 ex=calculate_time_to_next_minute(),
             )
         except Exception as exc:
-            logger.error("[LIMITER] Redis недоступен при записи ключа %s: %s", key_with_time, exc)
+            logger.error(
+                "[LIMITER] Redis недоступен при записи ключа %s: %s", key_with_time, exc
+            )
             raise LimiterRedisUnavailableException(f"Redis недоступен: {exc}") from exc
 
     def _select_account_for_generating(
@@ -137,82 +140,40 @@ class Limiter:
         # Если ни один аккаунт не подходит
         return None
 
-    def _choose_account(
-        self,
-        query_details: dict,
-        key_with_time: str,
-        dict_from_redis_with_keytime: dict,
-    ) -> str:
-        """
-        Запускает цикл поиска доступного аккаунта с ожиданием между попытками.
-        Максимум 5 попыток, между ними ждёт до следующей минуты.
-
-        :param query_details: словарь с содержимым запроса
-        :param key_with_time: ключ со временем запроса
-        :param dict_from_redis_with_keytime: текущие счётчики из Redis
-        :return: название аккаунта для генерации
-        :raises LimiterChooseAccountException: если аккаунт не найден за 5 попыток
-        """
-
-        # Счетчик попыток
-        retries = 0
-
-        # Общее количество попыток
-        max_retries = 5
-
-        # Формирование словаря с информацией из запроса
-        data_with_info = creating_dict_with_info_from_query(query_details=query_details)
-
-        while retries < max_retries:
-            # Пытаемся выбрать аккаунт
-            selected_account = self._select_account_for_generating(
-                data_with_info=data_with_info,
-                key_with_time=key_with_time,
-                dict_from_redis_with_keytime=dict_from_redis_with_keytime,
-            )
-
-            # Если подходящий аккаунт найден, возвращаем его название
-            if selected_account:
-                return selected_account
-
-            # Если ни один аккаунт не доступен, ждем
-            limiter_time.sleep(calculate_time_to_next_minute())
-            # и увеличиваем счетчик попыток
-            retries += 1
-
-        # Если после использования max_retries не удалось найти подходящий аккаунт
-        raise LimiterChooseAccountException(
-            f"Аккаунт для генерации {query_details['target']} контента не найден"
-        )
-
     def main_get_account_name(
         self,
         query_details: dict,
     ) -> str:
         """
         Главный метод класса.
-        Получает ключ текущей минуты, блокирует Redis,
-        выбирает доступный аккаунт для генерации.
+        Берёт лок только на чтение+запись счётчиков (миллисекунды).
+        Sleep выполняется вне лока — лок не протухает под ожиданием.
 
         :param query_details: словарь с содержимым запроса
         :return: название аккаунта для отправки запроса в OpenAI
+        :raises LimiterChooseAccountException: если аккаунт не найден за 5 попыток
         """
 
-        # Получаем ключ со временем запроса
-        key_with_time = generate_key_with_time()
+        data_with_info = creating_dict_with_info_from_query(query_details=query_details)
 
-        # блокируем процесс
-        lock = self.redis_client.lock(f"{key_with_time}_lock", timeout=10)
+        for _ in range(5):
+            key_with_time = generate_key_with_time()
+            lock = self.redis_client.lock(f"{key_with_time}_lock", timeout=5)
 
-        with lock:
-            # Проверяем есть ли ключ в Redis
-            dict_from_redis_with_keytime = self.checking_key_in_redis(
-                key_with_time=key_with_time
-            )
+            with lock:
+                counters = self.checking_key_in_redis(key_with_time)
+                account = self._select_account_for_generating(
+                    data_with_info=data_with_info,
+                    key_with_time=key_with_time,
+                    dict_from_redis_with_keytime=counters,
+                )
 
-            # Выбор аккаунта, через который дальше будет отправляться запрос
-            return self._choose_account(
-                query_details=query_details,
-                key_with_time=key_with_time,
-                dict_from_redis_with_keytime=dict_from_redis_with_keytime,
-            )
+            if account:
+                return account
+
+            # Sleep вне лока — ждём начала следующей минуты
+            limiter_time.sleep(calculate_time_to_next_minute())
+
+        raise LimiterChooseAccountException(
+            f"Аккаунт для генерации {query_details['target']} контента не найден"
+        )
