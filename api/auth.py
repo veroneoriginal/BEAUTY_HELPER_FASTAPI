@@ -26,6 +26,7 @@ from core.exceptions import (
     TokenRevokedError,
     UserAlreadyExistsError,
     UserBannedError,
+    UserInactiveError,
     UserNotFoundError,
 )
 
@@ -101,7 +102,12 @@ async def login(
     try:
         result = await service.login(data)
         return result
-    except (InvalidCredentialsError, EmailNotConfirmedError, UserBannedError) as e:
+    except (
+        InvalidCredentialsError,
+        EmailNotConfirmedError,
+        UserBannedError,
+        UserInactiveError,
+    ) as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(e),
@@ -127,6 +133,7 @@ async def refresh(
         TokenRevokedError,
         UserNotFoundError,
         UserBannedError,
+        UserInactiveError,
     ) as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -7,6 +7,7 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 
 from redis import Redis
+from redis.exceptions import RedisError
 from sqlalchemy import select, update
 from sqlalchemy.orm import joinedload
 
@@ -42,6 +43,11 @@ redis_client = Redis(
     db=0,
 )
 
+# Сколько секунд подборка может «молчать» в PROCESS (updated_at не меняется),
+# прежде, чем счесть задачу зависшей и перезапустить. Не меньше TTL Redis-lock
+# задачи (selection_lock, expire=600), иначе перезапуск упрётся в живой lock.
+STUCK_PROCESS_SECONDS = 600
+
 
 @contextmanager
 def redis_lock(lock_name: str, expire: int = 55):
@@ -54,12 +60,28 @@ def redis_lock(lock_name: str, expire: int = 55):
     """
 
     # Установка ключа в Redis с условием.
-    lock_acquired = redis_client.set(lock_name, "locked", ex=expire, nx=True)
+    try:
+        lock_acquired = redis_client.set(lock_name, "locked", ex=expire, nx=True)
+    except RedisError as e:
+        logger.error(
+            "[REDIS_LOCK] Redis недоступен при захвате блокировки '%s': %s",
+            lock_name,
+            e,
+        )
+        raise
+
     try:
         yield lock_acquired
     finally:
         if lock_acquired:
-            redis_client.delete(lock_name)
+            try:
+                redis_client.delete(lock_name)
+            except RedisError as e:
+                logger.warning(
+                    "[REDIS_LOCK] Не удалось снять блокировку '%s': %s",
+                    lock_name,
+                    e,
+                )
 
 
 def _get_selection_with_product(
@@ -206,6 +228,13 @@ def _close_waiting_and_act(
 
 
 def _get_open_waitings(session, selection_id: int) -> list:
+    """
+    Возвращает все открытые (OPEN) ожидания по подборке.
+
+    :param session: синхронная сессия SQLAlchemy
+    :param selection_id: ID подборки
+    :return: список объектов Waiting со статусом OPEN
+    """
     return (
         session.execute(
             select(Waiting).where(
@@ -219,12 +248,26 @@ def _get_open_waitings(session, selection_id: int) -> list:
 
 
 def _complete_waitings_for_selection(session, selection: Selection) -> None:
+    """
+    Закрывает все открытые ожидания подборки и списывает крутку каждому
+    пользователю (подборка успешно готова).
+
+    :param session: синхронная сессия SQLAlchemy
+    :param selection: объект подборки
+    """
     balance_service = SyncBalanceService(SyncBalanceRepository(session))
     for waiting in _get_open_waitings(session, selection.id):
         _close_waiting_and_act(session, waiting, balance_service, action="confirm")
 
 
 def _release_spins_for_selection(session, selection_id: int) -> None:
+    """
+    Закрывает все открытые ожидания подборки и возвращает крутку каждому
+    пользователю (подборка завершилась ошибкой).
+
+    :param session: синхронная сессия SQLAlchemy
+    :param selection_id: ID подборки
+    """
     balance_service = SyncBalanceService(SyncBalanceRepository(session))
     for waiting in _get_open_waitings(session, selection_id):
         _close_waiting_and_act(session, waiting, balance_service, action="release")
@@ -372,6 +415,29 @@ def run_waiting_task() -> None:
                     run_create_selection_on_task.delay(selection_id=selection.id)
                     logger.info(
                         "[WAITING_TASK] Перегенерация подборки id=%s (зависла %s сек)",
+                        selection.id,
+                        int(age_seconds),
+                    )
+
+                elif selection.selection_status == SelectionStatus.PROCESS:
+                    # Подборка взята в работу. Если воркер умер, она зависнет
+                    # в PROCESS навсегда (updated_at перестаёт обновляться),
+                    # а её Waiting останется OPEN — крутка заморожена.
+                    # Перезапускаем, когда с последнего изменения прошло больше
+                    # TTL Redis-lock: иначе .delay() упрётся в ещё живой lock и
+                    # просто пропустится. Крутки здесь не трогаем — ими владеет
+                    # сама задача (confirm при DONE / release при FAILED).
+                    age_seconds = (
+                        datetime.now(timezone.utc) - selection.updated_at
+                    ).total_seconds()
+
+                    if age_seconds < STUCK_PROCESS_SECONDS:
+                        continue
+
+                    run_create_selection_on_task.delay(selection_id=selection.id)
+                    logger.warning(
+                        "[WAITING_TASK] Перезапуск зависшей подборки id=%s "
+                        "(в PROCESS без изменений %s сек)",
                         selection.id,
                         int(age_seconds),
                     )

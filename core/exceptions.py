@@ -36,6 +36,12 @@ class UserBannedError(AppError):
     pass
 
 
+class UserInactiveError(AppError):
+    """Аккаунт деактивирован."""
+
+    pass
+
+
 class InvalidTokenError(AppError):
     """Токен невалидный, просроченный или неверного типа."""
 

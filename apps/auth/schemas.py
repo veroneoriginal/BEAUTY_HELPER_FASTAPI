@@ -2,7 +2,28 @@
 
 # Pydantic-схемы определяют формат данных для регистрации, логина и токенов.
 
-from pydantic import BaseModel, EmailStr, Field
+from typing import Annotated
+
+from pydantic import AfterValidator, BaseModel, EmailStr, Field
+
+
+def _max_72_bytes(value: str) -> str:
+    """
+    Проверка пароля в байтах.
+    bcrypt не принимает пароль длиннее 72 байт.
+    (UTF-8): кириллица — 2 байта на символ, эмодзи — до 4.
+    """
+    if len(value.encode("utf-8")) > 72:
+        raise ValueError("Пароль не должен превышать 72 байта")
+    return value
+
+
+# Пароль: 8–128 символов и не больше 72 байт (ограничение bcrypt).
+Password = Annotated[
+    str,
+    Field(min_length=8, max_length=128),
+    AfterValidator(_max_72_bytes),
+]
 
 
 class RegisterRequest(BaseModel):
@@ -12,7 +33,7 @@ class RegisterRequest(BaseModel):
     """
 
     email: EmailStr
-    password: str = Field(min_length=8, max_length=128)
+    password: Password
 
 
 class RegisterResponse(BaseModel):
@@ -43,7 +64,7 @@ class LoginRequest(BaseModel):
     """
 
     email: EmailStr
-    password: str = Field(min_length=8, max_length=128)
+    password: Password
 
 
 class TokenResponse(BaseModel):

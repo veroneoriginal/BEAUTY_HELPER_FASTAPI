@@ -40,7 +40,13 @@ def generate_selection_pdf(
 
     # 2. Идём на S3 и получаем картинку/изображение
     s3 = S3Service()
-    image_in_bytes = asyncio.run(s3.get_file(product_data["image_key"]))["file_bytes"]
+    image_result = asyncio.run(s3.get_file(product_data["image_key"]))
+    if image_result.get("error") or "file_bytes" not in image_result:
+        raise RuntimeError(
+            f"Не удалось скачать изображение из S3 "
+            f"(key={product_data['image_key']}): {image_result.get('error')}"
+        )
+    image_in_bytes = image_result["file_bytes"]
 
     # 3. Генерируем pdf
     pdf_creator = PDFCreator(

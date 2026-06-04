@@ -1,4 +1,4 @@
-# apps/auth/schemas.py
+# apps/auth/services.py
 
 # Содержит бизнес-логику: регистрация, подтверждение email,
 # логин, обновление токенов.
@@ -15,6 +15,7 @@ from core.exceptions import (
     TokenRevokedError,
     UserAlreadyExistsError,
     UserBannedError,
+    UserInactiveError,
     UserNotFoundError,
 )
 from core.security import (
@@ -159,6 +160,9 @@ class AuthService:
         if user.is_banned:
             raise UserBannedError("Аккаунт заблокирован")
 
+        if not user.is_active:
+            raise UserInactiveError("Аккаунт деактивирован")
+
         # Генерируем пару токенов
         access_token = create_access_token(
             data={"sub": str(user.id)},
@@ -205,6 +209,9 @@ class AuthService:
 
         if user.is_banned:
             raise UserBannedError("Аккаунт заблокирован")
+
+        if not user.is_active:
+            raise UserInactiveError("Аккаунт деактивирован")
 
         # Отзываем старый refresh перед выдачей новой пары
         await blacklist_token(refresh_token, "refresh")

@@ -288,4 +288,19 @@ async def get_current_user(
             detail="Пользователь не найден.",
         )
 
+    # Бан проверяется здесь, а не только при логине: иначе забаненный
+    # пользователь с уже выданным access-токеном ходил бы по API до его
+    # истечения.
+    if user.is_banned:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Аккаунт заблокирован.",
+        )
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Аккаунт деактивирован.",
+        )
+
     return user

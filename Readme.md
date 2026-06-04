@@ -134,6 +134,12 @@ spins (доступные)  --reserve-->  reserved_spins (в работе)
 2. Поднять весь стек (Postgres, Redis, RabbitMQ, app, Celery worker и beat):
    `make up`. Остальные цели (логи, пересборка, остановка) — в `Makefile`.
 
+> Запускайте только через `make up` (и другие цели Makefile). Они передают
+> `--env-file .env`, без которого `${POSTGRES_USER}`, `${REDIS_PASSWORD}` и т.д.
+> в `docker/docker-compose.yaml` не подставятся (compose ищет `.env` рядом с
+> compose-файлом, в `docker/` его нет). Прямой запуск тогда требует флага явно:
+> `docker compose -f docker/docker-compose.yaml --env-file .env up`.
+
 При первом старте `app` (см. `docker/entrypoint.sh`):
 прогоняются миграции Alembic, демо-картинки загружаются на S3,
 демо-продукты импортируются в БД.
@@ -159,3 +165,5 @@ spins (доступные)  --reserve-->  reserved_spins (в работе)
 - **Промокоды** — заглушка (на будущее).
 - **Email** не отправляется: токен подтверждения возвращается прямо в ответе регистрации.
 - Из типов задач реализован только подробный анализ состава (`detailed_analysis`).
+- **Нет троттлинга на `/auth/login`** — защита от перебора пароля не реализована.
+  В проде закрывается rate-limit по IP (например, `slowapi` со счётчиком в Redis).

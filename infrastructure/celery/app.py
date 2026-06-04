@@ -1,8 +1,21 @@
 # infrastructure/celery/app.py
 
 from celery import Celery
+from celery.signals import setup_logging
 
 from core.config import settings
+from core.logging import configure_logging
+
+
+@setup_logging.connect
+def _configure_celery_logging(**kwargs):
+    """
+    Перехватываем настройку логов Celery и используем общую конфигурацию,
+    чтобы формат/уровень совпадали с FastAPI. Подключение к этому сигналу
+    отключает собственную настройку логирования Celery.
+    """
+    configure_logging()
+
 
 celery_app = Celery(
     "beauty_helper",

@@ -5,8 +5,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-# Импортируем модели, чтобы SQLAlchemy увидел их при create_all.
-# Без этого Base.metadata будет пустой и таблицы не создадутся.
+# Импортируем модели, чтобы они зарегистрировались в Base.metadata.
 from api.auth import router as auth_router
 from apps.balance.models import BalanceOperation, UserBalance  # noqa: F401
 from apps.balance.routes import router as balance_router
@@ -18,17 +17,18 @@ from apps.products.models import Product  # noqa: F401
 from apps.selection.models import Selection, selection_users  # noqa: F401
 from apps.users.models import User  # noqa: F401
 from apps.waiting.models import Waiting  # noqa: F401
-from core.database import Base, async_session, engine
+from core.database import async_session, engine
+from core.logging import configure_logging
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    При старте — создаёт таблицы в БД (если их нет).
+    При старте — предзаполняет пакеты.
     При остановке — закрывает пул соединений.
+    Схему БД создаёт Alembic (миграции), а не приложение.
     """
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    configure_logging()
 
     # Предзаполнение пакетов (один раз при первом запуске)
     async with async_session() as session:
@@ -36,6 +36,7 @@ async def lifespan(app: FastAPI):
 
     yield
     await engine.dispose()
+    # закрывает пул соединений движка SQLAlchemy и освобождает все открытые сетевые сокеты к PostgreSQL
 
 
 app = FastAPI(
