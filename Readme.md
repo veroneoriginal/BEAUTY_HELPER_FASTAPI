@@ -1,9 +1,9 @@
 # Beauty Helper API
 
-Асинхронное веб-приложение с использованием ИИ.
+Асинхронное веб-приложение с использованием AI.
 
 Пользователь вставляет ссылку на косметическое средство → приложение анализирует
-состав через OpenAI API → возвращает PDF-отчёт с детальным разбором каждого компонента.
+состав через OpenAI API → возвращает PDF-отчёт с детальным разбором каждого компонента и вывод на оснвое анализа.
 
 **Только бэкенд. Демо через Swagger (`/docs`).**
 
@@ -120,7 +120,8 @@ spins (доступные)  --reserve-->  reserved_spins (в работе)
 | GET | `/selection/my` | Список своих подборок | ✅ |
 | GET | `/health` | Healthcheck | — |
 
-Авторизация: заголовок `Authorization: Bearer <access_token>`. В Swagger — кнопка **Authorize**.
+Авторизация: заголовок `Authorization: Bearer <access_token>`. 
+В Swagger — кнопка **Authorize**.
 
 Полный интерактивный список — Swagger UI: `http://localhost:8000/docs`.
 
@@ -128,55 +129,10 @@ spins (доступные)  --reserve-->  reserved_spins (в работе)
 
 ## Запуск
 
-### 1. Переменные окружения
-
-Создайте `.env` в корне проекта (полный список переменных — в `core/config.py`):
-
-```env
-# Приложение
-DEBUG=false
-
-# PostgreSQL
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_HOST=db            # имя сервиса в docker-compose
-POSTGRES_PORT=5432
-POSTGRES_DB=beauty_helper
-
-# Redis
-REDIS_HOST=redis
-REDIS_PORT=6379
-REDIS_PASSWORD=redis_pass
-
-# RabbitMQ
-RABBITMQ_USER=guest
-RABBITMQ_PASSWORD=guest
-RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672//
-
-# JWT
-SECRET_KEY=change-me
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-REFRESH_TOKEN_EXPIRE_DAYS=7
-
-# OpenAI (два аккаунта для ротации ключей)
-OPENAI_API_KEY_ACCOUNT_ONE=sk-...
-OPENAI_API_KEY_ACCOUNT_TWO=sk-...
-
-# S3
-S3_ENDPOINT_URL=https://...
-S3_ACCESS_KEY_ID=...
-S3_SECRET_KEY=...
-S3_BUCKET_NAME=...
-```
-
-### 2. Поднять всё в Docker
-
-```bash
-make up        # сборка и запуск: db, redis, rabbitmq, app, celery worker, celery beat
-make logs      # хвост логов
-make down      # остановить и удалить контейнеры + тома
-```
+1. Скопировать шаблон переменных и подставить свои значения:
+   `cp .env.example .env`
+2. Поднять весь стек (Postgres, Redis, RabbitMQ, app, Celery worker и beat):
+   `make up`. Остальные цели (логи, пересборка, остановка) — в `Makefile`.
 
 При первом старте `app` (см. `docker/entrypoint.sh`):
 прогоняются миграции Alembic, демо-картинки загружаются на S3,
@@ -185,17 +141,6 @@ make down      # остановить и удалить контейнеры + �
 После запуска:
 - Swagger: `http://localhost:8000/docs`
 - RabbitMQ Management: `http://localhost:15672`
-
-> После изменений кода Celery нужно перезапустить: `make restart-worker`.
-
-### Полезные команды
-
-```bash
-make migrate m="описание"   # создать миграцию (нужна запущенная БД: make up-db)
-make lint                   # ruff check .
-make format                 # ruff format .
-make shell                  # bash внутри контейнера app
-```
 
 ---
 

@@ -10,7 +10,7 @@ SETTINGS_FOR_OPENAI_RESPONSE = {
     "temperature": 1,
     "max_tokens": 4096,
     "cost": {
-        "USD_TO_RUB": 79.89,
+        "USD_TO_RUB": settings.OPENAI_USD_TO_RUB,
         "PRICE_ONE_TOKEN_PROMPT_USD": 0.00000015,
         "PRICE_ONE_TOKEN_RESPONSE_USD": 0.000000075,
     },

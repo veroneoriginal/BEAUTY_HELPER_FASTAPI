@@ -58,6 +58,8 @@ class Settings(BaseSettings):
     # === OpenAI ===
     OPENAI_API_KEY_ACCOUNT_ONE: str = ""
     OPENAI_API_KEY_ACCOUNT_TWO: str = ""
+    OPENAI_MODEL: str = "gpt-4o-mini"
+    OPENAI_USD_TO_RUB: float = 79.89
 
     # === S3 ===
     S3_ENDPOINT_URL: str = ""

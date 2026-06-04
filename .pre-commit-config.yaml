@@ -1,0 +1,19 @@
+# Pre-commit хуки для Ruff — чтобы линт/формат не забывались перед коммитом.
+#
+# Разовая установка:
+#   pip install pre-commit
+#   pre-commit install
+# Прогнать вручную по всем файлам:
+#   pre-commit run --all-files
+#
+# Версия Ruff зафиксирована и совпадает с requirements.txt (ruff==0.15.8),
+# чтобы хук и `make lint`/`make format` вели себя одинаково.
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.8
+    hooks:
+      # Линтер с автофиксом (сортировка импортов — см. ruff.toml). Аналог `make lint_fix`.
+      - id: ruff
+        args: [--fix]
+      # Форматтер. Аналог `make format`.
+      - id: ruff-format

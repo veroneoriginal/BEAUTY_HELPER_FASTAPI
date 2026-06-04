@@ -134,8 +134,9 @@ venv.bak/
 # Игнорируем все .env-файлы
 **/.env
 **/.env.*
-# Но оставляем .env.tests
+# Но оставляем .env.tests и шаблон .env.example
 !**/.env.test
+!**/.env.example
 
 # Spyder project settings
 .spyderproject

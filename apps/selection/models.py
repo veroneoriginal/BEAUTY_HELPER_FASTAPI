@@ -80,7 +80,7 @@ class Selection(Base):
     и может быть доступна нескольким пользователям (ManyToMany).
 
     Жизненный цикл:
-    QUEUE → PROCESS → ON_REVIEW → DONE / DEVIATION
+    QUEUE → PROCESS → DONE
                    ↘ FAILED (при ошибке)
     """
 

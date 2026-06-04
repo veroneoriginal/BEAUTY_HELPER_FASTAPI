@@ -1,7 +1,7 @@
 # core/database.py
 # Асинхронное подключение к PostgreSQL через SQLAlchemy 2.0.
 
-from collections.abc import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator
 from datetime import datetime
 
 from sqlalchemy import DateTime, create_engine, func
@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 from core.config import settings
 
@@ -75,20 +75,4 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
             yield session
         except Exception:
             await session.rollback()
-            raise
-
-
-def get_sync_session() -> Generator[Session, None, None]:
-    """
-    Sync dependency для Celery-воркеров.
-    Создаёт синхронную сессию и закрывает после использования.
-
-    Celery-воркер сам вызывает get_sync_session()
-    как контекстный менеджер — открывает сессию, делает работу, закрывает.
-    """
-    with sync_session() as session:
-        try:
-            yield session
-        except Exception:
-            session.rollback()
             raise

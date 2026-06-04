@@ -1,6 +1,6 @@
 # apps/content_generation/openai/tokenizer/main.py
 import json
-from typing import Dict, List, Literal
+from typing import Dict, List
 
 import tiktoken
 
@@ -57,7 +57,7 @@ def checking_type_data_json_scheme(
 
 
 def checking_relevance_model_name(
-    model: Literal["gpt-4o-mini",],
+    model: str,
 ) -> tiktoken.Encoding:
     """
     Подбирает энкодер tiktoken для указанной модели GPT.
@@ -133,7 +133,7 @@ def count_tokens(
 
 def main_count_tokens(
     context: List[Dict[str, str]],
-    model: Literal["gpt-4o-mini",],
+    model: str,
     json_scheme: dict | None,
 ) -> int:
     """

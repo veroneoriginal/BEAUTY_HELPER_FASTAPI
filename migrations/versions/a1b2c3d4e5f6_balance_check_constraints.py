@@ -5,6 +5,7 @@ Revises: 08de60d68ca7
 Create Date: 2026-06-02
 
 """
+
 from alembic import op
 
 revision = "a1b2c3d4e5f6"

@@ -3,7 +3,6 @@ import json
 import traceback
 from typing import (
     Dict,
-    Literal,
     Optional,
 )
 
@@ -188,7 +187,7 @@ class OpenAIClient:
         self,
         api_key: str,
         context: list,
-        model: Literal["gpt-4o-mini"],
+        model: str,
         json_scheme: dict,
     ) -> Dict:
         """

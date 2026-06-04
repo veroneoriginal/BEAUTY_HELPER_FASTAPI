@@ -1,5 +1,7 @@
 # apps/content_generation/openai/task_processing/utils.py
 
+from core.config import settings
+
 
 def formation_context(
     dict_with_prompts: dict,
@@ -47,7 +49,7 @@ def create_request_details(
     """
     return {
         "service": "openai",
-        "model": "gpt-4o-mini",
+        "model": settings.OPENAI_MODEL,
         "target": "text",
         "json_scheme": json_scheme,
         "context": context,

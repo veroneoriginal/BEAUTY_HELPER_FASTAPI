@@ -1,7 +1,6 @@
 # apps/content_generation/openai/utils/utils.py
 
 from decimal import ROUND_UP, Decimal
-from typing import Literal
 
 import openai
 from openai import OpenAI
@@ -19,7 +18,7 @@ def generate_text_content_openai(
     api_key: str,
     context: list,
     settings: dict,
-    model: Literal["gpt-4o-mini", "gpt-3.5-turbo"],
+    model: str,
     json_scheme: dict,
 ) -> ChatCompletion:
     """
