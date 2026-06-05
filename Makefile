@@ -11,6 +11,17 @@ format:
 lint_fix:
 	ruff check --fix .
 
+test: ## Прогнать тесты (локально, в .venv)
+	python -m pytest -q
+
+test-v: ## Прогнать тесты подробно (имя каждого теста)
+	python -m pytest -v
+
+check: ## Проверка перед пушем: линт + формат + тесты (как в CI)
+	ruff check .
+	ruff format --check .
+	python -m pytest -q
+
 up: ## Запустить всё в Docker
 	docker compose -f docker/docker-compose.yaml --env-file .env up -d --build
 
