@@ -101,6 +101,32 @@ class S3Service:
         }
 
     @s3_safe_call
+    async def file_exists(
+        self,
+        object_key: str,
+    ) -> dict:
+        """
+        Проверяет наличие объекта в S3 HEAD-запросом, НЕ скачивая тело файла.
+        Дешевле get_file, когда нужно лишь убедиться, что объект уже загружен.
+
+        :param object_key: Ключ (путь) объекта внутри бакета.
+        :return: Словарь с ключами:
+            - status_code: 200 если объект есть; None если отсутствует/ошибка
+            - etag: идентификатор версии объекта
+            - error: None если успех, иначе строка с описанием ошибки
+        """
+        async with self.session.client("s3", endpoint_url=self.endpoint_url) as s3:
+            response = await s3.head_object(Bucket=self.bucket_name, Key=object_key)
+
+        status_code = response.get("ResponseMetadata", {}).get("HTTPStatusCode", 0)
+
+        return {
+            "status_code": status_code,
+            "etag": response.get("ETag"),
+            "error": None,
+        }
+
+    @s3_safe_call
     async def delete_file(
         self,
         object_key: str,
