@@ -157,6 +157,37 @@ spins (доступные)  --reserve-->  reserved_spins (в работе)
 
 ---
 
+## Тесты
+
+Тесты лежат в `tests/`, зависимости для них — в `requirements-dev.txt`:
+
+```bash
+pip install -r requirements-dev.txt
+make test          # быстрый прогон (pytest -q)
+make test-v        # подробно, с именем каждого теста
+```
+
+- **Unit** (без внешних сервисов): баланс (резерв/списание/возврат), Limiter
+  (выбор аккаунта по лимитам), разбивка состава на шаги по 10, PDF-оркестрация,
+  безопасность (пароли/JWT).
+- **Интеграционные** (маркер `integration`): оркестратор `get_or_prepare_selection`
+  на реальной тестовой БД (`beauty_helper_test`), 4 ветки флоу
+  (done / pending / created / parsing) с моками OpenAI / S3 / Celery. Требуют
+  запущенный PostgreSQL (`make up`); без БД — автоматически пропускаются.
+
+---
+
+## Качество кода и CI
+
+- **Ruff** — линт и формат: `make lint`, `make format` (автофикс — `make lint_fix`).
+- **pre-commit** — хуки ruff / ruff-format:
+  `pip install pre-commit && pre-commit install`.
+- **Перед пушем** — `make check`: линт + формат-чек + тесты (ровно то, что гоняет CI).
+- **CI** (GitHub Actions, `.github/workflows/ci.yml`): на каждый push/PR —
+  `ruff check` + `ruff format --check` + `pytest`.
+
+---
+
 ## Текущие ограничения
 
 - **Парсер** карточек товара — заглушка (`apps/parsers/`). Анализируются только
