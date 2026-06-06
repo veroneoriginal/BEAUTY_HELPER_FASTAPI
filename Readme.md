@@ -1,3 +1,4 @@
+
 # Beauty Helper API
 
 Асинхронное веб-приложение с использованием AI.
@@ -20,7 +21,7 @@
 | Фоновые задачи | Celery + RabbitMQ (брокер) + Celery Beat (периодика) |
 | Кэш / счётчики / локи | Redis |
 | Хранилище файлов | S3 (aioboto3) |
-| ИИ | OpenAI SDK, модель `gpt-4o-mini`, structured output через tool_calls |
+| ИИ | OpenAI SDK, модель `gpt-4o-mini`, ответы в структурированном JSON-формате через механизм tool_calls |
 | PDF | ReportLab |
 | Аутентификация | JWT (PyJWT) + bcrypt |
 | Контейнеризация | Docker + docker-compose |
@@ -65,9 +66,9 @@
     подборки, застрявшие в QUEUE.
 ```
 
-> Примечание: весь пайплайн (OpenAI → PDF → S3) выполняет **одна** Celery-задача
-> `run_create_selection_on_task`, а не цепочка отдельных задач. PDF-этап грузит файл
-> на S3 через `asyncio.run(...)` внутри синхронного воркера.
+Весь пайплайн (OpenAI → PDF → S3) выполняет **одна** Celery-задача
+`run_create_selection_on_task`, а не цепочка отдельных задач. 
+PDF-этап грузит файл на S3 через `asyncio.run(...)` внутри синхронного воркера.
 
 ### Система баланса («крутки»)
 
@@ -86,12 +87,12 @@ spins (доступные)  --reserve-->  reserved_spins (в работе)
 
 ---
 
-## Флоу пользователя
+## Флоу пользователя (последовательность шагов для достижения результата)
 
 1. **Регистрация** → возвращается токен подтверждения email.
 2. **Подтверждение email** по токену.
 3. **Логин** → пара токенов (access + refresh).
-4. **Покупка пакета** → крутки начисляются на баланс (оплата — заглушка).
+4. **Покупка пакета** → крутки начисляются на баланс (реальная оплата — заглушка).
 5. **Отправка ссылки на средство** (`POST /selection/`). Оркестратор выбирает ветку:
    - подборка уже **готова (DONE)** → резерв + списание крутки → отдаём `pdf_url`;
    - подборка **в процессе (QUEUE/PROCESS)** → резерв крутки → добавляем в ожидание;
@@ -104,21 +105,24 @@ spins (доступные)  --reserve-->  reserved_spins (в работе)
 
 ## API-эндпоинты
 
-| Метод | Путь | Назначение | Auth |
-|---|---|---|---|
-| POST | `/auth/register` | Регистрация (возвращает токен подтверждения) | — |
-| GET | `/auth/confirm/{token}` | Подтверждение email | — |
-| POST | `/auth/login` | Логин → access + refresh | — |
-| POST | `/auth/refresh` | Обновление пары токенов | — |
-| POST | `/auth/logout` | Выход (blacklist токенов в Redis) | — |
-| GET | `/packages/` | Витрина пакетов | — |
-| POST | `/packages/buy` | Покупка пакета (начисление круток) | ✅ |
-| GET | `/packages/me/history` | История покупок | ✅ |
-| GET | `/balance/me` | Текущий баланс | ✅ |
-| GET | `/balance/me/operations` | История операций баланса | ✅ |
-| POST | `/selection/` | Анализ средства по ссылке | ✅ |
-| GET | `/selection/my` | Список своих подборок | ✅ |
-| GET | `/health` | Healthcheck | — |
+Колонка «Требует токен» — нужен ли заголовок `Authorization: Bearer <access_token>`
+для вызова. `Нет` — эндпоинт публичный, `Да` — только для авторизованного пользователя.
+
+| Метод | Путь                     | Назначение                                   | Требует токен |
+| ----- | ------------------------ | -------------------------------------------- | ------------- |
+| POST  | `/auth/register`         | Регистрация (возвращает токен подтверждения) | Нет           |
+| GET   | `/auth/confirm/{token}`  | Подтверждение email                          | Нет           |
+| POST  | `/auth/login`            | Логин → access + refresh                     | Нет           |
+| POST  | `/auth/refresh`          | Обновление пары токенов                      | Нет           |
+| POST  | `/auth/logout`           | Выход (blacklist токенов в Redis)            | Нет           |
+| GET   | `/packages/`             | Витрина пакетов                              | Нет           |
+| POST  | `/packages/buy`          | Покупка пакета (начисление круток)           | Да            |
+| GET   | `/packages/me/history`   | История покупок                              | Да            |
+| GET   | `/balance/me`            | Текущий баланс                               | Да            |
+| GET   | `/balance/me/operations` | История операций баланса                     | Да            |
+| POST  | `/selection/`            | Анализ средства по ссылке                    | Да            |
+| GET   | `/selection/my`          | Список своих подборок                        | Да            |
+| GET   | `/health`                | Healthcheck                                  | Нет           |
 
 Авторизация: заголовок `Authorization: Bearer <access_token>`. 
 В Swagger — кнопка **Authorize**.
@@ -133,12 +137,6 @@ spins (доступные)  --reserve-->  reserved_spins (в работе)
    `cp .env.example .env`
 2. Поднять весь стек (Postgres, Redis, RabbitMQ, app, Celery worker и beat):
    `make up`. Остальные цели (логи, пересборка, остановка) — в `Makefile`.
-
-> Запускайте только через `make up` (и другие цели Makefile). Они передают
-> `--env-file .env`, без которого `${POSTGRES_USER}`, `${REDIS_PASSWORD}` и т.д.
-> в `docker/docker-compose.yaml` не подставятся (compose ищет `.env` рядом с
-> compose-файлом, в `docker/` его нет). Прямой запуск тогда требует флага явно:
-> `docker compose -f docker/docker-compose.yaml --env-file .env up`.
 
 При первом старте `app` (см. `docker/entrypoint.sh`):
 прогоняются миграции Alembic, демо-картинки загружаются на S3,
@@ -170,18 +168,19 @@ make test-v        # подробно, с именем каждого теста
 - **Unit** (без внешних сервисов): баланс (резерв/списание/возврат), Limiter
   (выбор аккаунта по лимитам), разбивка состава на шаги по 10, PDF-оркестрация,
   безопасность (пароли/JWT).
-- **Интеграционные** (маркер `integration`): оркестратор `get_or_prepare_selection`
-  на реальной тестовой БД (`beauty_helper_test`), 4 ветки флоу
-  (done / pending / created / parsing) с моками OpenAI / S3 / Celery. Требуют
-  запущенный PostgreSQL (`make up`); без БД — автоматически пропускаются.
+- **Интеграционные** (маркер `integration`): 
+- оркестратор `get_or_prepare_selection` на реальной тестовой БД (`beauty_helper_test`), 
+- 4 ветки флоу (done / pending / created / parsing) с моками OpenAI / S3 / Celery. 
+- Требуют запущенный PostgreSQL (`make up`); без БД — автоматически пропускаются.
 
+## Финальный файл, который получает пользователь 
+- в папке `tests/final_pdf/`
 ---
 
 ## Качество кода и CI
 
 - **Ruff** — линт и формат: `make lint`, `make format` (автофикс — `make lint_fix`).
-- **pre-commit** — хуки ruff / ruff-format:
-  `pip install pre-commit && pre-commit install`.
+- **pre-commit** — хуки ruff / ruff-format: `pip install pre-commit && pre-commit install`.
 - **Перед пушем** — `make check`: линт + формат-чек + тесты (ровно то, что гоняет CI).
 - **CI** (GitHub Actions, `.github/workflows/ci.yml`): на каждый push/PR —
   `ruff check` + `ruff format --check` + `pytest`.
@@ -193,7 +192,6 @@ make test-v        # подробно, с именем каждого теста
 - **Парсер** карточек товара — заглушка (`apps/parsers/`). Анализируются только
   продукты, заранее импортированные в БД.
 - **Оплата** — заглушка: покупка пакета сразу начисляет крутки.
-- **Промокоды** — заглушка (на будущее).
 - **Email** не отправляется: токен подтверждения возвращается прямо в ответе регистрации.
 - Из типов задач реализован только подробный анализ состава (`detailed_analysis`).
 - **Нет троттлинга на `/auth/login`** — защита от перебора пароля не реализована.

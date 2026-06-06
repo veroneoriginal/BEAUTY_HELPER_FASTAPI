@@ -25,7 +25,10 @@ check: ## Проверка перед пушем: линт + формат + те
 up: ## Запустить всё в Docker
 	docker compose -f docker/docker-compose.yaml --env-file .env up -d --build
 
-down: ## Остановить и удалить контейнеры + тома
+down: ## Остановить и удалить контейнеры (ДАННЫЕ БД СОХРАНЯЮТСЯ)
+	docker compose -f docker/docker-compose.yaml --env-file .env down
+
+down-hard: ## Остановить, удалить контейнеры + тома (УДАЛЯЕТ ВСЕ ДАННЫЕ БД, пользователей и т.д.)
 	docker compose -f docker/docker-compose.yaml --env-file .env down -v
 
 logs: ## Хвост логов всех сервисов

@@ -6,7 +6,7 @@
 from datetime import datetime
 from decimal import Decimal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # === Пакеты (витрина) ===
 
@@ -20,7 +20,7 @@ class PackageRead(BaseModel):
     title: str
     description: str | None = None
     spins_count: int
-    price: Decimal
+    price: Decimal = Field(examples=["199.00"])
 
     model_config = {"from_attributes": True}
 

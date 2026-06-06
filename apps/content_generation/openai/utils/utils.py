@@ -43,6 +43,7 @@ def generate_text_content_openai(
                     "type": "function",
                     "function": {
                         "name": json_scheme["name"],
+                        "strict": json_scheme.get("strict", False),
                         "parameters": json_scheme["schema"],
                     },
                 }
