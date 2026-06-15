@@ -126,12 +126,15 @@ async def get_or_prepare_selection(
         SelectionStatus.QUEUE,
         SelectionStatus.PROCESS,
     ):
-        # Проверяем есть ли уже ожидание этого пользователя
-        existing_waiting = await waiting_service.get_open_waiting(
-            user_id=user.id,
+        # Дубликат запроса (пользователь нажал «получить» несколько раз):
+        # если он уже привязан к этой подборке, значит крутка под неё уже
+        # зарезервирована — повторно НЕ резервируем. Проверяем именно привязку,
+        # а не открытое ожидание: ожидание могло уже закрыться завершившимся
+        # прогоном, и тогда повторный резерв осиротел бы навсегда.
+        if await selection_service.is_user_attached(
             selection_id=selection.id,
-        )
-        if existing_waiting:
+            user_id=user.id,
+        ):
             return {
                 "status": "pending",
                 "message": "Подборка уже в работе. Мы пришлём PDF как только будет готово.",

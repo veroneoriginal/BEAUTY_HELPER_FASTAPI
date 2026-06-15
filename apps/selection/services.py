@@ -101,6 +101,21 @@ class SelectionService:
 
         return None
 
+    async def is_user_attached(
+        self,
+        selection_id: int,
+        user_id: int,
+    ) -> bool:
+        """
+        Привязан ли пользователь к подборке.
+
+        Привязка возникает одновременно с резервом крутки и никогда не
+        снимается, поэтому это надёжный признак «крутка под эту подборку
+        пользователем уже забронирована» — защита от повторных резервов
+        при дублирующихся запросах.
+        """
+        return await self.repository.has_user(selection_id, user_id)
+
     # === Привязка пользователя ===
 
     async def add_user_to_selection(

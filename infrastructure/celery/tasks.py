@@ -311,9 +311,12 @@ def run_create_selection_on_task(self, selection_id: int) -> None:
                 )
                 return
 
-            # Меняем статус на PROCESS
+            # Меняем статус на PROCESS и СРАЗУ коммитим, чтобы он стал виден
+            # остальным соединениям. Иначе на всё время генерации (OpenAI + PDF)
+            # подборка для всех остаётся QUEUE — и beat-страховка может счесть её
+            # незапущенной и перезапустить, плодя дубли.
             selection.selection_status = SelectionStatus.PROCESS
-            session.flush()
+            session.commit()
 
             try:
                 _create_selection_on_task(session=session, selection=selection)

@@ -179,6 +179,36 @@ async def test_pending_branch_adds_waiting_and_reserves(db_session):
     assert waiting is not None
 
 
+async def test_pending_branch_duplicate_click_does_not_reserve_twice(db_session):
+    """
+    Регрессия: пользователь нажал «получить» несколько раз по одной подборке.
+    Он уже привязан к ней (крутка под неё уже забронирована), статус PROCESS —
+    повторный запрос НЕ должен резервировать вторую крутку.
+    """
+    user = await _make_user(db_session)
+    await _make_balance(db_session, user.id, spins=2, reserved=1)
+    product = await _make_product(db_session)
+    selection = await _make_selection(db_session, product.id, SelectionStatus.PROCESS)
+    # пользователь уже привязан к подборке (как после первого запроса)
+    await db_session.execute(
+        selection_users.insert().values(selection_id=selection.id, user_id=user.id)
+    )
+    await db_session.flush()
+
+    result = await get_or_prepare_selection(
+        user=user,
+        product_link=product.link_ga,
+        task_type=TASK_TYPE,
+        session=db_session,
+    )
+
+    assert result["status"] == "pending"
+
+    # баланс не изменился — вторая крутка не зарезервирована
+    balance = await BalanceRepository(db_session).get_by_user_id(user.id)
+    assert (balance.spins, balance.reserved_spins) == (2, 1)
+
+
 # === Ветка done ===
 
 
