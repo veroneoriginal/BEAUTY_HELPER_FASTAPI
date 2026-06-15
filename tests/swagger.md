@@ -1,7 +1,7 @@
 # Swagger
 http://localhost:8000/docs
 
-Генерит первый пользователь с нуля https://goldapple.ru/19000002015-moisture-surge-100h
+Генерит первый пользователь с нуля https://goldapple.ru/19000044476-aloe-waterproof-sun-cream-spf-50-pa
 
 А второй отправляем ссылку на это же средство и ему возвращается готовый результат
 
@@ -9,6 +9,7 @@ http://localhost:8000/docs
 https://goldapple.ru/9400200001-bamboo-creme-frappee
 https://goldapple.ru/19000044476-aloe-waterproof-sun-cream-spf-50-pa
 https://goldapple.ru/9410400008-pomegranate-nutri-moisturizing-cream
+https://goldapple.ru/19000002015-moisture-surge-100h
 
 
 
@@ -29,7 +30,7 @@ https://goldapple.ru/9410400008-pomegranate-nutri-moisturizing-cream
 ### Получаем 201 Response body
 {
 "message": "Пользователь зарегистрирован. Проверьте почту для подтверждения email.",
-"confirmation_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwidHlwZSI6ImVtYWlsX2NvbmZpcm1hdGlvbiIsImV4cCI6MTc4MTYyMTAxOX0.cMEa67lJAk_NrUOY0fgsiBeNqa0-qJo0pDLFR29mtIE"
+"confirmation_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwidHlwZSI6ImVtYWlsX2NvbmZpcm1hdGlvbiIsImV4cCI6MTc4MTYzNjExMH0.WzdBIAKufMj0mDUH-8ngHi8gRI7fcYMYr29D1zMIAnk"
 }
 
 ## Подтверждение емейл
@@ -48,8 +49,8 @@ https://goldapple.ru/9410400008-pomegranate-nutri-moisturizing-cream
 
 ### Получаем 200 Response body
 {
-"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgxNTM2NDYwLCJ0eXBlIjoiYWNjZXNzIn0.6UUL8YXQRJAS3ce7bmc6p7dUxkGXrmnnif4FntVPhpM",
-"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgyMTM5NDYwLCJ0eXBlIjoicmVmcmVzaCJ9.RmqsUqvti3ND4kEG4l3CEvktjfsCu9ffNJD3i-sTdh8",
+"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgxNTUxNTQzLCJ0eXBlIjoiYWNjZXNzIn0.t4h3JdQfcq97N40xEoN-1SHgbnbS2sY_wv4ue3Z1gZo",
+"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgyMTU0NTQzLCJ0eXBlIjoicmVmcmVzaCJ9.53Ya1QiolKNZN0-h-cLYKN0oSb214XXmKijgcnCOjjU",
 "token_type": "bearer"
 }
 
