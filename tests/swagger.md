@@ -29,7 +29,7 @@ https://goldapple.ru/9410400008-pomegranate-nutri-moisturizing-cream
 ### Получаем 201 Response body
 {
 "message": "Пользователь зарегистрирован. Проверьте почту для подтверждения email.",
-"confirmation_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwidHlwZSI6ImVtYWlsX2NvbmZpcm1hdGlvbiIsImV4cCI6MTc4MTYxMTgwMn0.d9ln7SgxR-WjJldY-wsKGWCYak2XwPdJWFwupxqE2Lg"
+"confirmation_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwidHlwZSI6ImVtYWlsX2NvbmZpcm1hdGlvbiIsImV4cCI6MTc4MTYyMTAxOX0.cMEa67lJAk_NrUOY0fgsiBeNqa0-qJo0pDLFR29mtIE"
 }
 
 ## Подтверждение емейл
@@ -48,8 +48,8 @@ https://goldapple.ru/9410400008-pomegranate-nutri-moisturizing-cream
 
 ### Получаем 200 Response body
 {
-"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgxNTI3MjU2LCJ0eXBlIjoiYWNjZXNzIn0.FRWhmOSIXDt_M3S632HyDfg5ZGH_vj-wi9RPmvqVD00",
-"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgyMTMwMjU2LCJ0eXBlIjoicmVmcmVzaCJ9.ljdoIrfaDasZIaGCBxM90xEk2NyOGMYYfvjtzf67q0c",
+"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgxNTM2NDYwLCJ0eXBlIjoiYWNjZXNzIn0.6UUL8YXQRJAS3ce7bmc6p7dUxkGXrmnnif4FntVPhpM",
+"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgyMTM5NDYwLCJ0eXBlIjoicmVmcmVzaCJ9.RmqsUqvti3ND4kEG4l3CEvktjfsCu9ffNJD3i-sTdh8",
 "token_type": "bearer"
 }
 
