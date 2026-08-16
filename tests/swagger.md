@@ -49,8 +49,8 @@ https://goldapple.ru/19000002015-moisture-surge-100h
 
 ### Получаем 200 Response body
 {
-"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgxNTUxNTQzLCJ0eXBlIjoiYWNjZXNzIn0.t4h3JdQfcq97N40xEoN-1SHgbnbS2sY_wv4ue3Z1gZo",
-"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgyMTU0NTQzLCJ0eXBlIjoicmVmcmVzaCJ9.53Ya1QiolKNZN0-h-cLYKN0oSb214XXmKijgcnCOjjU",
+"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgxNjEyNTk2LCJ0eXBlIjoiYWNjZXNzIn0.jKO6WeO7co4XnuW1_461BuXRGyRn7k5KefukNN_d46w",
+"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgyMjE1NTk2LCJ0eXBlIjoicmVmcmVzaCJ9.yr6zadZJboCUul8HbE0AhowK8kJCsQZAnEmRZ1tmQjA",
 "token_type": "bearer"
 }
 
