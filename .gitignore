@@ -1,5 +1,9 @@
 help_files/
 presentation/
+.claude
+graphify-out/
+CLAUDE_for_Graph.md
+selection_task_type_trace.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
