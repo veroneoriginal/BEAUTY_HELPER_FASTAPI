@@ -74,4 +74,3 @@ class ParsedProduct:
             for f in fields(self)
             if not is_empty(getattr(self, f.name))
         }
-

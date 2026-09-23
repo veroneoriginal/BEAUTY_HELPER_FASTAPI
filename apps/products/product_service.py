@@ -31,8 +31,8 @@ class ProductService:
         self.repository = repository
 
     async def create_product(
-            self,
-            link_ga: str,
+        self,
+        link_ga: str,
     ) -> Product:
         """
         Создание продукта по ссылке.
@@ -62,9 +62,9 @@ class ProductService:
         return await self.repository.get_all()
 
     async def update_product(
-            self,
-            product_id: int,
-            data: dict,
+        self,
+        product_id: int,
+        data: dict,
     ) -> Product | None:
         """
         Обновить данные продукта.
