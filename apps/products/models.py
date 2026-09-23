@@ -30,7 +30,8 @@ class ProductFillStatus(str, enum.Enum):
 
     EMPTY = "empty"  # Не заполнено
     IN_PROGRESS = "in_progress"  # В процессе
-    DONE = "done"  # Заполнено
+    DONE = "done"  # Критичные поля есть (некритичные могут быть пустыми)
+    INCOMPLETE = "incomplete"  # Отсутствует критичное поле, нужна ручная доставка
     FAILED = "failed"  # Ошибка
 
 
@@ -59,26 +60,26 @@ class Product(Base):
         nullable=False,
         comment="Уникальная ссылка на карточку товара в Золотом Яблоке",
     )
-    name: Mapped[str] = mapped_column(
+    name: Mapped[str | None] = mapped_column(
         String(255),
-        nullable=False,
+        nullable=True,
         comment="Название продукта",
     )
-    article_ga: Mapped[str] = mapped_column(
+    article_ga: Mapped[str | None] = mapped_column(
         String(100),
-        nullable=False,
+        nullable=True,
         comment="Артикул в Золотом Яблоке",
     )
 
     # === Классификация ===
-    product_type: Mapped[str] = mapped_column(
+    product_type: Mapped[str | None] = mapped_column(
         String(255),
-        nullable=False,
+        nullable=True,
         comment="Тип продукта (сокращённо)",
     )
-    product_type_detailed: Mapped[str] = mapped_column(
+    product_type_detailed: Mapped[str | None] = mapped_column(
         String(255),
-        nullable=False,
+        nullable=True,
         comment="Тип продукта подробно",
     )
     purpose: Mapped[str | None] = mapped_column(
@@ -125,9 +126,9 @@ class Product(Base):
     )
 
     # === Мера и цена ===
-    measure_type: Mapped[str] = mapped_column(
+    measure_type: Mapped[str | None] = mapped_column(
         String(20),
-        nullable=False,
+        nullable=True,
         comment="Мера (объём или количество)",
     )
     measure_value: Mapped[Decimal | None] = mapped_column(
@@ -135,14 +136,14 @@ class Product(Base):
         nullable=True,
         comment="Количество меры",
     )
-    measure_unit: Mapped[str] = mapped_column(
+    measure_unit: Mapped[str | None] = mapped_column(
         String(20),
-        nullable=False,
+        nullable=True,
         comment="Юниты меры (мл или шт)",
     )
-    price_rub: Mapped[Decimal] = mapped_column(
+    price_rub: Mapped[Decimal | None] = mapped_column(
         Numeric(precision=10, scale=2),
-        nullable=False,
+        nullable=True,
         comment="Стоимость (руб)",
     )
 
@@ -159,9 +160,9 @@ class Product(Base):
     )
 
     # === Бренд ===
-    brand: Mapped[str] = mapped_column(
+    brand: Mapped[str | None] = mapped_column(
         String(255),
-        nullable=False,
+        nullable=True,
         comment="Бренд",
     )
     brand_country: Mapped[str | None] = mapped_column(
@@ -203,6 +204,11 @@ class Product(Base):
         default=ProductFillStatus.EMPTY,
         nullable=False,
         comment="Статус заполнения данных",
+    )
+    last_error: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+        comment="Причина последнего падения парсинга",
     )
 
     def get_data_about_product(self) -> ProductData:

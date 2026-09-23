@@ -4,6 +4,7 @@ presentation/
 graphify-out/
 CLAUDE_for_Graph.md
 selection_task_type_trace.md
+apps/parser/for_claude
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
