@@ -22,8 +22,8 @@ DEFAULT_TIMEOUT = 10.0
 
 
 async def is_alive(
-        proxy: Proxy,
-        timeout: float = DEFAULT_TIMEOUT,
+    proxy: Proxy,
+    timeout: float = DEFAULT_TIMEOUT,
 ) -> bool:
     """
     Один прокси: True, если через него пришёл нормальный ответ.
