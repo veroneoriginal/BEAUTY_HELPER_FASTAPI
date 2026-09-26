@@ -39,3 +39,4 @@ playwright==1.63.0
 beautifulsoup4==4.15.0
 
 botocore
+socksio
