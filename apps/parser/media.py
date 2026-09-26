@@ -47,15 +47,15 @@ class ImageStorage(Protocol):
     """
 
     async def file_exists(
-            self,
-            object_key: str,
+        self,
+        object_key: str,
     ) -> dict: ...
 
     async def upload_file(
-            self,
-            file_data: bytes,
-            object_key: str,
-            extension: str,
+        self,
+        file_data: bytes,
+        object_key: str,
+        extension: str,
     ) -> dict: ...
 
 
@@ -65,9 +65,9 @@ class ImageUploader:
     """
 
     def __init__(
-            self,
-            storage: ImageStorage,
-            timeout: float = DEFAULT_TIMEOUT,
+        self,
+        storage: ImageStorage,
+        timeout: float = DEFAULT_TIMEOUT,
     ):
         """
         :param storage: хранилище (S3Service), передаётся снаружи
@@ -77,10 +77,10 @@ class ImageUploader:
         self.timeout = timeout
 
     async def upload(
-            self,
-            image_link: str | None,
-            article: str | None,
-            proxy: Proxy | None = None,
+        self,
+        image_link: str | None,
+        article: str | None,
+        proxy: Proxy | None = None,
     ) -> str | None:
         """
         Картинка по ссылке → ключ в хранилище. Не получилось → None.
@@ -110,9 +110,9 @@ class ImageUploader:
         return image_key
 
     async def download(
-            self,
-            image_link: str,
-            proxy: Proxy | None = None,
+        self,
+        image_link: str,
+        proxy: Proxy | None = None,
     ) -> bytes | None:
         """
         Скачивает картинку. Не картинка, ошибка сети, плохой статус → None.
@@ -123,10 +123,10 @@ class ImageUploader:
         proxy_server = proxy.server if proxy else None
         try:
             async with httpx.AsyncClient(
-                    proxy=proxy_server,
-                    timeout=self.timeout,
-                    headers={"User-Agent": USER_AGENT},
-                    follow_redirects=True,
+                proxy=proxy_server,
+                timeout=self.timeout,
+                headers={"User-Agent": USER_AGENT},
+                follow_redirects=True,
             ) as client:
                 response = await client.get(image_link)
                 response.raise_for_status()
