@@ -19,7 +19,7 @@ load_dotenv()
 from openpyxl import load_workbook
 from openpyxl.cell.cell import Cell
 
-from infrastructure.s3.service import S3Service
+from infrastructure.s3.service import S3Service, s3_service
 
 # Путь до Excel
 EXCEL_PATH = Path("table/Таблица средств.xlsx")
@@ -102,8 +102,6 @@ async def upload_images_from_excel_to_s3() -> None:
     Автоматическая загрузка изображений, указанных в Excel-файле,
     в облачное хранилище S3.
     """
-    s3 = S3Service()
-
     wb = load_workbook(EXCEL_PATH)
     ws = wb[SHEET_NAME]
 
@@ -119,7 +117,7 @@ async def upload_images_from_excel_to_s3() -> None:
             row_index=row_index,
             image_col_idx=image_col_idx,
             s3_key_col_idx=s3_key_col_idx,
-            s3=s3,
+            s3=s3_service,
         )
         changed = changed or row_changed
 

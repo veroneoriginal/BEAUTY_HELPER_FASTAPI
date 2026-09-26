@@ -12,6 +12,11 @@ S3_RETRYABLE = (EndpointConnectionError, ClientError, BotoCoreError)
 S3_MAX_ATTEMPTS = 3
 S3_BACKOFF_BASE = 0.5  # секунды; задержка растёт экспоненциально: 0.5, 1.0, ...
 
+# ClientError с такими статусами — временный сбой на стороне S3, повторяем.
+# Остальные 4xx (404 — файла нет, 403 — нет доступа) — это ответ S3:
+# повтор даст то же самое, поэтому сразу возвращаем статус.
+S3_RETRYABLE_STATUSES = (429, 500, 502, 503, 504)
+
 
 def s3_safe_call(func):
     """
@@ -19,6 +24,8 @@ def s3_safe_call(func):
 
     - Повторяет вызов при транзиентных ошибках S3 (до S3_MAX_ATTEMPTS раз)
       с экспоненциальным бэкоффом, логируя каждую неудачную попытку.
+    - Ответ S3 вида 404/403 не повторяет: сразу возвращает словарь
+      с этим status_code и error — «файла нет» отличается от «S3 недоступен».
     - Если все попытки исчерпаны или ошибка неизвестна — возвращает
       стандартный словарь с error вместо выброса исключения.
 
@@ -35,6 +42,17 @@ def s3_safe_call(func):
             try:
                 return await func(*args, **kwargs)
             except S3_RETRYABLE as e:
+                if isinstance(e, ClientError):
+                    status_code = e.response.get("ResponseMetadata", {}).get(
+                        "HTTPStatusCode"
+                    )
+                    if status_code not in S3_RETRYABLE_STATUSES:
+                        # S3 ответил осмысленно (например, 404) — не повторяем
+                        return {
+                            "status_code": status_code,
+                            "etag": None,
+                            "error": str(e),
+                        }
                 last_exc = e
                 if attempt < S3_MAX_ATTEMPTS:
                     delay = S3_BACKOFF_BASE * (2 ** (attempt - 1))

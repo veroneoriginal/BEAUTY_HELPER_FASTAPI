@@ -1,7 +1,7 @@
-# apps/pdf_generation/debug_data/analys_translate_to_russian.py
+# apps/pdf_generation/debug_data/analysis_translate_to_russian.py
 # pylint: skip-file
 # Переводим словарь с английскими ключами на русский язык
-analys_translate_to_russian = {
+analysis_translate_to_russian = {
     "Исходное средство": {
         "Название средства": "CLINIQUE Moisture Surge 100h",
         "Артикул в Золотом Яблоке": "19000002015",

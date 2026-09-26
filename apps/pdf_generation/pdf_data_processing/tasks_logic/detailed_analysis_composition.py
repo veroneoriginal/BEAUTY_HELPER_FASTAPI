@@ -123,15 +123,15 @@ class DetailedAnalysisCompositionPDFTemplateCreator:
     def __init__(
         self,
         product_data: dict,
-        translated_analys: list | dict,
+        translated_analysis: list | dict,
     ):
         """
         :param product_data: DTO - продукта, преобразованный в словарь
-        :param translated_analys: информация от OpenAI о подборке в виде
+        :param translated_analysis: информация от OpenAI о подборке в виде
         списка словарей, переведенная на русский язык
         """
         self.product_data = product_data
-        self.translated_analys = translated_analys
+        self.translated_analysis = translated_analysis
         self.pdf_docs_data = []
 
     def get_data_for_pdf_docs(self) -> list:
@@ -140,7 +140,7 @@ class DetailedAnalysisCompositionPDFTemplateCreator:
         :return: Возвращает список с данными для создания документов
         """
 
-        template = self.get_base_template(one_product_data=self.translated_analys)
+        template = self.get_base_template(one_product_data=self.translated_analysis)
         self.pdf_docs_data.append(template)
 
         return self.pdf_docs_data

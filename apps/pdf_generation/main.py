@@ -10,12 +10,12 @@ from apps.pdf_generation.pdf_data_processing.main import (
 )
 from apps.pdf_generation.utils import create_object_key
 from apps.selection.models import SelectionTaskType
-from infrastructure.s3.service import S3Service
+from infrastructure.s3.service import s3_service
 
 
 def generate_selection_pdf(
     product_data: dict,
-    analys: dict,
+    analysis: dict,
     task_type: SelectionTaskType,
 ) -> str | None:
     """
@@ -23,24 +23,23 @@ def generate_selection_pdf(
     Результат выполнения - ссылка на готовую PDF.
 
     :param product_data: DTO-продукта, преобразованный в словарь
-    :param analys: информация от OpenAI о подборке
+    :param analysis: информация от OpenAI о подборке
     :param task_type: тип задачи, по которой создается подборка
     :return: ссылка на готовую PDF
     """
 
-    # 1. Берем задачу, данные о средстве product_data и analys продукта
+    # 1. Берем задачу, данные о средстве product_data и analysis продукта
     # и готовим данные для передачи в PDFCreator
     pdf_data_processor = PDFDataProcessor(
         task_type=task_type,
-        analys=analys,
+        analysis=analysis,
         product_data=product_data,
     )
     result = pdf_data_processor.process_data_with_task_code()
     # apps/pdf_generation/debug_data/pdf_docs_data.py
 
     # 2. Идём на S3 и получаем картинку/изображение
-    s3 = S3Service()
-    image_result = asyncio.run(s3.get_file(product_data["image_key"]))
+    image_result = asyncio.run(s3_service.get_file(product_data["image_key"]))
     if image_result.get("error") or "file_bytes" not in image_result:
         raise RuntimeError(
             f"Не удалось скачать изображение из S3 "
@@ -65,7 +64,7 @@ def generate_selection_pdf(
 
     # 5. Созданную PDF в виде bytes загружаем на S3.
     upload_pdf = asyncio.run(
-        s3.upload_file(
+        s3_service.upload_file(
             file_data=bytes_pdf,
             object_key=s3_key,
             extension="pdf",
@@ -74,6 +73,6 @@ def generate_selection_pdf(
 
     if upload_pdf["status_code"] == 200:
         # Генерируем ссылку на файл
-        return f"{s3.endpoint_url}/{s3.bucket_name}/{s3_key}"
+        return f"{s3_service.endpoint_url}/{s3_service.bucket_name}/{s3_key}"
 
     return None

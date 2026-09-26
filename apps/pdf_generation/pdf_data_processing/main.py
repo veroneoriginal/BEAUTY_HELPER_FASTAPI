@@ -19,16 +19,16 @@ class PDFDataProcessor:
     def __init__(
         self,
         product_data: dict,
-        analys: dict,
+        analysis: dict,
         task_type: SelectionTaskType,
     ) -> None:
         """
         :param product_data: DTO-продукта, преобразованный в словарь
-        :param analys: информация от OpenAI о подборке
+        :param analysis: информация от OpenAI о подборке
         :param task_type: тип задачи, по которой создается подборка
         """
         self.product_data = product_data
-        self.analys = analys
+        self.analysis = analysis
         self.task_type = task_type
 
         self.method_for_task_code = {
@@ -52,12 +52,12 @@ class PDFDataProcessor:
         """
 
         # Переводим словарь с английскими ключами на русский язык
-        analys_translate_to_russian = translate_keys_to_rus(self.analys)
+        analysis_translate_to_russian = translate_keys_to_rus(self.analysis)
 
         # готовим данные для PDF-документа по этой конкретной задаче
         detailed_analysis_pdf = DetailedAnalysisCompositionPDFTemplateCreator(
             product_data=self.product_data,
-            translated_analys=analys_translate_to_russian,
+            translated_analysis=analysis_translate_to_russian,
         )
 
         return detailed_analysis_pdf.get_data_for_pdf_docs()

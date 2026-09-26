@@ -12,7 +12,7 @@ from apps.pdf_generation import main as pdf_main
 from apps.selection.models import SelectionTaskType
 
 PRODUCT_DATA = {"image_key": "images/x.jpg", "article_ga": "A123"}
-ANALYS = {}
+ANALYSIS = {}
 
 
 @contextlib.contextmanager
@@ -22,11 +22,10 @@ def patched_pdf(get_file_ret, upload_ret):
         patch.object(pdf_main, "PDFDataProcessor") as pdp,
         patch.object(pdf_main, "PDFCreator") as creator,
         patch.object(pdf_main, "create_object_key", return_value="pdf/xyz.pdf"),
-        patch.object(pdf_main, "S3Service") as s3cls,
+        patch.object(pdf_main, "s3_service") as s3,
     ):
         pdp.return_value.process_data_with_task_code.return_value = []
         creator.return_value.create_pdf.return_value = b"%PDF-1.4 fake"
-        s3 = s3cls.return_value
         s3.endpoint_url = "http://s3"
         s3.bucket_name = "bucket"
         s3.get_file = AsyncMock(return_value=get_file_ret)
@@ -42,7 +41,7 @@ def test_returns_url_on_successful_upload():
     ):
         url = pdf_main.generate_selection_pdf(
             product_data=PRODUCT_DATA,
-            analys=ANALYS,
+            analysis=ANALYSIS,
             task_type=SelectionTaskType.COMPOSITION_ANALYSIS,
         )
     assert url == "http://s3/bucket/pdf/xyz.pdf"
@@ -56,7 +55,7 @@ def test_returns_none_when_upload_fails():
     ):
         url = pdf_main.generate_selection_pdf(
             product_data=PRODUCT_DATA,
-            analys=ANALYS,
+            analysis=ANALYSIS,
             task_type=SelectionTaskType.COMPOSITION_ANALYSIS,
         )
     assert url is None
@@ -71,6 +70,6 @@ def test_raises_when_image_download_fails():
         with pytest.raises(RuntimeError):
             pdf_main.generate_selection_pdf(
                 product_data=PRODUCT_DATA,
-                analys=ANALYS,
+                analysis=ANALYSIS,
                 task_type=SelectionTaskType.COMPOSITION_ANALYSIS,
             )

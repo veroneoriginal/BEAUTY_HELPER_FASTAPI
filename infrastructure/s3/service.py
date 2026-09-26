@@ -35,7 +35,7 @@ class S3Service:
         :param object_key: Ключ файла внутри бакета, например: "pdfs/analysis_uuid.pdf"
         :param extension: Расширение файла без точки, например: "pdf"
         :return: Словарь с ключами:
-            - status_code: HTTP-статус ответа от S3
+            - status_code: HTTP-статус ответа от S3 (в т.ч. 404, 403); None если S3 недоступен
             - etag: идентификатор версии объекта
             - error: None если успех, иначе строка с описанием ошибки
         """
@@ -82,7 +82,7 @@ class S3Service:
 
         :param object_key: Ключ (путь) объекта внутри бакета, например: "pdfs/analysis_uuid.pdf"
         :return: Словарь с ключами:
-            - status_code: HTTP-статус ответа от S3
+            - status_code: HTTP-статус ответа от S3 (в т.ч. 404, 403); None если S3 недоступен
             - etag: идентификатор версии объекта
             - error: None если успех, иначе строка с описанием ошибки
             - file_bytes: содержимое файла в виде bytes
@@ -111,7 +111,7 @@ class S3Service:
 
         :param object_key: Ключ (путь) объекта внутри бакета.
         :return: Словарь с ключами:
-            - status_code: 200 если объект есть; None если отсутствует/ошибка
+            - status_code: 200 если объект есть; 404 если нет; None если S3 недоступен
             - etag: идентификатор версии объекта
             - error: None если успех, иначе строка с описанием ошибки
         """
@@ -136,7 +136,7 @@ class S3Service:
 
         :param object_key: Ключ (путь) объекта внутри бакета, например: "pdfs/analysis_uuid.pdf"
         :return: Словарь с ключами:
-            - status_code: HTTP-статус ответа от S3
+            - status_code: HTTP-статус ответа от S3 (в т.ч. 404, 403); None если S3 недоступен
             - etag: None (S3 не возвращает etag при удалении)
             - error: None если успех, иначе строка с описанием ошибки
         """

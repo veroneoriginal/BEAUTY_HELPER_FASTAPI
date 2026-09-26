@@ -170,13 +170,13 @@ def _create_selection_on_task(session, selection: Selection) -> None:
     logger.info("[PRICE] price_request=%s", price_request)
 
     # 6. Генерируем PDF
-    analys_to_pdf = convert_analysis_to_pdf_data(
+    analysis_to_pdf = convert_analysis_to_pdf_data(
         answer_from_openai=answer_from_openai,
     )
     pdf_url = generate_selection_pdf(
         task_type=SelectionTaskType(selection.task_type),
         product_data=dto,
-        analys=analys_to_pdf,
+        analysis=analysis_to_pdf,
     )
 
     logger.info("[PDF] Generated pdf_url=%s", pdf_url)
