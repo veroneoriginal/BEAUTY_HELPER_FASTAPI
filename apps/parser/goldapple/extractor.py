@@ -36,7 +36,10 @@ IMAGE_SCREEN = "fullhd"
 IMAGE_FORMAT = "jpg"
 
 
-def extract(card: dict, link: str) -> dict[str, Any]:
+def extract(
+    card: dict,
+    link: str,
+) -> dict[str, Any]:
     """
     Достаёт поля товара из JSON карточки.
 
@@ -100,7 +103,10 @@ def article_from_link(link: str) -> str | None:
     return None
 
 
-def _find_variant(data: dict, article: str | None) -> dict:
+def _find_variant(
+    data: dict,
+    article: str | None,
+) -> dict:
     """
     Вариант товара из ссылки.
 
@@ -142,7 +148,10 @@ def _find_section(
     return {}
 
 
-def _extract_measure(data: dict, variant: dict) -> dict[str, Any]:
+def _extract_measure(
+    data: dict,
+    variant: dict,
+) -> dict[str, Any]:
     """
     Мера: вид («объём»), значение («200»), единица («мл»).
 
@@ -164,7 +173,8 @@ def _extract_measure(data: dict, variant: dict) -> dict[str, Any]:
 
 def _extract_price(variant: dict) -> int | None:
     """
-    Цена со скидкой: price.actual.amount. В Decimal переводит normalizer.
+    Цена со скидкой: price.actual.amount.
+    В Decimal переводит normalizer.
 
     :param variant: выбранный вариант
     """

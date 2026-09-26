@@ -1,8 +1,7 @@
 # apps/parser/goldapple/normalizer.py
 
-# Normalizer: dict из extractor → ParsedProduct.
+# Normalizer делает dict из extractor → ParsedProduct.
 # В сеть не ходит. Приводит значения «как на сайте» к нашему формату —
-# то, что раньше делалось руками в Excel:
 #   HTML → текст, лишние пробелы и \xa0 → один пробел, "" → None,
 #   цена и объём → Decimal, состав → список + количество,
 #   характеристики → JSON-строка.
@@ -57,18 +56,27 @@ def normalize(raw: dict[str, Any]) -> ParsedProduct:
 
     :param raw: результат extract(card, link)
     """
+    # Пустой ParsedProduct: заполнена только ссылка, остальные поля None
     product = ParsedProduct(link_ga=raw["link_ga"])
 
+    # Простой текст: убираем лишние пробелы, "" → None.
+    # setattr(product, "brand", x) — то же, что product.brand = x,
+    # только имя поля берём из переменной, поэтому можно пройти списком.
+    # raw.get(field) — None, если extractor такого поля не отдал.
     for field in TEXT_FIELDS:
         setattr(product, field, clean_text(raw.get(field)))
 
+    # HTML: убираем теги, <p>/<br>/<li> → переносы строк
     for field in HTML_FIELDS:
         setattr(product, field, html_to_text(raw.get(field)))
 
+    # Состав уже текстом → список ингредиентов и их количество.
+    # Нет состава → оба поля остаются None
     product.ingredients_list = split_ingredients(product.ingredients)
     if product.ingredients_list:
         product.ingredients_count = len(product.ingredients_list)
 
+    # Числа → Decimal, характеристики → JSON-строка словаря
     product.measure_value = to_decimal(raw.get("measure_value"))
     product.price_rub = to_decimal(raw.get("price_rub"))
     product.characteristics = to_json(raw.get("characteristics"))
@@ -148,8 +156,6 @@ def split_ingredients(ingredients: str | None) -> list[str] | None:
 def to_decimal(value: Any) -> Decimal | None:
     """
     Число → Decimal: 13675 → Decimal("13675"), "15" → Decimal("15").
-
-    Через str: Decimal(0.1) от float дал бы 0.1000000000000000055…
     Не число → None.
 
     :param value: цена или значение меры
@@ -167,10 +173,12 @@ def to_decimal(value: Any) -> Decimal | None:
 
 def to_json(value: Any) -> str | None:
     """
-    Характеристики (список атрибутов) → JSON-строка, кириллица как есть.
+    Характеристики → JSON-строка словаря {"тип продукта": "крем для лица", ...},
+    кириллица как есть.
 
     :param value: список {"key": ..., "value": ...} из extractor
     """
     if not value:
         return None
-    return json.dumps(value, ensure_ascii=False)
+    characteristics = {item["key"]: item["value"] for item in value}
+    return json.dumps(characteristics, ensure_ascii=False)
