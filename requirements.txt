@@ -36,3 +36,4 @@ openpyxl==3.1.5
 alembic==1.16.1
 httpx[socks]==0.28.1
 playwright==1.63.0
+beautifulsoup4==4.15.0
