@@ -51,8 +51,13 @@ def extract(
     if not isinstance(data, dict):
         raise ParseError(f"В ответе нет data: {link}")
 
-    article = article_from_link(link) or data.get("id")
-    variant = _find_variant(data, article)
+    # Артикул из ссылки нужен только чтобы выбрать вариант.
+    # Сам артикул берём у выбранного варианта: если такого в ссылке
+    # среди вариантов нет, берётся первый — и артикул должен быть его,
+    # иначе цена и объём одного варианта окажутся под артикулом другого
+    link_article = article_from_link(link)
+    variant = _find_variant(data, link_article or data.get("id"))
+    article = variant.get("itemId") or data.get("id") or link_article
     sections = data.get("productDescription") or []
     description = _find_section(sections, section_type="Description")
     brand = _find_section(sections, section_type="Brand")

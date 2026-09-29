@@ -50,7 +50,9 @@ class SelectionService:
         self,
         selection_id: int,
     ) -> Selection | None:
-        """Получить подборку по ID."""
+        """
+        Получить подборку по ID.
+        """
         return await self.repository.get_by_id(selection_id)
 
     async def get_by_product_and_task_type(
@@ -67,14 +69,18 @@ class SelectionService:
         )
 
     async def get_all_selections(self) -> Sequence[Selection]:
-        """Получить все подборки."""
+        """
+        Получить все подборки.
+        """
         return await self.repository.get_all()
 
     async def get_user_selections(
         self,
         user_id: int,
     ) -> list[Selection]:
-        """Получить все подборки пользователя."""
+        """
+        Получить все подборки пользователя.
+        """
         return await self.repository.get_by_user_id(user_id)
 
     # === Проверка готовности для пользователя ===

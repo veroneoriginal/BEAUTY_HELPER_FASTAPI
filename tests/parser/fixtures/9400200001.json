@@ -1,0 +1,392 @@
+{
+  "data": {
+    "id": "9400200001",
+    "itemId": "9400200001",
+    "name": "BAMBOO CREME FRAPPEE",
+    "mainVariantItemId": "9400200001",
+    "type": "Product",
+    "isAdult": false,
+    "configurable": false,
+    "brand": "Erborian",
+    "brandUrl": "/brands/erborian",
+    "productType": "Крем-фраппе для лица",
+    "breadcrumbs": [
+      {
+        "text": "главная",
+        "href": "/"
+      },
+      {
+        "text": "уход",
+        "href": "/uhod"
+      },
+      {
+        "text": "уход для лица",
+        "href": "/uhod/uhod-za-licom"
+      },
+      {
+        "text": "увлажнение и питание",
+        "href": "/uhod/uhod-za-licom/osnovnoj-uhod"
+      }
+    ],
+    "brandCategoryId": 1000001805,
+    "categoryIds": [
+      1000000004,
+      1000000010,
+      1000001805,
+      1000135030,
+      1000154340,
+      1000154445
+    ],
+    "scope": "product",
+    "beautiesPrelaunch": false,
+    "brandZoneInfo": {
+      "isBrandZone": true,
+      "brandMainCategoryId": 1000001805
+    },
+    "productDescription": [
+      {
+        "type": "Description",
+        "value": "Description_0",
+        "text": "Описание",
+        "title": "ERBORIAN BAMBOO CREME FRAPPEE",
+        "subtitle": "артикул: 9400200001",
+        "content": "Как ледяной водопад, Бамбук крем-фраппе дарит коже мгновенный бодрящий эффект. Крем обладает тающей текстурой, при контакте с кожей сразу дарит ей заряд свежести и увлажнения. Мгновенно впитываясь, он пробуждает кожу, которая выглядит более свежей, мягкой и гладкой сразу после применения.",
+        "attributes": [
+          {
+            "key": "тип продукта",
+            "value": "крем для лица"
+          },
+          {
+            "key": "для кого",
+            "value": "для женщин"
+          },
+          {
+            "key": "назначение",
+            "value": "увлажнение, охлаждение, тонизирование, разглаживание"
+          },
+          {
+            "key": "тип кожи",
+            "value": "для всех типов кожи"
+          },
+          {
+            "key": "время нанесения",
+            "value": "в любое время"
+          },
+          {
+            "key": "область применения",
+            "value": "лицо"
+          },
+          {
+            "key": "объём",
+            "value": "50 мл"
+          }
+        ]
+      },
+      {
+        "type": "Text",
+        "value": "Text_1",
+        "text": "Применение",
+        "title": "",
+        "subtitle": "",
+        "content": "Наносить ежедневно утром и вечером на кожу лица самостоятельно или в качестве основы под макияж."
+      },
+      {
+        "type": "Text",
+        "value": "Text_2",
+        "text": "Состав",
+        "title": "",
+        "subtitle": "",
+        "content": "<p>AQUA/WATER - GLYCERIN - DIMETHICONE - CYCLOMETHICONE - PHYLLOSTACHIS BAMBUSOIDES EXTRACT - PORTULACA OLERACEA EXTRACT - OPHIOPOGON JAPONICUS ROOT EXTRACT - DIOSPYROS KAKI LEAF EXTRACT - PHYLLOSTACHIS BAMBUSOIDES JUICE - DIMETHICONE/VINYL DIMETHICONE CROSSPOLYMER - HYDROXYETHYL ACRYLATE/SODIUM ACRYLOYLDIMETHYL TAURATE COPOLYMER - AMMONIUM ACRYLOYLDIMETHYLTAURATE/VP COPOLYMER - 1,2-HEXANEDIOL - PEG-10 DIMETHICONE – SQUALANE - SODIUM POLYACRYLATE STARCH - POLYSORBATE 60 - BUTYLENE GLYCOL - ETHYLHEXYLGLYCERIN - DIMETHICONOL - t-BUTYL ALCOHOL - SORBITAN ISOSTEARATE - BETAINE - SODIUM HYALURONATE - PHENOXYETHANOL - TOCOPHEROL - PARFUM/FRAGRANCE - LINALOOL - GERANIOL - CI 19140/YELLOW 5 - CI 42090/BLUE 1</p>\n<p>Комплекс «Bamboo Waterlock»: Дарит глубокое увлажнение<br />\nВолокна бамбука: Входящие в состав протеины и липиды помогают удерживать влагу в клетках<br />\nБамбуковый сок (Phyllostachys bambusoides): Увлажняет кожу<br />\nОфиопогон японский (японский ландыш): Успокаивает и защищает кожу, усиливая ее барьерные функции<br />\nХурма восточная: Улучшает тонус кожи и способствует сужению пор<br />\nГиалуронат натрия: Глубоко увлажняет, предотвращает обезвоживание кожи, помогает поддерживать естественный водный баланс кожи<br />\nТокоферол: Антиоксидант</p>"
+      },
+      {
+        "type": "Brand",
+        "value": "Brand_3",
+        "text": "Бренд",
+        "title": "Erborian",
+        "subtitle": "Республика Корея",
+        "content": "<p>Erborian — неповторимая вселенная красоты, в которой традиции, рецепты и тонкости изготовления косметических средств имеют огромную наследственную историю. Микро-эмульсии позволяют последовательно использовать от 7 до 12 средств утром и вечером. Erborian — это корейские традиции красоты в средствах 3 в 1, адаптированные к потребностям европейских женщин. Корейская фармакопея заключается в изготовлении концентрированной косметической продукции на основе чистых и натуральных ингредиентов. Благодаря этому средства мягко воздействует на кожу и дают мгновенный результат. Продукция хорошо переносится кожей не вызывая аллергии.</p>\n<p>Ценности Erborian заключаются в сохранении:   <br />\n- традиции (синергия натуральных лечебных ингредиентов, традиционные методы их добычи, корейские ритуалы красоты)   <br />\n- авангарда (технологии, опережающие время, инновационные текстуры, экспертность в области по уходу за кожей)   <br />\n- гармонии (Восток и Запад, человек и природа, внутренняя и внешняя красота)</p>\n<p>Erborian сочетает в себе традиционные корейские рецепты красоты, инновационные достижения и французское чувство вкуса.</p>",
+        "links": [
+          {
+            "title": "Перейти в каталог бренда",
+            "url": "/brands/erborian"
+          }
+        ]
+      },
+      {
+        "type": "Text",
+        "value": "Text_4",
+        "text": "Информация и документы",
+        "title": "",
+        "subtitle": "",
+        "content": "<p><strong>страна происхождения</strong><br />\nРеспублика Корея</p>\n<p><strong>документы</strong><br />\n<a href=\"https://pub.fsa.gov.ru/rds/declaration/view/20856593\">ЕАЭС N RU Д-FR.РА10.В.49096/25</a></p>"
+      }
+    ],
+    "attributes": {
+      "units": {
+        "label": "объём",
+        "unit": "мл",
+        "options": [
+          {
+            "value": "50",
+            "text": "50",
+            "image": null,
+            "additionalParam": null
+          }
+        ]
+      }
+    },
+    "attributesSelectedDefault": {
+      "units": "50",
+      "colors": ""
+    },
+    "variants": [
+      {
+        "itemId": "9400200001",
+        "attributesValue": {
+          "units": "50",
+          "colors": ""
+        },
+        "imageUrls": [
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/9400200001/web/696d674d61696e5064705f32636330366166366561313834626166393865656130356537633333623330638dea5fc09907d3a${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/9400200001/web/696d67416464315064705f66623631333239343033643934313763396561326438663437636534366539358dea5fbfeae58bb${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/9400200001/web/696d67416464325064705f31373264383735633463363934306430393362353736633361656135326234628dea5fc18277e8d${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/9400200001/web/696d67416464335064705f36616534373631613331366534653562396132656238316436646365353738658dea5fbf26a2843${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          }
+        ],
+        "imageUrlsV2": [],
+        "url": "/9400200001-bamboo-creme-frappee",
+        "inStock": true,
+        "dolyameInfo": {
+          "minPrice": {
+            "currency": "RUB",
+            "amount": 1000,
+            "denominator": 1
+          },
+          "maxPrice": {
+            "currency": "RUB",
+            "amount": 70000,
+            "denominator": 1
+          },
+          "landingPageUrl": "https://goldapple.ru/bnpl?webview=1"
+        },
+        "dolyame": [
+          {
+            "currency": "RUB",
+            "amount": 1275,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 1275,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 1275,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 1276,
+            "denominator": 1
+          }
+        ],
+        "needOnlineConsultation": false,
+        "hasSubscription": false,
+        "price": {
+          "regular": {
+            "currency": "RUB",
+            "amount": 5101,
+            "denominator": 1
+          },
+          "discount": {
+            "currency": "RUB",
+            "amount": 3570,
+            "denominator": 1
+          },
+          "actual": {
+            "currency": "RUB",
+            "amount": 3570,
+            "denominator": 1
+          },
+          "old": {
+            "currency": "RUB",
+            "amount": 5101,
+            "denominator": 1
+          },
+          "viewOptions": {
+            "priceFrom": false,
+            "crossPrice": true,
+            "useDiscount": true,
+            "discountPercent": 30,
+            "type": "old"
+          }
+        },
+        "name": "BAMBOO CREME FRAPPEE",
+        "productBonuses": {
+          "bonuses": {
+            "total": {
+              "value": {
+                "amount": 35,
+                "denominator": 1,
+                "currency": "",
+                "decimalSeparator": ",",
+                "groupingSeparator": ""
+              }
+            }
+          },
+          "beauties": {
+            "value": {
+              "amount": 35,
+              "denominator": 1,
+              "currency": "BEAUTIES",
+              "decimalSeparator": "",
+              "groupingSeparator": ""
+            }
+          }
+        },
+        "labels": [
+          {
+            "id": "discount",
+            "group": "standard",
+            "backgroundColor": "#FF1686",
+            "text": "30%",
+            "textColor": "#ffffff",
+            "textGravity": [
+              "bottom",
+              "middle"
+            ]
+          },
+          {
+            "id": "hit",
+            "group": "standard",
+            "resource": {
+              "resourceUrl": {
+                "url": "https://pcdn.goldapple.ru/p/sl/5374616e646172645f686974/6c6162656c3634633238366566316131666231663031383937323134328db8eb27223c825.png",
+                "format": [],
+                "screen": []
+              },
+              "resourceType": "image"
+            }
+          }
+        ],
+        "tags": [],
+        "favourite": false
+      }
+    ],
+    "availableInOtherCountry": false,
+    "bubbles": [
+      {
+        "title": "Erborian",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/67cd45e19731f75394278527/default/6369633637636434356531393733316637353339343237383532388dd5edda34347f6${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/brands/erborian",
+        "isAdult": false,
+        "bubbleCategoryId": 1000001805,
+        "categoryId": 1000000248,
+        "character": "E",
+        "type": "brand"
+      },
+      {
+        "title": "увлажнение и питание Erborian",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef3ce5ca62170a1bc0601b/default/6369633633656633636535636136323137306131626330363031638db10c2457377e2${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/uhod-za-licom/osnovnoj-uhod?brandobjectid=72056",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000248,
+        "categoryId": 1000000248,
+        "character": "УИ",
+        "type": "deepestCategoryBrand"
+      },
+      {
+        "title": "увлажнение и питание",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef3ce5ca62170a1bc0601b/default/6369633633656633636535636136323137306131626330363031638db10c2457377e2${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/uhod-za-licom/osnovnoj-uhod",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000248,
+        "categoryId": 1000000248,
+        "character": "УИ",
+        "type": "deepestCategory"
+      },
+      {
+        "title": "уход за лицом",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef3cb9ca62170a1bc06013/default/6369633637646164376130363133383865616566323462383931648dd66f426dbfa48${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/uhod-za-licom",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000033,
+        "categoryId": 1000000248,
+        "character": "УЗ",
+        "type": "wideCategory"
+      }
+    ]
+  }
+}

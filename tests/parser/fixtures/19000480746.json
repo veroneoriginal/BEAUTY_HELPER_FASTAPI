@@ -1,0 +1,419 @@
+{
+  "data": {
+    "id": "19000480746",
+    "itemId": "19000480746",
+    "name": "meraki",
+    "mainVariantItemId": "19000480746",
+    "type": "Product",
+    "isAdult": false,
+    "configurable": false,
+    "brand": "myTAUI",
+    "brandUrl": "/brands/mytaui",
+    "productType": "Спа-масло для тела",
+    "breadcrumbs": [
+      {
+        "text": "главная",
+        "href": "/"
+      },
+      {
+        "text": "уход",
+        "href": "/uhod"
+      },
+      {
+        "text": "уход для тела",
+        "href": "/uhod/uhod-za-telom"
+      },
+      {
+        "text": "основной уход",
+        "href": "/uhod/uhod-za-telom/osnovnoj-uhod"
+      }
+    ],
+    "brandCategoryId": 1000143387,
+    "categoryIds": [
+      1000001930,
+      1000000004,
+      1000143387,
+      1000151155,
+      1000134334,
+      1000156849
+    ],
+    "scope": "product",
+    "beautiesPrelaunch": false,
+    "brandZoneInfo": {
+      "isBrandZone": true,
+      "brandMainCategoryId": 1000143387
+    },
+    "productDescription": [
+      {
+        "type": "Description",
+        "value": "Description_0",
+        "text": "Описание",
+        "title": "MYTAUI meraki",
+        "subtitle": "артикул: 19000480746",
+        "content": "<p>Масло для тела Relaxing Body Oil с первого прикосновения успокаивает и смягчает кожу. Оно впитывается постепенно, поэтому идеально подходит для расслабляющего массажа.</p>\n<p>В составе, помимо питательных масел макадамии, миндаля и авокадо, лаванды и лемонграсса, есть ментол и эфирное масло мяты – компоненты дарят коже легкое охлаждение, свежесть и тонизацию. Ароматное комбо способствует восстановлению и комфорту – как внешнему, так и внутреннему.</p>",
+        "attributes": [
+          {
+            "key": "тип продукта",
+            "value": "масло для тела"
+          },
+          {
+            "key": "для кого",
+            "value": "универсально"
+          },
+          {
+            "key": "назначение",
+            "value": "восстановление, увлажнение, тонизирование, для массажа"
+          },
+          {
+            "key": "тип кожи",
+            "value": "для всех типов кожи"
+          },
+          {
+            "key": "область применения",
+            "value": "тело"
+          },
+          {
+            "key": "действующий компонент",
+            "value": "масло ши"
+          },
+          {
+            "key": "объём",
+            "value": "200 мл"
+          }
+        ]
+      },
+      {
+        "type": "Text",
+        "value": "Text_1",
+        "text": "Применение",
+        "title": "",
+        "subtitle": "",
+        "content": "<ol>\n<li>Нанесите немного масла на влажное или сухое тело.</li>\n<li>Мягко массируйте кожу до полного впитывания средства.</li>\n</ol>"
+      },
+      {
+        "type": "Text",
+        "value": "Text_2",
+        "text": "Состав",
+        "title": "",
+        "subtitle": "",
+        "content": "Isopropyl Palmitate, Ethylhexyl Stearate, Helianthus Annuus (Sunflower) Seed Oil, Macadamia Integrifolia (Macadamia) Seed Oil, PEG-40 Sorbitan Peroleate, Prunus Amygdalus Dulcis (Sweet Almond) Oil, Olea Europaea (Olive) Fruit Oil, Persea Gratissima (Avocado) Oil, Tocopherol, Mentha Arvensis (Mint) Leaf Oil, Menthol, Camphor, Mentha Spicata (Spearmint) Herb Oil, Cymbopogon Flexuosus (Lemongrass) Leaf Oil, Lavandula Angustifolia (Lavender) Flower Oil, Coumarin, Eugenol, Citral, Geraniol, Limonene, Linalool."
+      },
+      {
+        "type": "Brand",
+        "value": "Brand_3",
+        "text": "Бренд",
+        "title": "myTAUI",
+        "subtitle": "Россия",
+        "content": "<p>myTAUI — это косметика, вдохновленная путешествиями.   </p>\n<p>Создатели myTAUI стремятся воссоздать удовольствие отпуска с помощью косметических средств. Каждый продукт создан как воспоминание об одном из прекрасных мест нашей планеты.   </p>\n<p>Для этого в формулах используются географически значимые ингредиенты, подбираются текстуры, схожие с лучшими сокровищами природы, а главным критерием успеха считается эмоциональный восторг пользователя.</p>",
+        "links": [
+          {
+            "title": "Перейти в каталог бренда",
+            "url": "/brands/mytaui"
+          }
+        ]
+      },
+      {
+        "type": "Text",
+        "value": "Text_4",
+        "text": "Информация и документы",
+        "title": "",
+        "subtitle": "",
+        "content": "<p><strong>страна происхождения</strong><br />\nРоссия</p>\n<p><strong>изготовитель</strong><br />\nООО «СТМ эксперт», Россия, 127015, г. Москва, вн.тер.г. м.о. Савеловский, ул. Бутырская, д. 17А, помещ. 1/4</p>\n<p><strong>документы</strong><br />\n<a href=\"https://pub.fsa.gov.ru/rds/declaration/view/20565872\">ЕАЭС N RU Д-RU.РА07.В.83104/25</a></p>"
+      }
+    ],
+    "attributes": {
+      "units": {
+        "label": "объём",
+        "unit": "мл",
+        "options": [
+          {
+            "value": "200",
+            "text": "200",
+            "image": null,
+            "additionalParam": null
+          }
+        ]
+      }
+    },
+    "attributesSelectedDefault": {
+      "units": "200",
+      "colors": ""
+    },
+    "variants": [
+      {
+        "itemId": "19000480746",
+        "attributesValue": {
+          "units": "200",
+          "colors": ""
+        },
+        "imageUrls": [
+          {
+            "url": "https://ccdn.goldapple.ru/p/p/19000480746/web/696d674d61696e5064705f39366263623230326463623734626335393761346337633836643966636636308ded510878d9839${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://ccdn.goldapple.ru/p/p/19000480746/web/696d67416464315064705f37366631353866623137376634333961383235353333356536363731613030318ded5107e55e6f4${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://ccdn.goldapple.ru/p/p/19000480746/web/696d67416464325064705f33316232326166303763663534363636616336363030373463663437343637618ded5108fa3f1be${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://ccdn.goldapple.ru/p/p/19000480746/web/696d67416464335064705f38323363353132373965313434666262626535663064643139393030656633398ded510747239e6${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          }
+        ],
+        "imageUrlsV2": [],
+        "url": "/19000480746-mytaui-meraki",
+        "inStock": true,
+        "dolyameInfo": {
+          "minPrice": {
+            "currency": "RUB",
+            "amount": 1000,
+            "denominator": 1
+          },
+          "maxPrice": {
+            "currency": "RUB",
+            "amount": 70000,
+            "denominator": 1
+          },
+          "landingPageUrl": "https://goldapple.ru/bnpl?webview=1"
+        },
+        "dolyame": [
+          {
+            "currency": "RUB",
+            "amount": 372,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 372,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 372,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 374,
+            "denominator": 1
+          }
+        ],
+        "needOnlineConsultation": false,
+        "hasSubscription": false,
+        "price": {
+          "regular": {
+            "currency": "RUB",
+            "amount": 1490,
+            "denominator": 1
+          },
+          "loyalty": {
+            "currency": "RUB",
+            "amount": 1341,
+            "denominator": 1
+          },
+          "actual": {
+            "currency": "RUB",
+            "amount": 1490,
+            "denominator": 1
+          },
+          "old": {
+            "currency": "RUB",
+            "amount": 1341,
+            "denominator": 1
+          },
+          "viewOptions": {
+            "priceFrom": false,
+            "crossPrice": true,
+            "useDiscount": false,
+            "discountPercent": 10,
+            "type": "bestLoyalty"
+          }
+        },
+        "name": "meraki",
+        "shortVideos": [
+          {
+            "videoUrl": {
+              "url": "https://vcdn.goldapple.ru/p/p/19000480746/s/6a8829ed3b721e24d5a41b30${screen}.${format}",
+              "format": [
+                "mp4"
+              ],
+              "screen": [
+                "fullhd",
+                "mobile"
+              ]
+            },
+            "videoThumbnail": {
+              "url": "https://ccdn.goldapple.ru/p/p/19000480746/video/s/6a8829ed3b721e24d5a41b31${screen}.${format}",
+              "format": [
+                "webp",
+                "jpg"
+              ],
+              "screen": [
+                "fullhd",
+                "mobile"
+              ]
+            },
+            "position": 0
+          }
+        ],
+        "productBonuses": {
+          "bonuses": {
+            "total": {
+              "value": {
+                "amount": 13,
+                "denominator": 1,
+                "currency": "",
+                "decimalSeparator": ",",
+                "groupingSeparator": ""
+              }
+            }
+          },
+          "beauties": {
+            "value": {
+              "amount": 13,
+              "denominator": 1,
+              "currency": "BEAUTIES",
+              "decimalSeparator": "",
+              "groupingSeparator": ""
+            }
+          }
+        },
+        "labels": [
+          {
+            "id": "new",
+            "group": "standard",
+            "resource": {
+              "resourceUrl": {
+                "url": "https://pcdn.goldapple.ru/p/sl/5374616e646172645f6e6577/6c6162656c3634633238366433316131666231663031383937323134308db8eb261819c5e.png",
+                "format": [],
+                "screen": []
+              },
+              "resourceType": "image"
+            }
+          },
+          {
+            "id": "hit",
+            "group": "standard",
+            "resource": {
+              "resourceUrl": {
+                "url": "https://pcdn.goldapple.ru/p/sl/5374616e646172645f686974/6c6162656c3634633238366566316131666231663031383937323134328db8eb27223c825.png",
+                "format": [],
+                "screen": []
+              },
+              "resourceType": "image"
+            }
+          }
+        ],
+        "tags": [],
+        "favourite": false
+      }
+    ],
+    "availableInOtherCountry": false,
+    "bubbles": [
+      {
+        "title": "myTAUI",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/67ced25a9731f75394278764/default/6369633637636564323561393733316637353339343237383736358dd5fc9f404adab${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/brands/mytaui",
+        "isAdult": false,
+        "bubbleCategoryId": 1000143387,
+        "categoryId": 1000000262,
+        "character": "M",
+        "type": "brand"
+      },
+      {
+        "title": "основной уход myTAUI",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef3f9dcf417f4278a5e3a8/default/6369633633656633663964636634313766343237386135653361398db10c3e4599ee8${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/uhod-za-telom/osnovnoj-uhod?brandobjectid=474596",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000262,
+        "categoryId": 1000000262,
+        "character": "ОУ",
+        "type": "deepestCategoryBrand"
+      },
+      {
+        "title": "основной уход",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef3f9dcf417f4278a5e3a8/default/6369633633656633663964636634313766343237386135653361398db10c3e4599ee8${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/uhod-za-telom/osnovnoj-uhod",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000262,
+        "categoryId": 1000000262,
+        "character": "ОУ",
+        "type": "deepestCategory"
+      },
+      {
+        "title": "уход за телом",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef3e15ca62170a1bc0602f/default/6369633633656633653135636136323137306131626330363033308db10c2fa952797${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/uhod-za-telom",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000034,
+        "categoryId": 1000000262,
+        "character": "УЗ",
+        "type": "wideCategory"
+      }
+    ]
+  }
+}

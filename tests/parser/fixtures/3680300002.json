@@ -1,0 +1,894 @@
+{
+  "data": {
+    "id": "3680300002",
+    "itemId": "3680300002",
+    "name": "L'INTERDIT",
+    "mainVariantItemId": "3680300002",
+    "type": "Product",
+    "isAdult": false,
+    "configurable": true,
+    "brand": "Givenchy ",
+    "brandUrl": "/brands/givenchy",
+    "productType": "Парфюмерная вода",
+    "breadcrumbs": [
+      {
+        "text": "главная",
+        "href": "/"
+      },
+      {
+        "text": "парфюмерия",
+        "href": "/parfjumerija"
+      },
+      {
+        "text": "женские ароматы",
+        "href": "/parfjumerija/zhenskie-aromaty-parfume"
+      }
+    ],
+    "brandCategoryId": 1000001122,
+    "categoryIds": [
+      1000000007,
+      1000001122
+    ],
+    "scope": "product",
+    "beautiesPrelaunch": false,
+    "brandZoneInfo": {
+      "isBrandZone": true,
+      "brandMainCategoryId": 1000001122
+    },
+    "productDescription": [
+      {
+        "type": "Description",
+        "value": "Description_0",
+        "text": "Описание",
+        "title": "GIVENCHY  L'INTERDIT",
+        "subtitle": "артикул: 3680300002",
+        "content": "<p>Женская парфюмерная вода L’Interdit от Givenchy – это смелый цветочно-древесный аромат, который является ключом к свободе и возвращает вкус к жизни. Верхние ноты пирамиды образуют цветы апельсина и жасмин, средние ноты раскрываются чувственной туберозой, а пачули, ветивер и амброксан дополняют композицию в базовых нотах аромата. Запретный союз аккорда белых роскошных цветов и темного дерева - символ изящества и воплощение женственности. Женская парфюмерная вода L'Interdit от Givenchy раскрывает глубину чувств, играющих на контрастах. </p>\n<p>Дополните свой образ дымкой для волос L’Interdit Hair Mist, чтобы усилить шлейф любимого аромата.</p>\n<p>В линию L'Interdit также входят гель для душа и увлажняющий лосьон для тела.</p>",
+        "attributes": [
+          {
+            "key": "тип продукта",
+            "value": "парфюмерная вода"
+          },
+          {
+            "key": "для кого",
+            "value": "для женщин"
+          },
+          {
+            "key": "группа ароматов",
+            "value": "цветочные"
+          },
+          {
+            "key": "верхние ноты",
+            "value": "жасмин"
+          },
+          {
+            "key": "средние ноты",
+            "value": "тубероза"
+          },
+          {
+            "key": "базовые ноты",
+            "value": "пачули, ветивер, амброксан"
+          },
+          {
+            "key": "объём",
+            "value": "50 мл"
+          }
+        ]
+      },
+      {
+        "type": "Brand",
+        "value": "Brand_1",
+        "text": "Бренд",
+        "title": "Givenchy ",
+        "subtitle": "Франция",
+        "content": "",
+        "links": [
+          {
+            "title": "Перейти в каталог бренда",
+            "url": "/brands/givenchy"
+          }
+        ]
+      },
+      {
+        "type": "Text",
+        "value": "Text_2",
+        "text": "Информация и документы",
+        "title": "",
+        "subtitle": "",
+        "content": "<p><strong>страна происхождения</strong><br />\nФранция</p>\n<p><strong>изготовитель</strong><br />\n\"LVMH Fragrance Brands\", адрес: 77 Rue A. France, 92300 Levallois-Perret, Франция</p>\n<p><strong>документы</strong><br />\n<a href=\"https://pub.fsa.gov.ru/rds/declaration/view/17790619\">ЕАЭС N RU Д-FR.РА04.В.71288/23</a></p>"
+      }
+    ],
+    "attributes": {
+      "units": {
+        "label": "объём",
+        "unit": "мл",
+        "options": [
+          {
+            "value": "35",
+            "text": "35",
+            "image": null,
+            "additionalParam": null
+          },
+          {
+            "value": "50",
+            "text": "50",
+            "image": null,
+            "additionalParam": null
+          },
+          {
+            "value": "80",
+            "text": "80",
+            "image": null,
+            "additionalParam": null
+          },
+          {
+            "value": "100",
+            "text": "100",
+            "image": null,
+            "additionalParam": null
+          },
+          {
+            "value": "125",
+            "text": "125",
+            "image": null,
+            "additionalParam": null
+          }
+        ]
+      }
+    },
+    "attributesSelectedDefault": {
+      "units": "50",
+      "colors": ""
+    },
+    "variants": [
+      {
+        "itemId": "3680300002",
+        "attributesValue": {
+          "units": "50",
+          "colors": ""
+        },
+        "imageUrls": [
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/3680300002/web/696d674d61696e5064705f66393235333264663362313734396262383332333431616539353934353738658deb5aae2c2ed26${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/3680300002/web/696d67416464315064705f34623163343636666131633634363363613433303138303164376563303962668deb5aad4f22aad${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          }
+        ],
+        "imageUrlsV2": [],
+        "url": "/3680300002-l-interdit",
+        "inStock": true,
+        "dolyameInfo": {
+          "minPrice": {
+            "currency": "RUB",
+            "amount": 1000,
+            "denominator": 1
+          },
+          "maxPrice": {
+            "currency": "RUB",
+            "amount": 70000,
+            "denominator": 1
+          },
+          "landingPageUrl": "https://goldapple.ru/bnpl?webview=1"
+        },
+        "dolyame": [
+          {
+            "currency": "RUB",
+            "amount": 3418,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 3418,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 3418,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 3421,
+            "denominator": 1
+          }
+        ],
+        "needOnlineConsultation": false,
+        "hasSubscription": false,
+        "price": {
+          "regular": {
+            "currency": "RUB",
+            "amount": 13675,
+            "denominator": 1
+          },
+          "actual": {
+            "currency": "RUB",
+            "amount": 13675,
+            "denominator": 1
+          },
+          "old": null,
+          "viewOptions": {
+            "priceFrom": false,
+            "crossPrice": false,
+            "useDiscount": false,
+            "discountPercent": 0,
+            "type": "actual"
+          }
+        },
+        "name": "L'INTERDIT",
+        "productBonuses": {
+          "bonuses": {
+            "total": {
+              "value": {
+                "amount": 136,
+                "denominator": 1,
+                "currency": "",
+                "decimalSeparator": ",",
+                "groupingSeparator": ""
+              }
+            }
+          },
+          "beauties": {
+            "value": {
+              "amount": 136,
+              "denominator": 1,
+              "currency": "BEAUTIES",
+              "decimalSeparator": "",
+              "groupingSeparator": ""
+            }
+          }
+        },
+        "labels": [
+          {
+            "id": "hit",
+            "group": "standard",
+            "resource": {
+              "resourceUrl": {
+                "url": "https://pcdn.goldapple.ru/p/sl/5374616e646172645f686974/6c6162656c3634633238366566316131666231663031383937323134328db8eb27223c825.png",
+                "format": [],
+                "screen": []
+              },
+              "resourceType": "image"
+            }
+          }
+        ],
+        "tags": [],
+        "favourite": false
+      },
+      {
+        "itemId": "19000019660",
+        "attributesValue": {
+          "units": "125",
+          "colors": ""
+        },
+        "imageUrls": [
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/19000019660/web/696d674d61696e5064705f31656361633036363339616534666231393861663166306236376266613862348de31a764d5a8d4${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/19000019660/web/696d67416464315064705f66623130653936633233656534363636396537316163626634636264333864328de5f2f184a2d84${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/19000019660/web/696d67416464325064705f39363037313736636331303534396436613637376330316431313636343161628de600a54a33df5${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          }
+        ],
+        "imageUrlsV2": [],
+        "url": "/19000019660-l-interdit-eau-de-parfum",
+        "inStock": true,
+        "dolyameInfo": {
+          "minPrice": {
+            "currency": "RUB",
+            "amount": 1000,
+            "denominator": 1
+          },
+          "maxPrice": {
+            "currency": "RUB",
+            "amount": 70000,
+            "denominator": 1
+          },
+          "landingPageUrl": "https://goldapple.ru/bnpl?webview=1"
+        },
+        "dolyame": [
+          {
+            "currency": "RUB",
+            "amount": 5388,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 5388,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 5388,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 5391,
+            "denominator": 1
+          }
+        ],
+        "needOnlineConsultation": false,
+        "hasSubscription": false,
+        "price": {
+          "regular": {
+            "currency": "RUB",
+            "amount": 21555,
+            "denominator": 1
+          },
+          "actual": {
+            "currency": "RUB",
+            "amount": 21555,
+            "denominator": 1
+          },
+          "old": null,
+          "viewOptions": {
+            "priceFrom": false,
+            "crossPrice": false,
+            "useDiscount": false,
+            "discountPercent": 0,
+            "type": "actual"
+          }
+        },
+        "name": "L'Interdit",
+        "productBonuses": {
+          "bonuses": {
+            "total": {
+              "value": {
+                "amount": 215,
+                "denominator": 1,
+                "currency": "",
+                "decimalSeparator": ",",
+                "groupingSeparator": ""
+              }
+            }
+          },
+          "beauties": {
+            "value": {
+              "amount": 215,
+              "denominator": 1,
+              "currency": "BEAUTIES",
+              "decimalSeparator": "",
+              "groupingSeparator": ""
+            }
+          }
+        },
+        "labels": [
+          {
+            "id": "hit",
+            "group": "standard",
+            "resource": {
+              "resourceUrl": {
+                "url": "https://pcdn.goldapple.ru/p/sl/5374616e646172645f686974/6c6162656c3634633238366566316131666231663031383937323134328db8eb27223c825.png",
+                "format": [],
+                "screen": []
+              },
+              "resourceType": "image"
+            }
+          }
+        ],
+        "tags": [],
+        "favourite": false
+      },
+      {
+        "itemId": "19000359496",
+        "attributesValue": {
+          "units": "100",
+          "colors": ""
+        },
+        "imageUrls": [
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/19000359496/web/696d674d61696e5064705f64633438633030306661313434623333616637623832636165336431623237318de31a7648984f9${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/19000359496/web/696d67416464315064705f62383663386334303362396634376534393634653236356463383465633438368de5f2fed0935f7${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/19000359496/web/696d67416464325064705f34386261353633343462373434666131616239316137313961363939656335338de600c7582c224${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          }
+        ],
+        "imageUrlsV2": [],
+        "url": "/19000359496-l-interdit",
+        "inStock": true,
+        "dolyameInfo": {
+          "minPrice": {
+            "currency": "RUB",
+            "amount": 1000,
+            "denominator": 1
+          },
+          "maxPrice": {
+            "currency": "RUB",
+            "amount": 70000,
+            "denominator": 1
+          },
+          "landingPageUrl": "https://goldapple.ru/bnpl?webview=1"
+        },
+        "dolyame": [
+          {
+            "currency": "RUB",
+            "amount": 4727,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 4727,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 4727,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 4729,
+            "denominator": 1
+          }
+        ],
+        "needOnlineConsultation": false,
+        "hasSubscription": false,
+        "price": {
+          "regular": {
+            "currency": "RUB",
+            "amount": 18910,
+            "denominator": 1
+          },
+          "actual": {
+            "currency": "RUB",
+            "amount": 18910,
+            "denominator": 1
+          },
+          "old": null,
+          "viewOptions": {
+            "priceFrom": false,
+            "crossPrice": false,
+            "useDiscount": false,
+            "discountPercent": 0,
+            "type": "actual"
+          }
+        },
+        "name": "L'INTERDIT",
+        "productBonuses": {
+          "bonuses": {
+            "total": {
+              "value": {
+                "amount": 189,
+                "denominator": 1,
+                "currency": "",
+                "decimalSeparator": ",",
+                "groupingSeparator": ""
+              }
+            }
+          },
+          "beauties": {
+            "value": {
+              "amount": 189,
+              "denominator": 1,
+              "currency": "BEAUTIES",
+              "decimalSeparator": "",
+              "groupingSeparator": ""
+            }
+          }
+        },
+        "labels": [
+          {
+            "id": "hit",
+            "group": "standard",
+            "resource": {
+              "resourceUrl": {
+                "url": "https://pcdn.goldapple.ru/p/sl/5374616e646172645f686974/6c6162656c3634633238366566316131666231663031383937323134328db8eb27223c825.png",
+                "format": [],
+                "screen": []
+              },
+              "resourceType": "image"
+            }
+          }
+        ],
+        "tags": [],
+        "favourite": false
+      },
+      {
+        "itemId": "3680300001",
+        "attributesValue": {
+          "units": "35",
+          "colors": ""
+        },
+        "imageUrls": [
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/3680300001/web/696d674d61696e5064705f62313033353762383366386534323236393131656664336133653166636434368de84f4bec49360${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/3680300001/web/696d67416464315064705f65316238333339653837653634313231386531316134326134643163653866338de84f4b772d347${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/3680300001/web/696d67416464325064705f33616165356264663363613234653461613131373935316531346662613139358de84f4c65c9889${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          }
+        ],
+        "imageUrlsV2": [],
+        "url": "/3680300001-l-interdit",
+        "inStock": true,
+        "dolyameInfo": {
+          "minPrice": {
+            "currency": "RUB",
+            "amount": 1000,
+            "denominator": 1
+          },
+          "maxPrice": {
+            "currency": "RUB",
+            "amount": 70000,
+            "denominator": 1
+          },
+          "landingPageUrl": "https://goldapple.ru/bnpl?webview=1"
+        },
+        "dolyame": [
+          {
+            "currency": "RUB",
+            "amount": 2440,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 2440,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 2440,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 2440,
+            "denominator": 1
+          }
+        ],
+        "needOnlineConsultation": false,
+        "hasSubscription": false,
+        "price": {
+          "regular": {
+            "currency": "RUB",
+            "amount": 9760,
+            "denominator": 1
+          },
+          "actual": {
+            "currency": "RUB",
+            "amount": 9760,
+            "denominator": 1
+          },
+          "old": null,
+          "viewOptions": {
+            "priceFrom": false,
+            "crossPrice": false,
+            "useDiscount": false,
+            "discountPercent": 0,
+            "type": "actual"
+          }
+        },
+        "name": "L'INTERDIT",
+        "productBonuses": {
+          "bonuses": {
+            "total": {
+              "value": {
+                "amount": 97,
+                "denominator": 1,
+                "currency": "",
+                "decimalSeparator": ",",
+                "groupingSeparator": ""
+              }
+            }
+          },
+          "beauties": {
+            "value": {
+              "amount": 97,
+              "denominator": 1,
+              "currency": "BEAUTIES",
+              "decimalSeparator": "",
+              "groupingSeparator": ""
+            }
+          }
+        },
+        "labels": [
+          {
+            "id": "hit",
+            "group": "standard",
+            "resource": {
+              "resourceUrl": {
+                "url": "https://pcdn.goldapple.ru/p/sl/5374616e646172645f686974/6c6162656c3634633238366566316131666231663031383937323134328db8eb27223c825.png",
+                "format": [],
+                "screen": []
+              },
+              "resourceType": "image"
+            }
+          }
+        ],
+        "tags": [],
+        "favourite": false
+      },
+      {
+        "itemId": "3680300003",
+        "attributesValue": {
+          "units": "80",
+          "colors": ""
+        },
+        "imageUrls": [
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/3680300003/web/696d674d61696e5064705f31353263656132643736333834313065626534373337623532306439646530388deb5ab12310871${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/3680300003/web/696d67416464315064705f66346463333234626163383634656438613864386333333734643036633165658deb5ab09da6548${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          }
+        ],
+        "imageUrlsV2": [],
+        "url": "/3680300003-l-interdit",
+        "inStock": true,
+        "dolyameInfo": {
+          "minPrice": {
+            "currency": "RUB",
+            "amount": 1000,
+            "denominator": 1
+          },
+          "maxPrice": {
+            "currency": "RUB",
+            "amount": 70000,
+            "denominator": 1
+          },
+          "landingPageUrl": "https://goldapple.ru/bnpl?webview=1"
+        },
+        "dolyame": [
+          {
+            "currency": "RUB",
+            "amount": 4193,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 4193,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 4193,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 4196,
+            "denominator": 1
+          }
+        ],
+        "needOnlineConsultation": false,
+        "hasSubscription": false,
+        "price": {
+          "regular": {
+            "currency": "RUB",
+            "amount": 16775,
+            "denominator": 1
+          },
+          "actual": {
+            "currency": "RUB",
+            "amount": 16775,
+            "denominator": 1
+          },
+          "old": null,
+          "viewOptions": {
+            "priceFrom": false,
+            "crossPrice": false,
+            "useDiscount": false,
+            "discountPercent": 0,
+            "type": "actual"
+          }
+        },
+        "name": "L'INTERDIT",
+        "productBonuses": {
+          "bonuses": {
+            "total": {
+              "value": {
+                "amount": 167,
+                "denominator": 1,
+                "currency": "",
+                "decimalSeparator": ",",
+                "groupingSeparator": ""
+              }
+            }
+          },
+          "beauties": {
+            "value": {
+              "amount": 167,
+              "denominator": 1,
+              "currency": "BEAUTIES",
+              "decimalSeparator": "",
+              "groupingSeparator": ""
+            }
+          }
+        },
+        "labels": [
+          {
+            "id": "hit",
+            "group": "standard",
+            "resource": {
+              "resourceUrl": {
+                "url": "https://pcdn.goldapple.ru/p/sl/5374616e646172645f686974/6c6162656c3634633238366566316131666231663031383937323134328db8eb27223c825.png",
+                "format": [],
+                "screen": []
+              },
+              "resourceType": "image"
+            }
+          }
+        ],
+        "tags": [],
+        "favourite": false
+      }
+    ],
+    "availableInOtherCountry": false,
+    "bubbles": [
+      {
+        "title": "Givenchy ",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/67ceb1c19731f75394278709/default/6369633637636562316331393733316637353339343237383730618dd5fb6860417c1${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/brands/givenchy",
+        "isAdult": false,
+        "bubbleCategoryId": 1000001122,
+        "categoryId": 1000000057,
+        "character": "G",
+        "type": "brand"
+      },
+      {
+        "title": "женские ароматы Givenchy",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63f49e4c9b540c38e590f774/default/6369633637396337656261326335396362626332363331383633328dd41cab709f009${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/parfjumerija/zhenskie-aromaty-parfume?brandobjectid=11301",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000057,
+        "categoryId": 1000000057,
+        "character": "ЖА",
+        "type": "deepestCategoryBrand"
+      },
+      {
+        "title": "женские ароматы",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63f49e4c9b540c38e590f774/default/6369633637396337656261326335396362626332363331383633328dd41cab709f009${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/parfjumerija/zhenskie-aromaty-parfume",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000057,
+        "categoryId": 1000000057,
+        "character": "ЖА",
+        "type": "deepestCategory"
+      },
+      {
+        "title": "парфюмерия",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef414da5353dfd656892c4/default/6369633633656634313464613533353364666436353638393263358db10c4e5a2485d${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/parfjumerija",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000007,
+        "categoryId": 1000000057,
+        "character": "П",
+        "type": "wideCategory"
+      }
+    ]
+  }
+}

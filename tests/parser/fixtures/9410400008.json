@@ -1,0 +1,358 @@
+{
+  "data": {
+    "id": "9410400008",
+    "itemId": "9410400008",
+    "name": "Pomegranate Nutri-Moisturizing Cream Mini",
+    "mainVariantItemId": "9410400008",
+    "type": "Product",
+    "isAdult": false,
+    "configurable": false,
+    "brand": "Frudia",
+    "brandUrl": "/brands/frudia",
+    "productType": "Питательный крем с гранатом",
+    "breadcrumbs": [
+      {
+        "text": "главная",
+        "href": "/"
+      },
+      {
+        "text": "уход",
+        "href": "/uhod"
+      },
+      {
+        "text": "уход для лица",
+        "href": "/uhod/uhod-za-licom"
+      },
+      {
+        "text": "увлажнение и питание",
+        "href": "/uhod/uhod-za-licom/osnovnoj-uhod"
+      }
+    ],
+    "brandCategoryId": 1000001428,
+    "categoryIds": [
+      1000000004,
+      1000000010,
+      1000001428,
+      1000005159,
+      1000134334,
+      1000143780,
+      1000135030,
+      1000154340,
+      1000154445,
+      1000156856
+    ],
+    "scope": "product",
+    "beautiesPrelaunch": false,
+    "brandZoneInfo": {
+      "isBrandZone": false
+    },
+    "productDescription": [
+      {
+        "type": "Description",
+        "value": "Description_0",
+        "text": "Описание",
+        "title": "FRUDIA Pomegranate Nutri-Moisturizing Cream Mini",
+        "subtitle": "артикул: 9410400008",
+        "content": "Питательный крем с гранатом Frudia Pomegranate Nutri-Moisturizing Cream Mini восстанавливает поврежденную, склонную к раздражениям и утратившую тонус кожу. Благодаря маслу граната, крем оказывает питательное, увлажняющее и смягчающее действие. Аденозин в составе выравнивает морщины, разглаживает рельеф. Pomegranate Nutri-Moisturizing Cream Mini делает кожу эластичной, нежной, сияющей.",
+        "attributes": [
+          {
+            "key": "тип продукта",
+            "value": "крем для лица"
+          },
+          {
+            "key": "для кого",
+            "value": "для женщин"
+          },
+          {
+            "key": "назначение",
+            "value": "восстановление, питание, увлажнение, разглаживание, против признаков старения"
+          },
+          {
+            "key": "тип кожи",
+            "value": "для всех типов кожи"
+          },
+          {
+            "key": "время нанесения",
+            "value": "в любое время"
+          },
+          {
+            "key": "область применения",
+            "value": "лицо, шея и декольте"
+          },
+          {
+            "key": "действующий компонент",
+            "value": "аденозин, гранат"
+          },
+          {
+            "key": "объём",
+            "value": "10 мл"
+          },
+          {
+            "key": "тревел-формат",
+            "value": "да"
+          }
+        ]
+      },
+      {
+        "type": "Text",
+        "value": "Text_1",
+        "text": "Применение",
+        "title": "",
+        "subtitle": "",
+        "content": "В качестве финального этапа ухода за кожей, нанесите необходимое количество на кожу лица и шеи. Легко помассируйте. Для утреннего и вечернего ухода."
+      },
+      {
+        "type": "Text",
+        "value": "Text_2",
+        "text": "Состав",
+        "title": "",
+        "subtitle": "",
+        "content": "Punica Granatum Fruit Extract(63%), Glycerin, Butylene Glycol, Caprylic/Capric Triglyceride, Cyclopentasiloxane, Diisostearyl Malate, Pentaerythrityl Tetraethylhexanoate, Dimethicone, Cyclohexasiloxane, 1,2-Hexanediol, Trehalose, Glyceryl Stearate, PEG-100 Stearate, PEG-240/HDI Copolymer Bis-Decyltetradeceth-20 Ether, Sorbitan Stearate, Glyceryl Caprylate, Polyglyceryl-3 Methylglucose Distearate, Hydroxyethyl Acrylate/Sodium Acryloyldimethyl Taurate Copolymer, Dimethicone/Vinyl Dimethicone Crosspolymer, Sodium Polyacrylate, Ethylhexyl Stearate, Coco-Caprylate/Caprate, Sucrose Cocoate, Adenosine, Glyceryl Acrylate/Acrylic Acid Copolymer, Disodium EDTA, Polysorbate 60, Sorbitan Isostearate, Prunus Armeniaca (Apricot) Kernel Oil, Vitis Vinifera (Grape) Seed Oil, Trideceth-6, Citrus Paradisi (Grapefruit) Seed Oil, Mangifera Indica (Mango) Seed Oil, Punica Granatum Seed Oil, Solanum Lycopersicum (Tomato) Seed Oil, Tocopherol, Water, Chlorphenesin, CI 14700, Fragrance"
+      },
+      {
+        "type": "Brand",
+        "value": "Brand_3",
+        "text": "Бренд",
+        "title": "Frudia",
+        "subtitle": "Республика Корея",
+        "content": "",
+        "links": [
+          {
+            "title": "Перейти в каталог бренда",
+            "url": "/brands/frudia"
+          }
+        ]
+      },
+      {
+        "type": "Text",
+        "value": "Text_4",
+        "text": "Информация и документы",
+        "title": "",
+        "subtitle": "",
+        "content": "<p><strong>страна происхождения</strong><br />\nРеспублика Корея</p>\n<p><strong>изготовитель</strong><br />\nРеспублика Корея / Welcos Co., LTD. 21-12, Toegyegongdan, 1-gil, Chuncheon-si, Gangwon-do, Republic of Korea.</p>\n<p><strong>документы</strong><br />\n<a href=\"https://pub.fsa.gov.ru/rds/declaration/view/16281089\">ЕАЭС N RU Д-KR.РА02.В.44933/21</a></p>"
+      }
+    ],
+    "attributes": {
+      "units": {
+        "label": "объём",
+        "unit": "мл",
+        "options": [
+          {
+            "value": "10",
+            "text": "10",
+            "image": null,
+            "additionalParam": null
+          }
+        ]
+      }
+    },
+    "attributesSelectedDefault": {
+      "units": "10",
+      "colors": ""
+    },
+    "variants": [
+      {
+        "itemId": "9410400008",
+        "attributesValue": {
+          "units": "10",
+          "colors": ""
+        },
+        "imageUrls": [
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/9410400008/web/696d674d61696e5064708ddc4374a3f7cc4${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/9410400008/web/696d67416464315064708ddc4374a60d20b${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/9410400008/web/696d67416464325064708ddc4374a3f752a${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/9410400008/web/696d67416464335064708ddc4374a4e0b92${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          }
+        ],
+        "imageUrlsV2": [],
+        "url": "/9410400008-pomegranate-nutri-moisturizing-cream",
+        "inStock": true,
+        "dolyameInfo": {},
+        "dolyame": [],
+        "needOnlineConsultation": false,
+        "hasSubscription": false,
+        "price": {
+          "regular": {
+            "currency": "RUB",
+            "amount": 670,
+            "denominator": 1
+          },
+          "discount": {
+            "currency": "RUB",
+            "amount": 462,
+            "denominator": 1
+          },
+          "actual": {
+            "currency": "RUB",
+            "amount": 462,
+            "denominator": 1
+          },
+          "old": {
+            "currency": "RUB",
+            "amount": 670,
+            "denominator": 1
+          },
+          "viewOptions": {
+            "priceFrom": false,
+            "crossPrice": true,
+            "useDiscount": true,
+            "discountPercent": 31,
+            "type": "old"
+          }
+        },
+        "name": "Pomegranate Nutri-Moisturizing Cream Mini",
+        "productBonuses": {
+          "bonuses": {
+            "total": {
+              "value": {
+                "amount": 4,
+                "denominator": 1,
+                "currency": "",
+                "decimalSeparator": ",",
+                "groupingSeparator": ""
+              }
+            }
+          },
+          "beauties": {
+            "value": {
+              "amount": 4,
+              "denominator": 1,
+              "currency": "BEAUTIES",
+              "decimalSeparator": "",
+              "groupingSeparator": ""
+            }
+          }
+        },
+        "labels": [
+          {
+            "id": "discount",
+            "group": "standard",
+            "backgroundColor": "#FF1686",
+            "text": "31%",
+            "textColor": "#ffffff",
+            "textGravity": [
+              "bottom",
+              "middle"
+            ]
+          }
+        ],
+        "tags": [],
+        "favourite": false
+      }
+    ],
+    "availableInOtherCountry": false,
+    "bubbles": [
+      {
+        "title": "Frudia",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/67d3e40e6a46b9ea6c2488f5/default/6369633637643365343065366134366239656136633234383866368dd62cf720a93f6${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/brands/frudia",
+        "isAdult": false,
+        "bubbleCategoryId": 1000001428,
+        "categoryId": 1000000248,
+        "character": "F",
+        "type": "brand"
+      },
+      {
+        "title": "увлажнение и питание Frudia",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef3ce5ca62170a1bc0601b/default/6369633633656633636535636136323137306131626330363031638db10c2457377e2${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/uhod-za-licom/osnovnoj-uhod?brandobjectid=43861",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000248,
+        "categoryId": 1000000248,
+        "character": "УИ",
+        "type": "deepestCategoryBrand"
+      },
+      {
+        "title": "увлажнение и питание",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef3ce5ca62170a1bc0601b/default/6369633633656633636535636136323137306131626330363031638db10c2457377e2${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/uhod-za-licom/osnovnoj-uhod",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000248,
+        "categoryId": 1000000248,
+        "character": "УИ",
+        "type": "deepestCategory"
+      },
+      {
+        "title": "уход за лицом",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef3cb9ca62170a1bc06013/default/6369633637646164376130363133383865616566323462383931648dd66f426dbfa48${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/uhod-za-licom",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000033,
+        "categoryId": 1000000248,
+        "character": "УЗ",
+        "type": "wideCategory"
+      }
+    ]
+  }
+}

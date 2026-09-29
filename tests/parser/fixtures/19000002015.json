@@ -1,0 +1,386 @@
+{
+  "data": {
+    "id": "19000002015",
+    "itemId": "19000002015",
+    "name": "Moisture Surge 100h",
+    "mainVariantItemId": "19000002015",
+    "type": "Product",
+    "isAdult": false,
+    "configurable": false,
+    "brand": "Clinique",
+    "brandUrl": "/brands/clinique",
+    "productType": "Интенсивно увлажняющий гель на 100 часов",
+    "breadcrumbs": [
+      {
+        "text": "главная",
+        "href": "/"
+      },
+      {
+        "text": "уход",
+        "href": "/uhod"
+      },
+      {
+        "text": "уход для лица",
+        "href": "/uhod/uhod-za-licom"
+      },
+      {
+        "text": "увлажнение и питание",
+        "href": "/uhod/uhod-za-licom/osnovnoj-uhod"
+      }
+    ],
+    "brandCategoryId": 1000000839,
+    "categoryIds": [
+      1000000004,
+      1000000839,
+      1000005159,
+      1000134334,
+      1000153760,
+      1000154337,
+      1000154442,
+      1000156849
+    ],
+    "scope": "product",
+    "beautiesPrelaunch": false,
+    "brandZoneInfo": {
+      "isBrandZone": false
+    },
+    "productDescription": [
+      {
+        "type": "Description",
+        "value": "Description_0",
+        "text": "Описание",
+        "title": "CLINIQUE Moisture Surge 100h",
+        "subtitle": "артикул: 19000002015",
+        "content": "<p>Ваш любимый увлажняющий крем-гель стал еще эффективнее.  <br />\nСредство глубоко увлажняет и насыщает кожу влагой на 100 часов.  <br />\nКожа выглядит более упругой и сияющей даже после умывания.  <br />\nТехнология Auto-Replenishing активирует внутренние ресурсы кожи, обеспечивающие постоянное увлажнение.</p>",
+        "attributes": [
+          {
+            "key": "тип продукта",
+            "value": "крем-гель для лица"
+          },
+          {
+            "key": "для кого",
+            "value": "для женщин"
+          },
+          {
+            "key": "назначение",
+            "value": "увлажнение"
+          },
+          {
+            "key": "тип кожи",
+            "value": "для всех типов кожи"
+          },
+          {
+            "key": "время нанесения",
+            "value": "в любое время"
+          },
+          {
+            "key": "область применения",
+            "value": "лицо"
+          },
+          {
+            "key": "объём",
+            "value": "15 мл"
+          },
+          {
+            "key": "тревел-формат",
+            "value": "да"
+          }
+        ]
+      },
+      {
+        "type": "Text",
+        "value": "Text_1",
+        "text": "Применение",
+        "title": "",
+        "subtitle": "",
+        "content": "<p>1. Утром и вечером наносите средство на чистую кожу.  <br />\n2. Используйте как самостоятельное средство или в качестве основы для макияжа.  <br />\n3. Наносите на сухие участки или применяйте в качестве пятиминутной маски.</p>"
+      },
+      {
+        "type": "Text",
+        "value": "Text_2",
+        "text": "Состав",
+        "title": "",
+        "subtitle": "",
+        "content": "<p>Water/Aqua/Eau, Dimethicone, Butylene Glycol, Glycerin, Trisiloxane, Trehalose, Saccharomyces Lysate Extract, Sodium Hyaluronate, Aloe Barbadensis Leaf Extract, Aloe Barbadensis Leaf Water, Silybum Marianum (Lady’s Thistle) Extract, Camellia Sinensis Leaf Extract, Aloe Barbadensis Leaf Polysaccharides, Sorbitol, Sodium Polyaspartate, Caffeine, Thermus Thermophillus Ferment, Lactobacillus Ferment Lysate, Palmitoyl Hexapeptide-12, Caprylyl Glycol, Sucrose, Hydroxyethyl Urea, Ammonium Acryloyldimethyltaurate/VP Copolymer, Oleth-10, Acrylates/C10-30 Alkyl Acrylate Crosspolymer, Saccharide Isomerate, Hydrogenated Lecithin, Tromethamine, Glyceryl Polymethacrylate, Disodium EDTA, PEG-8, Hexylene Glycol, <strong>Citric Acid,</strong> Sodium Citrate, Tocopheryl Acetate, BHT, **Magnesium Ascorbyl Phosphate, **Phenoxyethanol, Sodium Benzoate, Potassium Sorbate, Red 4 (CI 14700), Yellow 5 (CI 19140) [ILN50944].</p>"
+      },
+      {
+        "type": "Brand",
+        "value": "Brand_3",
+        "text": "Бренд",
+        "title": "Clinique",
+        "subtitle": "США",
+        "content": "<p>Бренд Clinique был создан в 1968 году всемирно известным дерматологом Норманом Орентреком и является одним из ведущих производителей средств ухода за кожей, декоративной косметики и парфюмерии класса люкс. Все средства разработаны на основе клинических исследований и многолетнего опыта ведущих дерматологов с учетом индивидуальных потребностей кожи, проверены на аллергию и не содержат отдушек.  </p>\n<p>Легендарные средства Clinique заслуженно завоевали сердца российских потребителей. Один из бестселлеров бренда, интенсивно увлажняющий гель-крем на 100 часов с биоферментом алоэ и гиалуроновой кислотой Moisture Surge 100H Auto-replenishing Hydrator, мгновенно и надолго защищает кожу от обезвоживания, обеспечивая увлажнение десяти слоев кожи.  </p>\n<p>Сегодня Clinique в тесном партнерстве с нью-йоркской медицинской школой Icahn School of Medicine at Mount Sinai создает совместный центр Healthy Skin Dermatology Center с целью проведения совместных дерматологических исследований аллергических заболеваний.</p>",
+        "links": [
+          {
+            "title": "Перейти в каталог бренда",
+            "url": "/brands/clinique"
+          }
+        ]
+      },
+      {
+        "type": "Text",
+        "value": "Text_4",
+        "text": "Информация и документы",
+        "title": "",
+        "subtitle": "",
+        "content": "<p><strong>страна происхождения</strong><br />\nЯпония</p>\n<p><strong>документы</strong><br />\n<a href=\"https://tech.eaeunion.org/tech/registers/35-1/ru/registryList/conformityDocs/view/663348c430dcf8c3bebdc83f\">ЕАЭС KZ 1900193.13.12.06349</a></p>"
+      }
+    ],
+    "attributes": {
+      "units": {
+        "label": "объём",
+        "unit": "мл",
+        "options": [
+          {
+            "value": "15",
+            "text": "15",
+            "image": null,
+            "additionalParam": null
+          }
+        ]
+      }
+    },
+    "attributesSelectedDefault": {
+      "units": "15",
+      "colors": ""
+    },
+    "variants": [
+      {
+        "itemId": "19000002015",
+        "attributesValue": {
+          "units": "15",
+          "colors": ""
+        },
+        "imageUrls": [
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/19000002015/web/696d674d61696e5064708ddc47ab68f2bfc${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/19000002015/web/696d67416464315064708ddc47ab6b08f60${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/19000002015/web/696d67416464325064708ddc47ab6907d76${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/19000002015/web/696d67416464335064708ddc47ab69a8103${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          }
+        ],
+        "imageUrlsV2": [],
+        "url": "/19000002015-moisture-surge-100h",
+        "inStock": true,
+        "dolyameInfo": {
+          "minPrice": {
+            "currency": "RUB",
+            "amount": 1000,
+            "denominator": 1
+          },
+          "maxPrice": {
+            "currency": "RUB",
+            "amount": 70000,
+            "denominator": 1
+          },
+          "landingPageUrl": "https://goldapple.ru/bnpl?webview=1"
+        },
+        "dolyame": [
+          {
+            "currency": "RUB",
+            "amount": 550,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 550,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 550,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 550,
+            "denominator": 1
+          }
+        ],
+        "needOnlineConsultation": false,
+        "hasSubscription": false,
+        "price": {
+          "regular": {
+            "currency": "RUB",
+            "amount": 2200,
+            "denominator": 1
+          },
+          "loyalty": {
+            "currency": "RUB",
+            "amount": 1870,
+            "denominator": 1
+          },
+          "actual": {
+            "currency": "RUB",
+            "amount": 2200,
+            "denominator": 1
+          },
+          "old": {
+            "currency": "RUB",
+            "amount": 1870,
+            "denominator": 1
+          },
+          "viewOptions": {
+            "priceFrom": false,
+            "crossPrice": true,
+            "useDiscount": false,
+            "discountPercent": 15,
+            "type": "bestLoyalty"
+          }
+        },
+        "name": "Moisture Surge 100h",
+        "productBonuses": {
+          "bonuses": {
+            "total": {
+              "value": {
+                "amount": 18,
+                "denominator": 1,
+                "currency": "",
+                "decimalSeparator": ",",
+                "groupingSeparator": ""
+              }
+            }
+          },
+          "beauties": {
+            "value": {
+              "amount": 18,
+              "denominator": 1,
+              "currency": "BEAUTIES",
+              "decimalSeparator": "",
+              "groupingSeparator": ""
+            }
+          }
+        },
+        "labels": [
+          {
+            "id": "hit",
+            "group": "standard",
+            "resource": {
+              "resourceUrl": {
+                "url": "https://pcdn.goldapple.ru/p/sl/5374616e646172645f686974/6c6162656c3634633238366566316131666231663031383937323134328db8eb27223c825.png",
+                "format": [],
+                "screen": []
+              },
+              "resourceType": "image"
+            }
+          }
+        ],
+        "tags": [],
+        "favourite": false
+      }
+    ],
+    "availableInOtherCountry": false,
+    "bubbles": [
+      {
+        "title": "Clinique",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/67cbf5b0a559c8ff14970f66/default/6369633637636266356230613535396338666631343937306636378dd5e1540b3825b${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/brands/clinique",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000839,
+        "categoryId": 1000000248,
+        "character": "C",
+        "type": "brand"
+      },
+      {
+        "title": "увлажнение и питание Clinique",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef3ce5ca62170a1bc0601b/default/6369633633656633636535636136323137306131626330363031638db10c2457377e2${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/uhod-za-licom/osnovnoj-uhod?brandobjectid=11365",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000248,
+        "categoryId": 1000000248,
+        "character": "УИ",
+        "type": "deepestCategoryBrand"
+      },
+      {
+        "title": "увлажнение и питание",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef3ce5ca62170a1bc0601b/default/6369633633656633636535636136323137306131626330363031638db10c2457377e2${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/uhod-za-licom/osnovnoj-uhod",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000248,
+        "categoryId": 1000000248,
+        "character": "УИ",
+        "type": "deepestCategory"
+      },
+      {
+        "title": "уход за лицом",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef3cb9ca62170a1bc06013/default/6369633637646164376130363133383865616566323462383931648dd66f426dbfa48${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/uhod-za-licom",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000033,
+        "categoryId": 1000000248,
+        "character": "УЗ",
+        "type": "wideCategory"
+      }
+    ]
+  }
+}

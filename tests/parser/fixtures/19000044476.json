@@ -1,0 +1,387 @@
+{
+  "data": {
+    "id": "19000044476",
+    "itemId": "19000044476",
+    "name": "Aloe Waterproof",
+    "mainVariantItemId": "19000044476",
+    "type": "Product",
+    "isAdult": false,
+    "configurable": false,
+    "brand": "Holika Holika",
+    "brandUrl": "/brands/holika-holika",
+    "productType": "Солнцезащитный крем для лица и тела SPF 50+",
+    "breadcrumbs": [
+      {
+        "text": "главная",
+        "href": "/"
+      },
+      {
+        "text": "уход",
+        "href": "/uhod"
+      },
+      {
+        "text": "солнечная линия",
+        "href": "/uhod/solnechnaja-linija"
+      },
+      {
+        "text": "защита от солнца",
+        "href": "/uhod/solnechnaja-linija/zaschita-ot-solnca"
+      }
+    ],
+    "brandCategoryId": 1000001173,
+    "categoryIds": [
+      1000000004,
+      1000000010,
+      1000001173,
+      1000143780,
+      1000135030,
+      1000154340,
+      1000154445,
+      1000156856
+    ],
+    "scope": "product",
+    "beautiesPrelaunch": false,
+    "brandZoneInfo": {
+      "isBrandZone": false
+    },
+    "productDescription": [
+      {
+        "type": "Description",
+        "value": "Description_0",
+        "text": "Описание",
+        "title": "HOLIKA HOLIKA Aloe Waterproof",
+        "subtitle": "артикул: 19000044476",
+        "content": "<p>Чего нам не хватает для идеального отпуска? Защиты от солнца с должным увлажнением и водоотталкивающим эффектом! Встречайте, солнцезащитный крем с алоэ SPF50+/ РА ++++!  </p>\n<p>Идеально подходит для всех типов кожи, особенно для чувствительной и склонной к сухости. Надежно защищает от UVA/UVB-лучей, предотвращая фотостарение и пигментацию, а экстракт алоэ вера в составе успокаивает и увлажняет кожу после загара.  </p>\n<p>Водостойкая формула делает крем устойчивым к воде и поту – perfect для пляжа, спорта и активного отдыха. Нежная текстура быстро впитывается, не оставляя белых разводов или липкости, а легкий свежий аромат добавляет комфорта в использовании.  </p>\n<p>Препятствует появлению жирного блеска, поддерживая оптимальный уровень влаги, успокаивает раздраженные и воспаленные участки кожи.  <br />\nПодходит для лица и тела.</p>",
+        "attributes": [
+          {
+            "key": "тип продукта",
+            "value": "крем для лица"
+          },
+          {
+            "key": "для кого",
+            "value": "универсально"
+          },
+          {
+            "key": "назначение",
+            "value": "защита от солнца, увлажнение"
+          },
+          {
+            "key": "тип кожи",
+            "value": "для всех типов кожи, для чувствительной кожи"
+          },
+          {
+            "key": "область применения",
+            "value": "лицо, тело"
+          },
+          {
+            "key": "действующий компонент",
+            "value": "зелёный чай, пантенол"
+          },
+          {
+            "key": "spf",
+            "value": "spf 50+"
+          },
+          {
+            "key": "объём",
+            "value": "70 мл"
+          }
+        ]
+      },
+      {
+        "type": "Text",
+        "value": "Text_1",
+        "text": "Применение",
+        "title": "",
+        "subtitle": "",
+        "content": "<p>1. Нанесите достаточное количество крема (около 1 чайной ложки) на чистую кожу лица и тела за 15-20 минут до выхода на солнце.  <br />\n2. Тщательно распределите ровным слоем, уделяя внимание всем открытым участкам кожи.  <br />\n3. Обновляйте каждые 2 часа при длительном пребывании на солнце и после каждого купания. Водостойкая формула обеспечивает надежную защиту во время плавания.</p>"
+      },
+      {
+        "type": "Text",
+        "value": "Text_2",
+        "text": "Состав",
+        "title": "",
+        "subtitle": "",
+        "content": "Вода, Дибутил Адипат, Пропандиол, Диэтиламино Гидроксибензоил Гексил Бензоат, Полиметилсилсесквиоксан, Этилгексил Триазон, Ниацинамид, Метилен Бис-Бензотриазолил Тетраметилбутилфенол, Коко-Каприлат/Капрат, Каприлил МетИкон, Диэтилгексил Бутамидо Триазон, Глицерин, Бутилен Гликоль, 1,2-Гександиол, Экстракт Плодов Облепихи Крушиновидной, Экстракт Дикой Моркови, Экстракт Плодов Шиповника Собачьего, Экстракт Плодов Яблока, Экстракт Листьев Алоэ Ферокс (5 ppb), Экстракт Полыни Веничной, Сок Абрикоса, Гидрогенизированный Лецитин, Пентилен Гликоль, Бегениловый Спирт, Поли C10-30 Алкил Акрилат, Полиглицерил-3 Метилглюкозы Дистеарат, Децил Глюкозид, Трометамин, Карбомер, Акрилат/C10-30-Алкил Акрилат Кроссполимер, Натрия Стеароил Глутамат, Полиакрилат Кроссполимер-6, Этилгексилглицерин, Аденозин, Ксантановая Камедь, Т-Бутиловый Спирт, Токоферол, Аскорбиновая Кислота, Масло Семян Моринги, Керамид NP, Фитосфингозин, Отдушка."
+      },
+      {
+        "type": "Brand",
+        "value": "Brand_3",
+        "text": "Бренд",
+        "title": "Holika Holika",
+        "subtitle": "Республика Корея",
+        "content": "Holika Holika — это стиль, яркость и эффективность прямиком из Южной Кореи! Визитная карточка бренда – мультифункциональный гель Aloe 99%, который подходит для всей семьи (0+), нейтрализует сухость и раздражения, а также успокаивает лицо и тело. А ещё в списке бестселлеров бренда ультратонкие тканевые маски Pure Essence, солнцезащитный крем Aloe, яркий декор и уходовая косметика, которая доказала свою эффективность уже миллионам девушек!",
+        "links": [
+          {
+            "title": "Перейти в каталог бренда",
+            "url": "/brands/holika-holika"
+          }
+        ]
+      },
+      {
+        "type": "Text",
+        "value": "Text_4",
+        "text": "Информация и документы",
+        "title": "",
+        "subtitle": "",
+        "content": "<p><strong>страна происхождения</strong><br />\nРеспублика Корея</p>\n<p><strong>документы</strong><br />\n<a href=\"https://pub.fsa.gov.ru/rds/declaration/view/16499932\">ЕАЭС N RU Д-KR.РА01.В.50366/22</a></p>"
+      }
+    ],
+    "attributes": {
+      "units": {
+        "label": "объём",
+        "unit": "мл",
+        "options": [
+          {
+            "value": "70",
+            "text": "70",
+            "image": null,
+            "additionalParam": null
+          }
+        ]
+      }
+    },
+    "attributesSelectedDefault": {
+      "units": "70",
+      "colors": ""
+    },
+    "variants": [
+      {
+        "itemId": "19000044476",
+        "attributesValue": {
+          "units": "70",
+          "colors": ""
+        },
+        "imageUrls": [
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/19000044476/web/696d674d61696e5064708ddc4b5e256e511${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/19000044476/web/7377617463685f61623065646432343939363034386430386438643632643062616663653830618de5b2ce3dc4e73${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          },
+          {
+            "url": "https://cdn-01.goldapple.ru/p/p/19000044476/web/696d67416464315064705f66633138356438623639633934303765396666393031643235346639353163348de5b2cdf02846c${screen}.${format}",
+            "format": [
+              "webp",
+              "jpg"
+            ],
+            "screen": [
+              "fullhd"
+            ]
+          }
+        ],
+        "imageUrlsV2": [],
+        "url": "/19000044476-aloe-waterproof-sun-cream-spf-50-pa",
+        "inStock": true,
+        "dolyameInfo": {
+          "minPrice": {
+            "currency": "RUB",
+            "amount": 1000,
+            "denominator": 1
+          },
+          "maxPrice": {
+            "currency": "RUB",
+            "amount": 70000,
+            "denominator": 1
+          },
+          "landingPageUrl": "https://goldapple.ru/bnpl?webview=1"
+        },
+        "dolyame": [
+          {
+            "currency": "RUB",
+            "amount": 456,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 456,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 456,
+            "denominator": 1
+          },
+          {
+            "currency": "RUB",
+            "amount": 457,
+            "denominator": 1
+          }
+        ],
+        "needOnlineConsultation": false,
+        "hasSubscription": false,
+        "price": {
+          "regular": {
+            "currency": "RUB",
+            "amount": 1825,
+            "denominator": 1
+          },
+          "discount": {
+            "currency": "RUB",
+            "amount": 1295,
+            "denominator": 1
+          },
+          "actual": {
+            "currency": "RUB",
+            "amount": 1295,
+            "denominator": 1
+          },
+          "old": {
+            "currency": "RUB",
+            "amount": 1825,
+            "denominator": 1
+          },
+          "viewOptions": {
+            "priceFrom": false,
+            "crossPrice": true,
+            "useDiscount": true,
+            "discountPercent": 29,
+            "type": "old"
+          }
+        },
+        "name": "Aloe Waterproof",
+        "productBonuses": {
+          "bonuses": {
+            "total": {
+              "value": {
+                "amount": 12,
+                "denominator": 1,
+                "currency": "",
+                "decimalSeparator": ",",
+                "groupingSeparator": ""
+              }
+            }
+          },
+          "beauties": {
+            "value": {
+              "amount": 12,
+              "denominator": 1,
+              "currency": "BEAUTIES",
+              "decimalSeparator": "",
+              "groupingSeparator": ""
+            }
+          }
+        },
+        "labels": [
+          {
+            "id": "discount",
+            "group": "standard",
+            "backgroundColor": "#FF1686",
+            "text": "29%",
+            "textColor": "#ffffff",
+            "textGravity": [
+              "bottom",
+              "middle"
+            ]
+          },
+          {
+            "id": "hit",
+            "group": "standard",
+            "resource": {
+              "resourceUrl": {
+                "url": "https://pcdn.goldapple.ru/p/sl/5374616e646172645f686974/6c6162656c3634633238366566316131666231663031383937323134328db8eb27223c825.png",
+                "format": [],
+                "screen": []
+              },
+              "resourceType": "image"
+            }
+          }
+        ],
+        "tags": [],
+        "favourite": false
+      }
+    ],
+    "availableInOtherCountry": false,
+    "bubbles": [
+      {
+        "title": "Holika Holika",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/67d181fa6a46b9ea6c24856a/default/6369633637643138316661366134366239656136633234383536628dd6163cfc2f2d8${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/brands/holika-holika",
+        "isAdult": false,
+        "bubbleCategoryId": 1000001173,
+        "categoryId": 1000142360,
+        "character": "HH",
+        "type": "brand"
+      },
+      {
+        "title": "защита от солнца Holika Holika",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/6683dd522b4de2c67c440768/default/6369633636383364643532326234646532633637633434303736398dc9a85e65d56e6${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/solnechnaja-linija/zaschita-ot-solnca?brandobjectid=37301",
+        "isAdult": false,
+        "bubbleCategoryId": 1000142360,
+        "categoryId": 1000142360,
+        "character": "ЗО",
+        "type": "deepestCategoryBrand"
+      },
+      {
+        "title": "защита от солнца",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/6683dd522b4de2c67c440768/default/6369633636383364643532326234646532633637633434303736398dc9a85e65d56e6${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/solnechnaja-linija/zaschita-ot-solnca",
+        "isAdult": false,
+        "bubbleCategoryId": 1000142360,
+        "categoryId": 1000142360,
+        "character": "ЗО",
+        "type": "deepestCategory"
+      },
+      {
+        "title": "солнечная линия",
+        "imageUrl": {
+          "url": "https://pcdn.goldapple.ru/p/ci/63ef40e7cf417f4278a5e3c8/default/6369633637646331306634363133383865616566323462386238398dd67aee8e2065c${screen}.${format}",
+          "format": [
+            "webp",
+            "png"
+          ],
+          "screen": [
+            "fullhd"
+          ]
+        },
+        "link": "/uhod/solnechnaja-linija",
+        "isAdult": false,
+        "bubbleCategoryId": 1000000280,
+        "categoryId": 1000142360,
+        "character": "СЛ",
+        "type": "wideCategory"
+      }
+    ]
+  }
+}
