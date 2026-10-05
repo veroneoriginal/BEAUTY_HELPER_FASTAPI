@@ -37,6 +37,5 @@ alembic==1.16.1
 httpx[socks]==0.28.1
 playwright==1.63.0
 beautifulsoup4==4.15.0
-
-botocore
-socksio
+botocore==1.40.61
+socksio==1.0.0

@@ -67,6 +67,10 @@ class Settings(BaseSettings):
     S3_SECRET_KEY: str = ""
     S3_BUCKET_NAME: str = ""
 
+    # === Парсер ===
+    # Список прокси, по одному на строку; путь от корня проекта
+    PARSER_PROXIES_FILE: str = "apps/parser/proxy/proxies.txt"
+
     model_config = {
         "env_file": ".env",
         "env_file_encoding": "utf-8",

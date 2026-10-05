@@ -10,6 +10,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Chromium для парсера (Playwright) и системные библиотеки к нему
+RUN playwright install --with-deps chromium
+
 # Код приложения
 COPY . .
 
