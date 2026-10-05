@@ -53,6 +53,7 @@ class SelectionStatus(str, enum.Enum):
     Отслеживает, на каком этапе находится процесс создания.
     """
 
+    PARSING = "parsing"  # Продукт парсится, подборка ждёт данных
     QUEUE = "queue"  # Задача поставлена, воркер ещё не взял
     PROCESS = "process"  # Подборка создаётся (запросы, PDF)
     DONE = "done"  # Прошла модерацию, можно отправлять
@@ -80,8 +81,8 @@ class Selection(Base):
     и может быть доступна нескольким пользователям (ManyToMany).
 
     Жизненный цикл:
-    QUEUE → PROCESS → DONE
-                   ↘ FAILED (при ошибке)
+    PARSING → QUEUE → PROCESS → DONE
+         ↘ FAILED (при ошибке) ↙
     """
 
     __tablename__ = "selections"

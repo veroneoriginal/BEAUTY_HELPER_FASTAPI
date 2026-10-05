@@ -1,11 +1,14 @@
 # apps/orchestrator/service.py
 
 import logging
+from urllib.parse import urlsplit
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.balance.repository import BalanceRepository
 from apps.balance.services import BalanceService
+from apps.products.models import Product, ProductFillStatus
 from apps.products.product_service import ProductService
 from apps.products.repository import ProductRepository
 from apps.selection.models import SelectionStatus, SelectionTaskType
@@ -14,9 +17,25 @@ from apps.selection.services import SelectionService
 from apps.users.models import User
 from apps.waiting.repository import WaitingRepository
 from apps.waiting.services import WaitingService
-from infrastructure.celery.tasks import run_create_selection_on_task
+from infrastructure.celery.tasks import (
+    run_create_selection_on_task,
+    run_parse_product_task,
+)
 
 logger = logging.getLogger(__name__)
+
+
+def normalize_link(link: str) -> str:
+    """
+    Приводит ссылку на товар к одному виду: схема + хост + путь.
+    Убирает ?utm=…, #… и / на конце, иначе одна карточка даст несколько Product.
+
+    :param link: ссылка, как её прислал пользователь
+    :return: чистая ссылка — по ней ищем, её пишем в link_ga и отдаём парсеру
+    """
+    parts = urlsplit(link.strip())
+    path = parts.path.rstrip("/")
+    return f"{parts.scheme.lower()}://{parts.netloc.lower()}{path}"
 
 
 async def try_reserve_spin_or_return_message(
@@ -45,6 +64,79 @@ async def try_reserve_spin_or_return_message(
     return True, None
 
 
+async def start_parsing(
+    user: User,
+    product: Product | None,
+    product_link: str,
+    task_type: SelectionTaskType,
+    product_service: ProductService,
+    selection_service: SelectionService,
+) -> dict:
+    """
+    Продукта нет в БД или он не спарсен — запускаем парсинг.
+
+    Создаёт Product (если нет) и подборку в статусе PARSING, привязывает
+    пользователя и ставит задачу парсинга в Celery. Крутку не резервируем:
+    новое средство — «подарок» тому, кто его прислал. Ожидание (Waiting) тоже
+    не создаём — оно списывает/возвращает зарезервированную крутку.
+
+    :param user: объект пользователя
+    :param product: продукт из БД или None
+    :param product_link: чистая ссылка на товар
+    :param task_type: тип задачи подборки
+    :param product_service: экземпляр ProductService
+    :param selection_service: экземпляр SelectionService
+    :return: словарь со статусом и сообщением для пользователя
+    """
+    # Сайт отдал не все критичные поля — повторный парсинг не поможет
+    if product and product.fill_status == ProductFillStatus.INCOMPLETE:
+        logger.info(
+            "[ORCHESTRATOR] Продукт %s спарсен не полностью: %s",
+            product.id,
+            product.last_error,
+        )
+        return {
+            "status": "error",
+            "message": "Не можем разобрать средство по этой ссылке.",
+        }
+
+    if not product:
+        try:
+            product = await product_service.create_product(link_ga=product_link)
+        except IntegrityError:
+            # Ту же ссылку в эту же миллисекунду создал другой запрос (unique на link_ga)
+            await product_service.repository.session.rollback()
+            logger.info(
+                "[ORCHESTRATOR] Продукт по ссылке %s уже создаёт другой запрос",
+                product_link,
+            )
+            return {
+                "status": "parsing",
+                "message": "Средство уже разбираем. Отправьте ссылку ещё раз через минуту.",
+            }
+
+    # EMPTY / FAILED / IN_PROGRESS — парсим (заново). Если задача по этому
+    # продукту уже идёт, вторая упрётся в parse_lock и выйдет.
+    new_selection = await selection_service.create_selection(
+        product_id=product.id,
+        task_type=task_type,
+        status=SelectionStatus.PARSING,
+    )
+    await selection_service.add_user_to_selection(selection=new_selection, user=user)
+
+    run_parse_product_task.delay(product_id=product.id)
+
+    logger.info(
+        "[ORCHESTRATOR] Парсинг продукта %s (подборка %s) отправлен в Celery",
+        product.id,
+        new_selection.id,
+    )
+    return {
+        "status": "parsing",
+        "message": "Разбираем новое средство. Пришлём подборку, когда будет готово.",
+    }
+
+
 async def get_or_prepare_selection(
     user: User,
     product_link: str,
@@ -66,6 +158,9 @@ async def get_or_prepare_selection(
     :param session: async сессия SQLAlchemy
     :return: словарь со статусом и сообщением для пользователя
     """
+
+    # Чистая ссылка: по ней ищем подборку и продукт
+    product_link = normalize_link(product_link)
 
     # Инициализируем сервисы
     selection_service = SelectionService(SelectionRepository(session))
@@ -121,8 +216,9 @@ async def get_or_prepare_selection(
             "pdf_url": selection.pdf_url,
         }
 
-    # 3. Подборка есть, но ещё в процессе
+    # 3. Подборка есть, но ещё в процессе (парсинг или генерация)
     if selection and selection.selection_status in (
+        SelectionStatus.PARSING,
         SelectionStatus.QUEUE,
         SelectionStatus.PROCESS,
     ):
@@ -171,16 +267,16 @@ async def get_or_prepare_selection(
     # 4.1 Ищем продукт в БД
     product = await product_service.get_product_by_link(link=product_link)
 
-    # 4.2 Если продукта нет — заглушка парсера
-    if not product:
-        logger.info(
-            "[ORCHESTRATOR] Включается парсер для ссылки %s",
-            product_link,
+    # 4.2 Продукта нет или он не спарсен (fill_status не DONE) — парсим
+    if not product or not product_service.is_filled(product):
+        return await start_parsing(
+            user=user,
+            product=product,
+            product_link=product_link,
+            task_type=task_type,
+            product_service=product_service,
+            selection_service=selection_service,
         )
-        return {
-            "status": "parsing",
-            "message": "Запущен парсинг данного продукта — попробуйте позже.",
-        }
 
     # 4.3 Резервируем крутку
     success, error_message = await try_reserve_spin_or_return_message(

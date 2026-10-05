@@ -1,10 +1,12 @@
 # infrastructure/celery/tasks.py
 
+import asyncio
 import json
 import logging
 from contextlib import contextmanager
 from dataclasses import asdict
 from datetime import datetime, timezone
+from pathlib import Path
 
 from redis import Redis
 from redis.exceptions import RedisError
@@ -20,19 +22,27 @@ from apps.content_generation.openai.utils.utils_errors import (
 )
 from apps.orchestrator.encoders import CustomJSONEncoder
 from apps.package.models import Package, UserPackage  # noqa: F401
+from apps.parser.exceptions import ParserError
+from apps.parser.media import ImageUploader
+from apps.parser.proxy.pool import ProxyPool
+from apps.parser.proxy.source import load_from_file
+from apps.parser.service import ProductParser
 from apps.pdf_generation.main import generate_selection_pdf
 from apps.pdf_generation.utils import (
     calculate_price_full_request,
     convert_analysis_to_pdf_data,
     convert_json_openai_to_list,
 )
-from apps.products.models import Product  # noqa: F401
+from apps.products.models import Product, ProductFillStatus
+from apps.products.product_service import ProductService
+from apps.products.sync_repository import SyncProductRepository
 from apps.selection.models import Selection, SelectionStatus, SelectionTaskType
 from apps.users.models import User  # noqa: F401
 from apps.waiting.models import Waiting, WaitingStatus
 from core.config import settings
 from core.database import sync_session
 from infrastructure.celery.app import celery_app
+from infrastructure.s3.service import s3_service
 
 logger = logging.getLogger(__name__)
 
@@ -446,3 +456,129 @@ def run_waiting_task() -> None:
                     )
 
             session.commit()
+
+
+# Парсер создаётся один раз на процесс воркера (при первой задаче):
+# пул прокси живёт между задачами, выкинутые прокси не возвращаются.
+# Пул опустел (все выкинуты) — перечитываем proxies.txt, иначе воркер
+# до перезапуска отвечал бы NoAliveProxy на каждый парсинг.
+# При импорте модуля не создаём — tasks.py импортирует и API.
+_parser: ProductParser | None = None
+
+
+def _get_parser() -> ProductParser:
+    """
+    Парсер с пулом из settings.PARSER_PROXIES_FILE и общим s3_service.
+    Пул пуст — создаём заново из файла.
+    """
+    global _parser
+    if _parser is None or len(_parser.pool) == 0:
+        pool = ProxyPool(load_from_file(Path(settings.PARSER_PROXIES_FILE)))
+        _parser = ProductParser(pool, ImageUploader(s3_service))
+    return _parser
+
+
+# Худший случай парсинга: ~29 прокси × (10 с проверка + 60 с карточка) ≈ 35 мин.
+# По истечении Celery бросает SoftTimeLimitExceeded → except Exception → FAILED.
+PARSE_SOFT_TIME_LIMIT_SECONDS = 40 * 60
+
+# TTL lock'а парсинга: больше soft_time_limit, чтобы живая задача не потеряла lock
+PARSE_LOCK_SECONDS = 45 * 60
+
+
+@celery_app.task(soft_time_limit=PARSE_SOFT_TIME_LIMIT_SECONDS)
+def run_parse_product_task(product_id: int) -> None:
+    """
+    Celery-задача парсинга продукта.
+    Запускается оркестратором, когда продукта ещё нет в БД (строка Product уже создана).
+
+    Шаги:
+    0. Redis-lock parse_lock:<product_id>; занят или продукт уже DONE — выходим
+    1. fill_status = IN_PROGRESS
+    2. Парсит ссылку (сайт ЗЯ → ParsedProduct, картинка в S3)
+    3. Записывает спарсенные поля в Product
+    4. Все критичные поля есть → DONE, иначе INCOMPLETE
+    5. Ошибка парсинга → FAILED + текст в last_error
+
+    :param product_id: ID продукта
+    """
+    # Lock: одну ссылку парсит только одна задача (повтор от RabbitMQ при acks_late,
+    # перезапуск beat-страховкой). Живёт дольше soft_time_limit — если воркер умер,
+    # ключ исчезнет сам, и следующий запуск пройдёт.
+    with redis_lock(
+        f"parse_lock:{product_id}", expire=PARSE_LOCK_SECONDS
+    ) as acquired:
+        if not acquired:
+            logger.info("[PARSE] Продукт %s уже парсится, пропускаем", product_id)
+            return
+
+        with sync_session() as session:
+            repository = SyncProductRepository(session)
+            product = repository.get_by_id(product_id)
+
+            if not product:
+                logger.error("[PARSE] Продукт %s не найден", product_id)
+                return
+
+            if product.fill_status == ProductFillStatus.DONE:
+                logger.info("[PARSE] Продукт %s уже спарсен, пропускаем", product_id)
+                return
+
+            # Коммитим сразу, чтобы IN_PROGRESS видели остальные соединения
+            repository.update(product_id, {"fill_status": ProductFillStatus.IN_PROGRESS})
+            session.commit()
+
+            try:
+                # Celery синхронный, парсер async — как с PDF, через asyncio.run
+                parsed = asyncio.run(_get_parser().parse(product.link_ga))
+
+            except ParserError as exc:
+                logger.warning(
+                    "[PARSE] Не удалось спарсить product_id=%s: %s: %s",
+                    product_id,
+                    type(exc).__name__,
+                    exc,
+                )
+                repository.update(
+                    product_id,
+                    {
+                        "fill_status": ProductFillStatus.FAILED,
+                        "last_error": f"{type(exc).__name__}: {exc}",
+                    },
+                )
+                session.commit()
+                return
+
+            except Exception as exc:
+                # Любая другая ошибка — тоже FAILED, иначе продукт навсегда останется IN_PROGRESS
+                logger.exception("[PARSE] Неожиданная ошибка product_id=%s", product_id)
+                session.rollback()
+                repository.update(
+                    product_id,
+                    {
+                        "fill_status": ProductFillStatus.FAILED,
+                        "last_error": f"{type(exc).__name__}: {exc}",
+                    },
+                )
+                session.commit()
+                return
+
+            product = repository.update(product_id, parsed.to_dict())
+
+            missing = ProductService.missing_fields(product)
+            if missing:
+                product.fill_status = ProductFillStatus.INCOMPLETE
+                product.last_error = "Не хватает полей: " + ", ".join(missing)
+                logger.warning(
+                    "[PARSE] Продукт %s спарсен не полностью, нет: %s",
+                    product_id,
+                    missing,
+                )
+            else:
+                product.fill_status = ProductFillStatus.DONE
+                product.last_error = None
+                logger.info("[PARSE] Продукт %s спарсен", product_id)
+
+            session.commit()
+
+            # Шаг 3 (parser_integration.md): здесь задача продолжит подборку

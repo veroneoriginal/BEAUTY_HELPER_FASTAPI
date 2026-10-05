@@ -3,15 +3,16 @@
 # тестовая (beauty_helper_test). Проверяем 4 ветки флоу и движение круток.
 
 from decimal import Decimal
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
+from sqlalchemy.exc import IntegrityError
 
 from apps.balance.models import UserBalance
 from apps.balance.repository import BalanceRepository
 from apps.orchestrator import service as orchestrator
 from apps.orchestrator.service import get_or_prepare_selection
-from apps.products.models import Product
+from apps.products.models import Product, ProductFillStatus
 from apps.selection.models import (
     Selection,
     SelectionStatus,
@@ -50,9 +51,11 @@ async def _make_balance(session, user_id, spins=5, reserved=0) -> UserBalance:
     return balance
 
 
-async def _make_product(session, link="https://gy.ru/p1") -> Product:
+async def _make_product(
+    session, link="https://gy.ru/p1", fill_status=ProductFillStatus.DONE
+) -> Product:
     """
-    Создаёт продукт со всеми NOT NULL-полями.
+    Создаёт продукт со всеми NOT NULL-полями (по умолчанию спарсенный — DONE).
     """
     product = Product(
         link_ga=link,
@@ -64,6 +67,7 @@ async def _make_product(session, link="https://gy.ru/p1") -> Product:
         measure_unit="мл",
         price_rub=Decimal("1990.00"),
         brand="TestBrand",
+        fill_status=fill_status,
     )
     session.add(product)
     await session.flush()
@@ -85,26 +89,156 @@ async def _make_selection(session, product_id, status, pdf_url=None) -> Selectio
     return selection
 
 
-# === Ветка 4: parsing (продукта нет в БД) ===
+# === Ветка 4: parsing (продукта нет в БД или он не спарсен) ===
+
+
+async def _parsing_selection(session, link):
+    """
+    Подборка по ссылке после запроса (последняя по id).
+    """
+    return await SelectionRepository(session).get_by_product_and_task_type(
+        link_ga=link,
+        task_type=TASK_TYPE,
+    )
 
 
 async def test_parsing_branch_when_product_missing(db_session):
     """
-    Продукта нет → статус parsing, крутка НЕ резервируется.
+    Продукта нет → создаются Product (EMPTY) и подборка PARSING, пользователь
+    привязан, задача парсинга в Celery; крутка НЕ резервируется, ожидания нет.
+    """
+    user = await _make_user(db_session)
+    await _make_balance(db_session, user.id, spins=5)
+    link = "https://gy.ru/unknown"
+
+    with patch.object(orchestrator, "run_parse_product_task") as task:
+        result = await get_or_prepare_selection(
+            user=user,
+            product_link=link,
+            task_type=TASK_TYPE,
+            session=db_session,
+        )
+
+    assert result["status"] == "parsing"
+    selection = await _parsing_selection(db_session, link)
+    assert selection.selection_status == SelectionStatus.PARSING
+    assert selection.product.fill_status == ProductFillStatus.EMPTY
+    task.delay.assert_called_once_with(product_id=selection.product_id)
+    assert await SelectionRepository(db_session).has_user(selection.id, user.id)
+    assert (
+        await WaitingRepository(db_session).get_open_by_user_and_selection(
+            user.id, selection.id
+        )
+        is None
+    )
+    balance = await BalanceRepository(db_session).get_by_user_id(user.id)
+    assert (balance.spins, balance.reserved_spins) == (5, 0)
+
+
+async def test_parsing_branch_when_product_failed(db_session):
+    """
+    Продукт есть, парсинг упал (FAILED) → парсим заново: подборка PARSING,
+    генерация не запускается, крутка НЕ резервируется.
+    """
+    user = await _make_user(db_session)
+    await _make_balance(db_session, user.id, spins=5)
+    product = await _make_product(db_session, fill_status=ProductFillStatus.FAILED)
+
+    with (
+        patch.object(orchestrator, "run_parse_product_task") as parse_task,
+        patch.object(orchestrator, "run_create_selection_on_task") as task,
+    ):
+        result = await get_or_prepare_selection(
+            user=user,
+            product_link=product.link_ga,
+            task_type=TASK_TYPE,
+            session=db_session,
+        )
+
+    assert result["status"] == "parsing"
+    parse_task.delay.assert_called_once_with(product_id=product.id)
+    task.delay.assert_not_called()
+    selection = await _parsing_selection(db_session, product.link_ga)
+    assert selection.selection_status == SelectionStatus.PARSING
+    balance = await BalanceRepository(db_session).get_by_user_id(user.id)
+    assert (balance.spins, balance.reserved_spins) == (5, 0)
+
+
+async def test_incomplete_product_not_parsed_again(db_session):
+    """
+    Продукт INCOMPLETE → «не можем разобрать», ни парсинга, ни подборки.
+    """
+    user = await _make_user(db_session)
+    await _make_balance(db_session, user.id, spins=5)
+    product = await _make_product(
+        db_session, fill_status=ProductFillStatus.INCOMPLETE
+    )
+
+    with patch.object(orchestrator, "run_parse_product_task") as parse_task:
+        result = await get_or_prepare_selection(
+            user=user,
+            product_link=product.link_ga,
+            task_type=TASK_TYPE,
+            session=db_session,
+        )
+
+    assert result["status"] == "error"
+    parse_task.delay.assert_not_called()
+    assert await _parsing_selection(db_session, product.link_ga) is None
+
+
+async def test_parsing_duplicate_request_does_not_start_second_task(db_session):
+    """
+    Тот же пользователь прислал ссылку ещё раз, пока подборка PARSING →
+    «уже в работе», вторая задача не ставится, крутка не резервируется.
+    """
+    user = await _make_user(db_session)
+    await _make_balance(db_session, user.id, spins=5)
+    link = "https://gy.ru/unknown"
+
+    with patch.object(orchestrator, "run_parse_product_task") as parse_task:
+        for _ in range(2):
+            result = await get_or_prepare_selection(
+                user=user,
+                product_link=link,
+                task_type=TASK_TYPE,
+                session=db_session,
+            )
+
+    assert result["status"] == "pending"
+    parse_task.delay.assert_called_once()
+    balance = await BalanceRepository(db_session).get_by_user_id(user.id)
+    assert (balance.spins, balance.reserved_spins) == (5, 0)
+
+
+async def test_parsing_race_on_product_create(db_session):
+    """
+    Тот же Product в эту же миллисекунду создал другой запрос (IntegrityError) →
+    «уже разбираем», задача не ставится.
     """
     user = await _make_user(db_session)
     await _make_balance(db_session, user.id, spins=5)
 
-    result = await get_or_prepare_selection(
-        user=user,
-        product_link="https://gy.ru/unknown",
-        task_type=TASK_TYPE,
-        session=db_session,
-    )
+    with (
+        patch.object(
+            orchestrator.ProductService,
+            "create_product",
+            side_effect=IntegrityError("insert", {}, Exception("duplicate")),
+        ),
+        patch.object(orchestrator, "run_parse_product_task") as parse_task,
+        # Настоящий rollback откатил бы транзакцию тестовой фикстуры
+        patch.object(db_session, "rollback", AsyncMock()) as rollback,
+    ):
+        result = await get_or_prepare_selection(
+            user=user,
+            product_link="https://gy.ru/unknown",
+            task_type=TASK_TYPE,
+            session=db_session,
+        )
 
     assert result["status"] == "parsing"
-    balance = await BalanceRepository(db_session).get_by_user_id(user.id)
-    assert (balance.spins, balance.reserved_spins) == (5, 0)
+    rollback.assert_awaited_once()
+    parse_task.delay.assert_not_called()
 
 
 # === Ветка created (продукт есть, подборки нет) ===
@@ -275,3 +409,45 @@ async def test_done_branch_existing_user_not_charged(db_session):
     assert result["status"] == "done"
     balance = await BalanceRepository(db_session).get_by_user_id(user.id)
     assert (balance.spins, balance.reserved_spins) == (2, 0)
+
+
+# === normalize_link: одна карточка — одна ссылка ===
+
+
+@pytest.mark.parametrize(
+    "link",
+    [
+        "https://goldapple.ru/19000002015-moisture-surge-100h",
+        "https://goldapple.ru/19000002015-moisture-surge-100h/",
+        "https://goldapple.ru/19000002015-moisture-surge-100h?utm_source=tg",
+        "https://goldapple.ru/19000002015-moisture-surge-100h/?utm=tg#reviews",
+        "  HTTPS://GoldApple.ru/19000002015-moisture-surge-100h  ",
+    ],
+)
+def test_normalize_link(link):
+    """
+    Метки, якорь, / на конце, пробелы и регистр хоста не дают разных ссылок.
+    """
+    assert (
+        orchestrator.normalize_link(link)
+        == "https://goldapple.ru/19000002015-moisture-surge-100h"
+    )
+
+
+async def test_dirty_link_finds_existing_product(db_session):
+    """
+    Ссылка с метками находит продукт, сохранённый по чистой ссылке.
+    """
+    user = await _make_user(db_session)
+    await _make_balance(db_session, user.id, spins=3)
+    product = await _make_product(db_session)
+
+    with patch.object(orchestrator, "run_create_selection_on_task"):
+        result = await get_or_prepare_selection(
+            user=user,
+            product_link=product.link_ga + "/?utm_source=tg",
+            task_type=TASK_TYPE,
+            session=db_session,
+        )
+
+    assert result["status"] == "created"

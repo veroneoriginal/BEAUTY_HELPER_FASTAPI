@@ -30,15 +30,17 @@ class SelectionService:
         self,
         product_id: int,
         task_type: SelectionTaskType,
+        status: SelectionStatus = SelectionStatus.QUEUE,
     ) -> Selection:
         """
-        Создаёт подборку в статусе QUEUE.
+        Создаёт подборку в статусе QUEUE
+        (или PARSING — продукт ещё парсится).
         """
         selection = await self.repository.create(
             {
                 "product_id": product_id,
                 "task_type": task_type,
-                "selection_status": SelectionStatus.QUEUE,
+                "selection_status": status,
             }
         )
         await self.repository.session.commit()
