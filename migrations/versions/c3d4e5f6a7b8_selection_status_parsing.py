@@ -31,8 +31,7 @@ def downgrade() -> None:
     )
     op.execute("ALTER TYPE selection_status RENAME TO selection_status_old")
     op.execute(
-        "CREATE TYPE selection_status AS ENUM "
-        "('QUEUE', 'PROCESS', 'DONE', 'FAILED')"
+        "CREATE TYPE selection_status AS ENUM ('QUEUE', 'PROCESS', 'DONE', 'FAILED')"
     )
     op.execute(
         "ALTER TABLE selections ALTER COLUMN selection_status TYPE selection_status "

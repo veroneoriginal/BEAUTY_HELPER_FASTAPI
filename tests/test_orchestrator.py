@@ -170,9 +170,7 @@ async def test_incomplete_product_not_parsed_again(db_session):
     """
     user = await _make_user(db_session)
     await _make_balance(db_session, user.id, spins=5)
-    product = await _make_product(
-        db_session, fill_status=ProductFillStatus.INCOMPLETE
-    )
+    product = await _make_product(db_session, fill_status=ProductFillStatus.INCOMPLETE)
 
     with patch.object(orchestrator, "run_parse_product_task") as parse_task:
         result = await get_or_prepare_selection(

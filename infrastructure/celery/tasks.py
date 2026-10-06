@@ -505,9 +505,7 @@ def run_parse_product_task(product_id: int) -> None:
     # Lock: одну ссылку парсит только одна задача (повтор от RabbitMQ при acks_late,
     # перезапуск beat-страховкой). Живёт дольше soft_time_limit — если воркер умер,
     # ключ исчезнет сам, и следующий запуск пройдёт.
-    with redis_lock(
-        f"parse_lock:{product_id}", expire=PARSE_LOCK_SECONDS
-    ) as acquired:
+    with redis_lock(f"parse_lock:{product_id}", expire=PARSE_LOCK_SECONDS) as acquired:
         if not acquired:
             logger.info("[PARSE] Продукт %s уже парсится, пропускаем", product_id)
             return
@@ -525,7 +523,9 @@ def run_parse_product_task(product_id: int) -> None:
                 return
 
             # Коммитим сразу, чтобы IN_PROGRESS видели остальные соединения
-            repository.update(product_id, {"fill_status": ProductFillStatus.IN_PROGRESS})
+            repository.update(
+                product_id, {"fill_status": ProductFillStatus.IN_PROGRESS}
+            )
             session.commit()
 
             try:
