@@ -105,7 +105,7 @@ async def _parsing_selection(session, link):
 async def test_parsing_branch_when_product_missing(db_session):
     """
     Продукта нет → создаются Product (EMPTY) и подборка PARSING, пользователь
-    привязан, задача парсинга в Celery; крутка НЕ резервируется, ожидания нет.
+    привязан, задача парсинга в Celery; крутка зарезервирована, ожидание открыто.
     """
     user = await _make_user(db_session)
     await _make_balance(db_session, user.id, spins=5)
@@ -129,16 +129,16 @@ async def test_parsing_branch_when_product_missing(db_session):
         await WaitingRepository(db_session).get_open_by_user_and_selection(
             user.id, selection.id
         )
-        is None
+        is not None
     )
     balance = await BalanceRepository(db_session).get_by_user_id(user.id)
-    assert (balance.spins, balance.reserved_spins) == (5, 0)
+    assert (balance.spins, balance.reserved_spins) == (4, 1)
 
 
 async def test_parsing_branch_when_product_failed(db_session):
     """
     Продукт есть, парсинг упал (FAILED) → парсим заново: подборка PARSING,
-    генерация не запускается, крутка НЕ резервируется.
+    генерация не запускается, крутка зарезервирована.
     """
     user = await _make_user(db_session)
     await _make_balance(db_session, user.id, spins=5)
@@ -161,7 +161,7 @@ async def test_parsing_branch_when_product_failed(db_session):
     selection = await _parsing_selection(db_session, product.link_ga)
     assert selection.selection_status == SelectionStatus.PARSING
     balance = await BalanceRepository(db_session).get_by_user_id(user.id)
-    assert (balance.spins, balance.reserved_spins) == (5, 0)
+    assert (balance.spins, balance.reserved_spins) == (4, 1)
 
 
 async def test_incomplete_product_not_parsed_again(db_session):
@@ -188,7 +188,7 @@ async def test_incomplete_product_not_parsed_again(db_session):
 async def test_parsing_duplicate_request_does_not_start_second_task(db_session):
     """
     Тот же пользователь прислал ссылку ещё раз, пока подборка PARSING →
-    «уже в работе», вторая задача не ставится, крутка не резервируется.
+    «уже в работе», вторая задача не ставится, вторая крутка не резервируется.
     """
     user = await _make_user(db_session)
     await _make_balance(db_session, user.id, spins=5)
@@ -206,7 +206,28 @@ async def test_parsing_duplicate_request_does_not_start_second_task(db_session):
     assert result["status"] == "pending"
     parse_task.delay.assert_called_once()
     balance = await BalanceRepository(db_session).get_by_user_id(user.id)
-    assert (balance.spins, balance.reserved_spins) == (5, 0)
+    assert (balance.spins, balance.reserved_spins) == (4, 1)
+
+
+async def test_parsing_without_spins_returns_error(db_session):
+    """
+    Новая ссылка, круток нет → ошибка баланса, ни подборки, ни задачи парсинга.
+    """
+    user = await _make_user(db_session)
+    await _make_balance(db_session, user.id, spins=0)
+    link = "https://gy.ru/unknown"
+
+    with patch.object(orchestrator, "run_parse_product_task") as parse_task:
+        result = await get_or_prepare_selection(
+            user=user,
+            product_link=link,
+            task_type=TASK_TYPE,
+            session=db_session,
+        )
+
+    assert result["status"] == "error"
+    parse_task.delay.assert_not_called()
+    assert await _parsing_selection(db_session, link) is None
 
 
 async def test_parsing_race_on_product_create(db_session):

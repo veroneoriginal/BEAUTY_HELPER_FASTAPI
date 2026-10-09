@@ -9,10 +9,14 @@
 # Проверяем через httpx, а не через Playwright: поднимать браузер ради
 # «отвечает ли прокси» слишком тяжело. SOCKS5 в httpx — через httpx[socks].
 
+import logging
+
 import httpx
 from socksio.exceptions import ProtocolError as SocksProtocolError
 
 from apps.parser.proxy.models import Proxy
+
+logger = logging.getLogger(__name__)
 
 CHECK_URL = "https://httpbin.org/ip"
 
@@ -37,13 +41,16 @@ async def is_alive(
             response.raise_for_status()
             # httpbin отвечает {"origin": "<ip>"}; нет поля — отвечал не httpbin
             return "origin" in response.json()
-    except httpx.HTTPError:
+    except httpx.HTTPError as exc:
         # не подключился, таймаут, плохой статус
+        logger.info("[PROXY] %s мёртвый: %s", proxy, type(exc).__name__)
         return False
     except SocksProtocolError:
         # SOCKS5-прокси ответил не по протоколу (сломан или это не SOCKS5).
         # httpx не заворачивает эту ошибку в свою, ловим отдельно
+        logger.info("[PROXY] %s мёртвый: SOCKS5 ответил не по протоколу", proxy)
         return False
     except ValueError:
         # в ответе не JSON: прокси подсунул свою страницу
+        logger.info("[PROXY] %s мёртвый: вместо ответа httpbin своя страница", proxy)
         return False

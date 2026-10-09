@@ -14,9 +14,13 @@
 # Выкидываем только из пула в памяти, файл со списком не трогаем:
 # бесплатный прокси, мёртвый сейчас, через час может ожить.
 
+import logging
+
 from apps.parser.exceptions import NoAliveProxy
 from apps.parser.proxy.checker import is_alive
 from apps.parser.proxy.models import Proxy
+
+logger = logging.getLogger(__name__)
 
 
 class ProxyPool:
@@ -48,14 +52,22 @@ class ProxyPool:
 
         :raises NoAliveProxy: живых не осталось
         """
+        logger.info("[PROXY] Ищем живой прокси, в пуле %s", len(self._proxies))
+
         while self._proxies:
             proxy = self._proxies[0]
 
             if await is_alive(proxy):
+                logger.info(
+                    "[PROXY] Найден живой прокси %s, в пуле %s",
+                    proxy,
+                    len(self._proxies),
+                )
                 return proxy
 
             self.mark_bad(proxy)
 
+        logger.warning("[PROXY] В пуле не осталось живых прокси")
         raise NoAliveProxy("В пуле не осталось живых прокси")
 
     def mark_bad(self, proxy: Proxy) -> None:

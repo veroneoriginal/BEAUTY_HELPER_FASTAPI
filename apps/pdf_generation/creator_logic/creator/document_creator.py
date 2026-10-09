@@ -218,6 +218,8 @@ class PDFFlowablesCreator:
         self.data = data
         self.flowables: list[Flowable] = []
         self.image_in_bytes = image_in_bytes
+        # Ширина картинки на странице, поинты — для текста у её края
+        self.image_width: float | None = None
 
     def create_flowables(self) -> list[Flowable]:
         """
@@ -287,6 +289,7 @@ class PDFFlowablesCreator:
                         flowable_data.get("Текст", None)
                         or self.data[flowable_data["Ключ в подборке"]]
                     )
+                    image_offset = flowable_data.get("Отступ от края картинки")
                     self.flowables.append(
                         FreeText(
                             text=text,
@@ -297,6 +300,10 @@ class PDFFlowablesCreator:
                             font_color=flowable_data.get("font_color"),
                             bold=flowable_data.get("bold"),
                             align=flowable_data.get("align"),
+                            image_width=(
+                                self.image_width if image_offset is not None else None
+                            ),
+                            image_offset=_pixels_to_points(image_offset or 0),
                         )
                     )
 
@@ -343,6 +350,7 @@ class PDFFlowablesCreator:
         """
         img_stream = BytesIO(img_bytes)
         img = Image(img_stream, width=width, height=height, kind="proportional")
+        self.image_width = img.drawWidth
         self.flowables.append(img)
 
     def _create_spacer(self, width: int, height: int) -> None:

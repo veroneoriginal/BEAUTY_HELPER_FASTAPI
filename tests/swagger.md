@@ -23,14 +23,14 @@ https://goldapple.ru/19000002015-moisture-surge-100h
 
 ## Регистрация пользователя
 {
-"email": "user_number1@example.com",
+"email": "user_number1111@example.com",
 "password": "12379796n1"
 }
 
 ### Получаем 201 Response body
 {
 "message": "Пользователь зарегистрирован. Проверьте почту для подтверждения email.",
-"confirmation_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwidHlwZSI6ImVtYWlsX2NvbmZpcm1hdGlvbiIsImV4cCI6MTc4MTYzNjExMH0.WzdBIAKufMj0mDUH-8ngHi8gRI7fcYMYr29D1zMIAnk"
+"confirmation_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwidHlwZSI6ImVtYWlsX2NvbmZpcm1hdGlvbiIsImV4cCI6MTc5MTY0MDg0Nn0.DNVs3oIC4hoV0NoL_KadG7RHde8SQIfpjFVnakwUaDE"
 }
 
 ## Подтверждение емейл
@@ -49,8 +49,8 @@ https://goldapple.ru/19000002015-moisture-surge-100h
 
 ### Получаем 200 Response body
 {
-"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgxNjEyNTk2LCJ0eXBlIjoiYWNjZXNzIn0.jKO6WeO7co4XnuW1_461BuXRGyRn7k5KefukNN_d46w",
-"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzgyMjE1NTk2LCJ0eXBlIjoicmVmcmVzaCJ9.yr6zadZJboCUul8HbE0AhowK8kJCsQZAnEmRZ1tmQjA",
+"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiZXhwIjoxNzkxNTU2Mjg2LCJ0eXBlIjoiYWNjZXNzIn0.b4ZlESzK8Luv6We35bilBfuIdtK-CJ_A7J8AoFRRo0Y",
+"refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiZXhwIjoxNzkyMTU5Mjg2LCJ0eXBlIjoicmVmcmVzaCJ9.UbFIYqh9E5rY7tYKlgBSw7ndj5GBLC13u1vlDzo-MiA",
 "token_type": "bearer"
 }
 

@@ -9,6 +9,9 @@ class FreeText(Flowable):
     """
     Абсолютно позиционированный текст, рисуется вне фрейма.
     Координаты (x, y) — от верхнего левого угла страницы (как и в других Free*).
+
+    image_width — прижать текст к левому краю картинки над ним: картинка стоит
+    по центру фрейма, x = её левый край + image_offset, но не левее заданного x.
     """
 
     def __init__(
@@ -21,6 +24,8 @@ class FreeText(Flowable):
         font_color: str = "#FFFFFFDD",
         bold: bool = False,
         align: str = "left",  # left, center, right
+        image_width: float | None = None,
+        image_offset: float = 0,
     ):
         super().__init__()
         self.absolute = 1
@@ -34,15 +39,25 @@ class FreeText(Flowable):
             hasAlpha=True,
         )
         self.align = align.lower()
+        self.image_width = image_width
+        self.image_offset = image_offset
+        self.avail_width = 0
         self._fixedHeight = 0
         self._fixedWidth = 0
 
     def wrap(self, availWidth, availHeight):
+        # Ширина фрейма — по ней считаем левый край картинки
+        self.avail_width = availWidth
         return (0, 0)
 
     def draw(self):
         c = self.canv
         c.saveState()
+
+        x = self.x
+        if self.image_width is not None:
+            image_left = (self.avail_width - self.image_width) / 2
+            x = max(self.x, image_left + self.image_offset)
 
         c.setFont(self.font_name, self.font_size)
         c.setFillColor(self.font_color)
@@ -50,11 +65,11 @@ class FreeText(Flowable):
         text_width = c.stringWidth(self.text, self.font_name, self.font_size)
 
         if self.align == "center":
-            draw_x = self.x - text_width / 2
+            draw_x = x - text_width / 2
         elif self.align == "right":
-            draw_x = self.x - text_width
+            draw_x = x - text_width
         else:  # left
-            draw_x = self.x
+            draw_x = x
 
         # Внимание: координаты в ReportLab начинаются от низа страницы
         c.drawString(draw_x, self.y, self.text)

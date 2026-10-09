@@ -5,7 +5,7 @@ import json
 import logging
 from contextlib import contextmanager
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from redis import Redis
@@ -57,6 +57,11 @@ redis_client = Redis(
 # прежде, чем счесть задачу зависшей и перезапустить. Не меньше TTL Redis-lock
 # задачи (selection_lock, expire=600), иначе перезапуск упрётся в живой lock.
 STUCK_PROCESS_SECONDS = 600
+
+# Сколько секунд подборка может пробыть в PARSING, прежде чем beat-страховка
+# разберётся с ней сама. Больше TTL parse_lock (45 мин) — к этому моменту
+# lock упавшей задачи точно истёк, и перезапуск парсинга не упрётся в него.
+STUCK_PARSING_SECONDS = 50 * 60
 
 
 @contextmanager
@@ -361,6 +366,127 @@ def run_create_selection_on_task(self, selection_id: int) -> None:
                 raise self.retry(exc=exc)
 
 
+def _continue_selections_after_parse(session, product: Product) -> None:
+    """
+    Двигает дальше все подборки продукта в статусе PARSING по итогу парсинга.
+
+    - продукт DONE → подборки QUEUE и запуск генерации;
+    - продукт FAILED / INCOMPLETE → подборки FAILED, причина из last_error,
+      ожидающим (кто присоединился во время парсинга) возвращается крутка.
+
+    Подборки берём условным UPDATE ... WHERE status = PARSING: если их
+    одновременно двигает beat-страховка, каждую подборку двинет только один.
+
+    :param session: синхронная сессия SQLAlchemy
+    :param product: продукт с итоговым fill_status (DONE / FAILED / INCOMPLETE)
+    """
+    if product.fill_status == ProductFillStatus.DONE:
+        selection_ids = (
+            session.execute(
+                update(Selection)
+                .where(
+                    Selection.product_id == product.id,
+                    Selection.selection_status == SelectionStatus.PARSING,
+                )
+                .values(selection_status=SelectionStatus.QUEUE)
+                .returning(Selection.id)
+            )
+            .scalars()
+            .all()
+        )
+        # Коммитим до .delay(), чтобы задача генерации видела QUEUE
+        session.commit()
+
+        for selection_id in selection_ids:
+            run_create_selection_on_task.delay(selection_id=selection_id)
+            logger.info(
+                "[PARSE] Продукт %s спарсен, подборка %s отправлена на генерацию",
+                product.id,
+                selection_id,
+            )
+        return
+
+    selection_ids = (
+        session.execute(
+            update(Selection)
+            .where(
+                Selection.product_id == product.id,
+                Selection.selection_status == SelectionStatus.PARSING,
+            )
+            .values(
+                selection_status=SelectionStatus.FAILED,
+                error_message=product.last_error,
+            )
+            .returning(Selection.id)
+        )
+        .scalars()
+        .all()
+    )
+    for selection_id in selection_ids:
+        _release_spins_for_selection(session, selection_id)
+        logger.warning(
+            "[PARSE] Продукт %s не спарсен (%s), подборка %s → FAILED",
+            product.id,
+            product.fill_status,
+            selection_id,
+        )
+    session.commit()
+
+
+def _check_stuck_parsing(session) -> None:
+    """
+    Beat-страховка для подборок в PARSING дольше STUCK_PARSING_SECONDS.
+    Ищем их напрямую, а не через ожидания: у того, кто прислал ссылку, Waiting нет.
+
+    По fill_status продукта:
+    - DONE / FAILED / INCOMPLETE → подборки дальше, как в конце задачи парсинга;
+    - EMPTY / IN_PROGRESS → задача потерялась или воркер умер — парсим заново.
+
+    :param session: синхронная сессия SQLAlchemy
+    """
+    now = datetime.now(timezone.utc)
+    selections = (
+        session.execute(
+            select(Selection).where(
+                Selection.selection_status == SelectionStatus.PARSING,
+                Selection.updated_at < now - timedelta(seconds=STUCK_PARSING_SECONDS),
+            )
+        )
+        .scalars()
+        .all()
+    )
+
+    # Несколько подборок одного продукта (разные task_type) — один парсинг
+    products = {selection.product_id: selection.product for selection in selections}
+
+    for product_id, product in products.items():
+        if product.fill_status in (
+            ProductFillStatus.DONE,
+            ProductFillStatus.FAILED,
+            ProductFillStatus.INCOMPLETE,
+        ):
+            logger.warning(
+                "[WAITING_TASK] Подборки продукта %s зависли в PARSING, продукт %s",
+                product_id,
+                product.fill_status,
+            )
+            _continue_selections_after_parse(session, product)
+            continue
+
+        # Сдвигаем updated_at, чтобы следующая проверка была через
+        # STUCK_PARSING_SECONDS, а не через 30 секунд
+        for selection in selections:
+            if selection.product_id == product_id:
+                selection.updated_at = now
+
+        run_parse_product_task.delay(product_id=product_id)
+        logger.warning(
+            "[WAITING_TASK] Перезапуск парсинга продукта %s (%s, подборки в PARSING)",
+            product_id,
+            product.fill_status,
+        )
+
+
 @celery_app.task
 def run_waiting_task() -> None:
     """
@@ -371,6 +497,8 @@ def run_waiting_task() -> None:
     - DONE → списывает крутку, закрывает ожидание
     - FAILED → возвращает крутку, закрывает ожидание
     - QUEUE/PROCESS → перезапускает генерацию если зависла
+
+    Отдельно проверяет подборки, зависшие в PARSING (_check_stuck_parsing).
     """
     with redis_lock("waiting_lock", expire=55) as acquired:
         if not acquired:
@@ -457,6 +585,9 @@ def run_waiting_task() -> None:
 
             session.commit()
 
+            _check_stuck_parsing(session)
+            session.commit()
+
 
 # Парсер создаётся один раз на процесс воркера (при первой задаче):
 # пул прокси живёт между задачами, выкинутые прокси не возвращаются.
@@ -474,6 +605,11 @@ def _get_parser() -> ProductParser:
     global _parser
     if _parser is None or len(_parser.pool) == 0:
         pool = ProxyPool(load_from_file(Path(settings.PARSER_PROXIES_FILE)))
+        logger.info(
+            "[PARSE] Пул прокси загружен из %s: %s шт.",
+            settings.PARSER_PROXIES_FILE,
+            len(pool),
+        )
         _parser = ProductParser(pool, ImageUploader(s3_service))
     return _parser
 
@@ -499,6 +635,7 @@ def run_parse_product_task(product_id: int) -> None:
     3. Записывает спарсенные поля в Product
     4. Все критичные поля есть → DONE, иначе INCOMPLETE
     5. Ошибка парсинга → FAILED + текст в last_error
+    6. Подборки продукта из PARSING: DONE → QUEUE + генерация, иначе → FAILED
 
     :param product_id: ID продукта
     """
@@ -520,6 +657,9 @@ def run_parse_product_task(product_id: int) -> None:
 
             if product.fill_status == ProductFillStatus.DONE:
                 logger.info("[PARSE] Продукт %s уже спарсен, пропускаем", product_id)
+                # Подборка могла появиться, когда предыдущая задача уже
+                # двинула остальные, — не оставляем её в PARSING
+                _continue_selections_after_parse(session, product)
                 return
 
             # Коммитим сразу, чтобы IN_PROGRESS видели остальные соединения
@@ -528,6 +668,7 @@ def run_parse_product_task(product_id: int) -> None:
             )
             session.commit()
 
+            logger.info("[PARSE] Парсим продукт %s: %s", product_id, product.link_ga)
             try:
                 # Celery синхронный, парсер async — как с PDF, через asyncio.run
                 parsed = asyncio.run(_get_parser().parse(product.link_ga))
@@ -547,6 +688,7 @@ def run_parse_product_task(product_id: int) -> None:
                     },
                 )
                 session.commit()
+                _continue_selections_after_parse(session, product)
                 return
 
             except Exception as exc:
@@ -561,6 +703,7 @@ def run_parse_product_task(product_id: int) -> None:
                     },
                 )
                 session.commit()
+                _continue_selections_after_parse(session, product)
                 return
 
             product = repository.update(product_id, parsed.to_dict())
@@ -581,4 +724,5 @@ def run_parse_product_task(product_id: int) -> None:
 
             session.commit()
 
-            # Шаг 3 (parser_integration.md): здесь задача продолжит подборку
+            # Пользователь ждёт подборку, а не парсинг — продолжаем сами
+            _continue_selections_after_parse(session, product)

@@ -174,3 +174,4 @@ cython_debug/
 .drawio
 .$*
 htmlcov/
+apps/parser/tools/debug_page.html

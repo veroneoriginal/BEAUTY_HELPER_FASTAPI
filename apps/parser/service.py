@@ -14,6 +14,8 @@
 #   NoAliveProxy     — прокси в пуле кончились (бросает pool.get()) → наверх.
 # Картинка не загрузилась → image_key = None, парсинг не падает.
 
+import logging
+
 from apps.parser.dto import ParsedProduct
 from apps.parser.exceptions import SiteBlocked
 from apps.parser.goldapple.client import fetch
@@ -22,6 +24,8 @@ from apps.parser.goldapple.normalizer import normalize
 from apps.parser.media import ImageUploader
 from apps.parser.proxy.models import Proxy
 from apps.parser.proxy.pool import ProxyPool
+
+logger = logging.getLogger(__name__)
 
 
 class ProductParser:
@@ -54,6 +58,7 @@ class ProductParser:
         :raises ParseError: карточку не получилось разобрать
         """
         card, proxy = await self.fetch_card(link)
+        logger.info("[PARSE] Карточка получена через %s, разбираем", proxy)
 
         raw = extract(card, link)
         product = normalize(raw)
@@ -64,6 +69,13 @@ class ProductParser:
             product.article_ga,
             proxy,
         )
+        if product.image_key:
+            logger.info("[PARSE] Картинка в хранилище: %s", product.image_key)
+        else:
+            logger.warning(
+                "[PARSE] Картинку загрузить не удалось: %s",
+                product.image_link,
+            )
         return product
 
     async def fetch_card(self, link: str) -> tuple[dict, Proxy]:
@@ -81,9 +93,11 @@ class ProductParser:
         """
         while True:
             proxy = await self.pool.get()
+            logger.info("[PARSE] Загружаем карточку через %s", proxy)
             try:
                 card = await fetch(link, proxy)
-            except SiteBlocked:
+            except SiteBlocked as exc:
+                logger.warning("[PARSE] Сайт не пустил через %s: %s", proxy, exc)
                 self.pool.mark_bad(proxy)
                 continue
             return card, proxy

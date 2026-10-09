@@ -71,14 +71,15 @@ async def start_parsing(
     task_type: SelectionTaskType,
     product_service: ProductService,
     selection_service: SelectionService,
+    balance_service: BalanceService,
+    waiting_service: WaitingService,
 ) -> dict:
     """
     Продукта нет в БД или он не спарсен — запускаем парсинг.
 
-    Создаёт Product (если нет) и подборку в статусе PARSING, привязывает
-    пользователя и ставит задачу парсинга в Celery. Крутку не резервируем:
-    новое средство — «подарок» тому, кто его прислал. Ожидание (Waiting) тоже
-    не создаём — оно списывает/возвращает зарезервированную крутку.
+    Создаёт Product (если нет) и подборку в статусе PARSING, резервирует крутку,
+    привязывает пользователя, создаёт ожидание и ставит задачу парсинга в Celery.
+    Крутка списывается, когда подборка DONE, и возвращается, если FAILED.
 
     :param user: объект пользователя
     :param product: продукт из БД или None
@@ -86,6 +87,8 @@ async def start_parsing(
     :param task_type: тип задачи подборки
     :param product_service: экземпляр ProductService
     :param selection_service: экземпляр SelectionService
+    :param balance_service: экземпляр BalanceService
+    :param waiting_service: экземпляр WaitingService
     :return: словарь со статусом и сообщением для пользователя
     """
     # Сайт отдал не все критичные поля — повторный парсинг не поможет
@@ -115,6 +118,15 @@ async def start_parsing(
                 "message": "Средство уже разбираем. Отправьте ссылку ещё раз через минуту.",
             }
 
+    # Резервируем крутку. Нет круток — Product остаётся EMPTY, его
+    # распарсит следующий запрос по этой ссылке
+    success, error_message = await try_reserve_spin_or_return_message(
+        balance_service=balance_service,
+        user_id=user.id,
+    )
+    if not success:
+        return {"status": "error", "message": error_message}
+
     # EMPTY / FAILED / IN_PROGRESS — парсим (заново). Если задача по этому
     # продукту уже идёт, вторая упрётся в parse_lock и выйдет.
     new_selection = await selection_service.create_selection(
@@ -123,6 +135,10 @@ async def start_parsing(
         status=SelectionStatus.PARSING,
     )
     await selection_service.add_user_to_selection(selection=new_selection, user=user)
+    await waiting_service.get_or_create_waiting(
+        user_id=user.id,
+        selection_id=new_selection.id,
+    )
 
     run_parse_product_task.delay(product_id=product.id)
 
@@ -276,6 +292,8 @@ async def get_or_prepare_selection(
             task_type=task_type,
             product_service=product_service,
             selection_service=selection_service,
+            balance_service=balance_service,
+            waiting_service=waiting_service,
         )
 
     # 4.3 Резервируем крутку
