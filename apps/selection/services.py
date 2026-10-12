@@ -59,14 +59,14 @@ class SelectionService:
 
     async def get_by_product_and_task_type(
         self,
-        link_ga: str,
+        product_link: str,
         task_type: str | SelectionTaskType,
     ) -> Selection | None:
         """
         Найти подборку по ссылке на продукт и типу задачи.
         """
         return await self.repository.get_by_product_and_task_type(
-            link_ga=link_ga,
+            product_link=product_link,
             task_type=task_type,
         )
 

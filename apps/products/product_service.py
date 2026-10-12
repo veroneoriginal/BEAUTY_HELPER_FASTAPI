@@ -32,14 +32,14 @@ class ProductService:
 
     async def create_product(
         self,
-        link_ga: str,
+        product_link: str,
     ) -> Product:
         """
         Создание продукта по ссылке.
         На этом этапе заполняется только ссылка,
         остальные данные придут после парсинга.
         """
-        product = await self.repository.create({"link_ga": link_ga})
+        product = await self.repository.create({"product_link": product_link})
         await self.repository.session.commit()
         return product
 
@@ -53,7 +53,7 @@ class ProductService:
         """
         Получить продукт по ссылке из Золотого Яблока.
         """
-        return await self.repository.get_by_link_ga(link)
+        return await self.repository.get_by_product_link(link)
 
     async def get_all_products(self) -> Sequence[Product]:
         """

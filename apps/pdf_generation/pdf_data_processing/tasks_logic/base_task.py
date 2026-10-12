@@ -25,5 +25,5 @@ def get_base_info_by_product(
         "Тип продукта": capitalize_first_letter(
             product_data["product_type"] or product_data["product_type_detailed"]
         ),
-        "Артикул": f"артикул: {product_data['article_ga']}",
+        "Артикул": f"артикул: {product_data['article']}",
     }

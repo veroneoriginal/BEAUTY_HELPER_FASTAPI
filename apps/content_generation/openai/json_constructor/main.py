@@ -25,7 +25,7 @@ def get_json_scheme(
     :param data_collection: словарь с информацией по текущей подборке
     такого вида
     {
-        'article_ga': '19000002015',
+        'article': '19000002015',
         'image_key': None,
         'ingredients_list': ['Water',
                              'Dimethicone',

@@ -54,21 +54,21 @@ class Product(Base):
     )
 
     # === Ссылка и идентификация ===
-    link_ga: Mapped[str] = mapped_column(
+    product_link: Mapped[str] = mapped_column(
         String(2083),
         unique=True,
         nullable=False,
-        comment="Уникальная ссылка на карточку товара в Золотом Яблоке",
+        comment="Уникальная ссылка на карточку товара на сайте",
     )
     name: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True,
         comment="Название продукта",
     )
-    article_ga: Mapped[str | None] = mapped_column(
+    article: Mapped[str | None] = mapped_column(
         String(100),
         nullable=True,
-        comment="Артикул в Золотом Яблоке",
+        comment="Артикул товара на сайте",
     )
 
     # === Классификация ===
@@ -217,7 +217,7 @@ class Product(Base):
         """
         return ProductData(
             name=self.name,
-            article_ga=self.article_ga,
+            article=self.article,
             image_key=self.image_key,
             product_type=self.product_type,
             product_type_detailed=self.product_type_detailed,
@@ -230,4 +230,4 @@ class Product(Base):
         )
 
     def __repr__(self) -> str:
-        return f"Product(id={self.id}, name={self.name}, article={self.article_ga})"
+        return f"Product(id={self.id}, name={self.name}, article={self.article})"

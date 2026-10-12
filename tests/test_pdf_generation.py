@@ -11,7 +11,7 @@ import pytest
 from apps.pdf_generation import main as pdf_main
 from apps.selection.models import SelectionTaskType
 
-PRODUCT_DATA = {"image_key": "images/x.jpg", "article_ga": "A123"}
+PRODUCT_DATA = {"image_key": "images/x.jpg", "article": "A123"}
 ANALYSIS = {}
 
 

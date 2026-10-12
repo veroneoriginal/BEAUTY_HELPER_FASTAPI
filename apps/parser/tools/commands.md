@@ -144,9 +144,31 @@ cd ~/Projects/beauty_helper_fastapi && make up-db && python -m pytest -q -rs tes
 ```
 Статус парсинга и подборки по ссылке (ждём `IN_PROGRESS`/`PARSING` → `DONE`/`QUEUE` → `DONE`/`DONE`; подставь артикул из ссылки):
 ```
-cd ~/Projects/beauty_helper_fastapi && docker exec bh_pg sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT p.id, p.fill_status, p.last_error, s.id AS sel, s.selection_status, s.error_message FROM products p JOIN selections s ON s.product_id = p.id WHERE p.link_ga LIKE '"'"'%25270500001%'"'"';"'
+cd ~/Projects/beauty_helper_fastapi && docker exec bh_pg sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT p.id, p.fill_status, p.last_error, s.id AS sel, s.selection_status, s.error_message FROM products p JOIN selections s ON s.product_id = p.id WHERE p.product_link LIKE '"'"'%25270500001%'"'"';"'
 ```
 Перезапустить воркер после правок кода (Celery сам код не перечитывает) и смотреть логи парсинга:
 ```
 cd ~/Projects/beauty_helper_fastapi && docker restart bh_celery && docker logs -f --since 1m bh_celery 2>&1 | grep -E "PARSE|PROXY|SELECTION|ERROR"
+```
+
+## Переименование link_ga → product_link, article_ga → article (12.10)
+Поднять БД и прогнать все тесты (ждём `passed` без `skipped`):
+```
+cd ~/Projects/beauty_helper_fastapi && make up-db && python -m pytest -q -rs tests
+```
+До миграции: имя уникального ограничения (ждём `products_link_ga_key` — под него написана миграция):
+```
+cd ~/Projects/beauty_helper_fastapi && docker exec bh_pg sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Atc "SELECT conname FROM pg_constraint WHERE conrelid = '"'"'products'"'"'::regclass AND contype = '"'"'u'"'"';"'
+```
+Пересобрать и поднять всё — новый код и миграция выезжают вместе (миграцию применяет entrypoint бэкенда):
+```
+cd ~/Projects/beauty_helper_fastapi && docker compose -f docker/docker-compose.yaml --env-file .env up -d --build
+```
+После миграции: колонки и ограничение (ждём `229c40bccd34`, `product_link`, `article`, `products_product_link_key`):
+```
+cd ~/Projects/beauty_helper_fastapi && docker exec bh_pg sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Atc "SELECT version_num FROM alembic_version; SELECT column_name FROM information_schema.columns WHERE table_name = '"'"'products'"'"' AND column_name IN ('"'"'product_link'"'"', '"'"'article'"'"', '"'"'link_ga'"'"', '"'"'article_ga'"'"'); SELECT conname FROM pg_constraint WHERE conrelid = '"'"'products'"'"'::regclass AND contype = '"'"'u'"'"';"'
+```
+Проверить откат и вернуть обратно (ждём две строки `Running ...` без ошибок):
+```
+cd ~/Projects/beauty_helper_fastapi && docker exec bh_backend alembic downgrade -1 && docker exec bh_backend alembic upgrade head
 ```

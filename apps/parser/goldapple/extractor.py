@@ -63,8 +63,8 @@ def extract(
     brand = _find_section(sections, section_type="Brand")
 
     result: dict[str, Any] = {
-        "link_ga": link,
-        "article_ga": article,
+        "product_link": link,
+        "article": article,
         "name": description.get("title"),
         "brand": data.get("brand"),
         "product_type_detailed": data.get("productType"),

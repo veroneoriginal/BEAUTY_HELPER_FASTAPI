@@ -28,7 +28,7 @@ update_request_info = {
     "task_type": "Подробный анализ каждого элемента состава",
     "name": "Шампунь магический современный",
     "product_type_detailed": "Шампунь",
-    "article_ga": "43347287037",
+    "article": "43347287037",
     "ingredients_list": [
         "Aqua",
         "Cocamidopropyl Betaine",

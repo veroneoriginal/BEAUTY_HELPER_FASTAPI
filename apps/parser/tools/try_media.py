@@ -23,8 +23,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from apps.parser.goldapple.extractor import extract
-from apps.parser.goldapple.normalizer import normalize
+from apps.parser.goldapple.strategy import GoldAppleStrategy
 from apps.parser.media import ImageUploader
+from apps.parser.normalizer import normalize
 from apps.parser.proxy.models import Proxy
 from apps.parser.proxy.source import parse_proxy
 from infrastructure.s3.service import S3Service, s3_service
@@ -95,7 +96,9 @@ async def main(article: str, proxy_line: str | None, delete: bool) -> None:
     print(f"Хранилище: {s3.endpoint_url}, бакет {s3.bucket_name}\n")
 
     uploader = VerboseUploader(VerboseStorage(s3))
-    image_key = await uploader.upload(product.image_link, product.article_ga, proxy)
+    image_key = await uploader.upload(
+        product.image_link, product.article, GoldAppleStrategy.name, proxy
+    )
     print(f"\nimage_key = {image_key}")
     if image_key:
         print(f"Ссылка: {s3.endpoint_url}/{s3.bucket_name}/{image_key}")

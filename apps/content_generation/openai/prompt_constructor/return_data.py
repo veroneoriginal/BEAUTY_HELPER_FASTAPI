@@ -8,7 +8,7 @@ from apps.selection.models import (
 # В функцию get_prompts приходит data_collection следующего вида
 
 data_collection = {
-    "article_ga": "19000002015",
+    "article": "19000002015",
     "image_key": None,
     "ingredients_list": [
         "Water",
@@ -81,7 +81,7 @@ data_collection = {
 # Затем словарь расшифровывается и модифицируется
 result_decrypted_data = {
     "ingredients_list": [],
-    "article_ga": "19000002015",
+    "article": "19000002015",
     "decryption_task": "Тебе дано средство и часть элементов его состава. Тебе "
     "надо разобрать каждый элемент состава средства. "
     "Внимательно изучаешь и выдаёшь результат в соответствии с "

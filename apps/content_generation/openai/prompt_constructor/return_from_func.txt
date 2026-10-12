@@ -12,7 +12,7 @@
 18_Hydroxyethyl Acrylate/sodium Acryloyldimethyl Taurate Copolymer,
 19_Dimethicone/vinyl Dimethicone Crosspolymer, 20_Sodium Polyacrylate',
 'name': 'FRUDIA Pomegranate Nutri-Moisturizing Cream Mini',
-'article_ga': '9410400008',
+'article': '9410400008',
 'task_type': <SelectionTaskType.COMPOSITION_ANALYSIS: 'detailed_analysis'>,
 'Номер шага задачи': 2, 'Шаг задачи последний или нет': False,
 'product_type_detailed': 'Питательный крем с гранатом',

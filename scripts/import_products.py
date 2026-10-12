@@ -23,11 +23,11 @@ EXCEL_PATH = Path(__file__).parent.parent / "table" / "Таблица средс
 SHEET_NAME = "Средства"
 
 COLUMN_MAP = {
-    "Ссылка в Золотом Яблоке": "link_ga",
+    "Ссылка в Золотом Яблоке": "product_link",
     "Тип продукта": "product_type",
     "Тип продукта подробно": "product_type_detailed",
     "Название": "name",
-    "Артикул в Золотом Яблоке": "article_ga",
+    "Артикул в Золотом Яблоке": "article",
     "Назначение": "purpose",
     "Тип волос": "hair_type",
     "Тип кожи": "skin_type",
@@ -83,7 +83,7 @@ def _parse_row(raw_data: dict) -> dict:
 
 def import_products() -> None:
     """
-    Читает Excel-файл и выполняет upsert продуктов в БД по полю link_ga.
+    Читает Excel-файл и выполняет upsert продуктов в БД по полю product_link.
     Каждая строка — отдельный savepoint: ошибка в одной строке не откатывает остальные.
     """
     wb = openpyxl.load_workbook(EXCEL_PATH)
@@ -112,7 +112,7 @@ def import_products() -> None:
                 with session.begin_nested():  # savepoint — ошибка не откатит всё
                     existing = session.execute(
                         select(Product).where(
-                            Product.link_ga == product_data["link_ga"]
+                            Product.product_link == product_data["product_link"]
                         )
                     ).scalar_one_or_none()
 

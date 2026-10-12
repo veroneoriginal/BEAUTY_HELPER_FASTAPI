@@ -45,7 +45,7 @@ class JsonProcessingData:
 
         :return:
         {
-            'article_ga': '19000002015',
+            'article': '19000002015',
             'name': 'CLINIQUE Moisture Surge 100h',
             'product_type': 'гель для лица',
             'product_type_detailed': 'Интенсивно увлажняющий гель на 100 часов',
@@ -65,7 +65,7 @@ class JsonProcessingData:
         data["name"] = self.data_collection["name"]
         data["product_type"] = self.data_collection["product_type"]
         data["product_type_detailed"] = self.data_collection["product_type_detailed"]
-        data["article_ga"] = self.data_collection["article_ga"]
+        data["article"] = self.data_collection["article"]
         data["Элементы состава для шага задачи"] = self.data_collection[
             "Элементы состава для шага задачи"
         ]

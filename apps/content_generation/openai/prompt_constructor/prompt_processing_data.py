@@ -42,7 +42,7 @@ class PromptProcessingData:
 
         :return: Словарь с расшифрованными данными по текущей подборке вида
         {
-        'article_ga': '19000002015',
+        'article': '19000002015',
         'name': 'CLINIQUE Moisture Surge 100h',
         'task_type': SelectionTaskType.COMPOSITION_ANALYSIS,
         'Номер шага задачи': 1,
@@ -111,7 +111,7 @@ class PromptProcessingData:
         decrypting_data_collection["name"] = self.data_collection["name"]
 
         # 5 добавляем ключ с артикулом товара в новый словарь
-        decrypting_data_collection["article_ga"] = self.data_collection["article_ga"]
+        decrypting_data_collection["article"] = self.data_collection["article"]
 
         # 6 добавляем исходную задачу в новый словарь
         decrypting_data_collection["task_type"] = self.task_type

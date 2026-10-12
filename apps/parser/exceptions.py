@@ -35,6 +35,14 @@ class ProductNotFound(ParserError):
     """
 
 
+class UnsupportedSite(ParserError):
+    """
+    Ссылка на сайт, которого нет в реестре (registry.STRATEGIES).
+
+    В сеть не ходим: прокси тут ни при чём.
+    """
+
+
 class ParseError(ParserError):
     """
     Ответ пришёл, но разобрать его не получилось:

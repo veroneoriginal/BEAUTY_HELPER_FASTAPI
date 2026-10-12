@@ -30,7 +30,7 @@ class SelectionRepository(SQLAlchemyRepository[Selection]):
 
     async def get_by_product_and_task_type(
         self,
-        link_ga: str,
+        product_link: str,
         task_type: str | SelectionTaskType,
     ) -> Selection | None:
         """
@@ -41,7 +41,7 @@ class SelectionRepository(SQLAlchemyRepository[Selection]):
             .join(Product, Selection.product_id == Product.id)
             .options(joinedload(Selection.product))
             .where(
-                Product.link_ga == link_ga,
+                Product.product_link == product_link,
                 Selection.task_type == task_type,
             )
             .order_by(Selection.id.desc())

@@ -35,6 +35,8 @@ celery_app.conf.update(
     task_track_started=True,
     task_acks_late=True,
     worker_prefetch_multiplier=1,
+    # Своё имя очереди в RabbitMQ вместо дефолтного "celery"
+    task_default_queue="Tasks_Queue",
 )
 
 celery_app.conf.beat_schedule = {

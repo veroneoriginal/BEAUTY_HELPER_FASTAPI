@@ -1,4 +1,4 @@
-# apps/parser/goldapple/normalizer.py
+# apps/parser/normalizer.py
 
 # Normalizer делает dict из extractor → ParsedProduct.
 # В сеть не ходит. Приводит значения «как на сайте» к нашему формату —
@@ -27,7 +27,7 @@ HTML_FIELDS = (
 # Поля с простым текстом
 TEXT_FIELDS = (
     "name",
-    "article_ga",
+    "article",
     "brand",
     "product_type",
     "product_type_detailed",
@@ -57,7 +57,7 @@ def normalize(raw: dict[str, Any]) -> ParsedProduct:
     :param raw: результат extract(card, link)
     """
     # Пустой ParsedProduct: заполнена только ссылка, остальные поля None
-    product = ParsedProduct(link_ga=raw["link_ga"])
+    product = ParsedProduct(product_link=raw["product_link"])
 
     # Простой текст: убираем лишние пробелы, "" → None.
     # setattr(product, "brand", x) — то же, что product.brand = x,

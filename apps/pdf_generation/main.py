@@ -59,7 +59,7 @@ def generate_selection_pdf(
         prefix="pdf",
         extension="pdf",
         task_type=task_type,
-        article=product_data["article_ga"],
+        article=product_data["article"],
     )
 
     # 5. Созданную PDF в виде bytes загружаем на S3.

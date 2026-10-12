@@ -56,7 +56,7 @@ class PromptConstructor:
         if data_decrypted["Шаг задачи последний или нет"] is True:
             return (
                 f"Информация о средстве: {data_decrypted['product_type_detailed']},\n"
-                f"название - {data_decrypted['name']}, артикул - {data_decrypted['article_ga']}.\n"
+                f"название - {data_decrypted['name']}, артикул - {data_decrypted['article']}.\n"
                 f"Это финальный шаг — анализировать отдельные компоненты не нужно.\n"
                 f"Сделай только общий итоговый вывод по средству, полагаясь на полный состав продукта: \n"
                 f"{data_decrypted['ingredients_list']}"
@@ -64,7 +64,7 @@ class PromptConstructor:
 
         return (
             f"Информация о средстве: {data_decrypted['product_type_detailed']},\n"
-            f"название - {data_decrypted['name']}, артикул - {data_decrypted['article_ga']}.\n"
+            f"название - {data_decrypted['name']}, артикул - {data_decrypted['article']}.\n"
             f"Информация о части состава этого средства: "
             f"{data_decrypted['Элементы состава для шага задачи']}.\n"
             f"Учти всю вышепредставленную информацию и проведи анализ каждого элемента состава.\n"

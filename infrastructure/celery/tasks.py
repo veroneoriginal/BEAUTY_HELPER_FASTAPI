@@ -668,10 +668,12 @@ def run_parse_product_task(product_id: int) -> None:
             )
             session.commit()
 
-            logger.info("[PARSE] Парсим продукт %s: %s", product_id, product.link_ga)
+            logger.info(
+                "[PARSE] Парсим продукт %s: %s", product_id, product.product_link
+            )
             try:
                 # Celery синхронный, парсер async — как с PDF, через asyncio.run
-                parsed = asyncio.run(_get_parser().parse(product.link_ga))
+                parsed = asyncio.run(_get_parser().parse(product.product_link))
 
             except ParserError as exc:
                 logger.warning(

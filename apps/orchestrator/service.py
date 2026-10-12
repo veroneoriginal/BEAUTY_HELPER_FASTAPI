@@ -8,6 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from apps.balance.repository import BalanceRepository
 from apps.balance.services import BalanceService
+from apps.parser.exceptions import UnsupportedSite
+from apps.parser.registry import strategy_for
 from apps.products.models import Product, ProductFillStatus
 from apps.products.product_service import ProductService
 from apps.products.repository import ProductRepository
@@ -31,7 +33,7 @@ def normalize_link(link: str) -> str:
     Убирает ?utm=…, #… и / на конце, иначе одна карточка даст несколько Product.
 
     :param link: ссылка, как её прислал пользователь
-    :return: чистая ссылка — по ней ищем, её пишем в link_ga и отдаём парсеру
+    :return: чистая ссылка — по ней ищем, её пишем в product_link и отдаём парсеру
     """
     parts = urlsplit(link.strip())
     path = parts.path.rstrip("/")
@@ -105,9 +107,9 @@ async def start_parsing(
 
     if not product:
         try:
-            product = await product_service.create_product(link_ga=product_link)
+            product = await product_service.create_product(product_link=product_link)
         except IntegrityError:
-            # Ту же ссылку в эту же миллисекунду создал другой запрос (unique на link_ga)
+            # Ту же ссылку в эту же миллисекунду создал другой запрос (unique на product_link)
             await product_service.repository.session.rollback()
             logger.info(
                 "[ORCHESTRATOR] Продукт по ссылке %s уже создаёт другой запрос",
@@ -178,6 +180,18 @@ async def get_or_prepare_selection(
     # Чистая ссылка: по ней ищем подборку и продукт
     product_link = normalize_link(product_link)
 
+    # Сайт не поддерживается — отказываем до БД и крутки.
+    # Иначе парсер перебрал бы на чужой ссылке все прокси
+    try:
+        strategy_for(product_link)
+    except UnsupportedSite:
+        logger.info("[ORCHESTRATOR] Сайт не поддерживается: %s", product_link)
+        return {
+            "status": "error",
+            "message": "Этот сайт пока не поддерживается. Пришлите ссылку "
+            "на товар из Золотого Яблока.",
+        }
+
     # Инициализируем сервисы
     selection_service = SelectionService(SelectionRepository(session))
     waiting_service = WaitingService(WaitingRepository(session))
@@ -186,7 +200,7 @@ async def get_or_prepare_selection(
 
     # 1. Ищем подборку по ссылке и типу задачи
     selection = await selection_service.get_by_product_and_task_type(
-        link_ga=product_link,
+        product_link=product_link,
         task_type=task_type,
     )
 

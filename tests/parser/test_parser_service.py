@@ -1,16 +1,17 @@
 # Тесты ProductParser.parse: сборка всей цепочки без сети.
-# fetch подменяем (карточка — из fixtures/), проверку прокси — тоже,
+# client.fetch подменяем (карточка — из fixtures/), проверку прокси — тоже,
 # ImageUploader — свой класс, который только запоминает вызов.
 
 import pytest
 
-from apps.parser import service as service_module
 from apps.parser.exceptions import (
     NoAliveProxy,
     ParseError,
     ProductNotFound,
     SiteBlocked,
+    UnsupportedSite,
 )
+from apps.parser.goldapple import strategy as strategy_module
 from apps.parser.proxy import pool as pool_module
 from apps.parser.proxy.models import Proxy, ProxyProtocol
 from apps.parser.proxy.pool import ProxyPool
@@ -28,12 +29,15 @@ class FakeUploader:
     Вместо ImageUploader: запоминает, что пришло, и отдаёт ключ.
     """
 
-    def __init__(self, image_key: str | None = f"images/{ARTICLE}.jpg") -> None:
+    def __init__(
+        self,
+        image_key: str | None = f"images/goldapple/{ARTICLE}.jpg",
+    ) -> None:
         self.image_key = image_key
         self.calls: list[tuple] = []
 
-    async def upload(self, image_link, article, proxy=None):
-        self.calls.append((image_link, article, proxy))
+    async def upload(self, image_link, article, site, proxy=None):
+        self.calls.append((image_link, article, site, proxy))
         return self.image_key
 
 
@@ -65,7 +69,7 @@ def site(monkeypatch, load_card):
             raise errors[proxy]
         return load_card(ARTICLE)
 
-    monkeypatch.setattr(service_module, "fetch", fake_fetch)
+    monkeypatch.setattr(strategy_module, "fetch", fake_fetch)
     return errors, used
 
 
@@ -79,12 +83,12 @@ async def test_parse_full_chain(site):
 
     product = await parser.parse(LINK)
 
-    assert product.link_ga == LINK
-    assert product.article_ga == ARTICLE
+    assert product.product_link == LINK
+    assert product.article == ARTICLE
     assert product.name == "CLINIQUE Moisture Surge 100h"
-    assert product.image_key == f"images/{ARTICLE}.jpg"
+    assert product.image_key == f"images/goldapple/{ARTICLE}.jpg"
     assert used == [FIRST]
-    assert uploader.calls == [(product.image_link, ARTICLE, FIRST)]
+    assert uploader.calls == [(product.image_link, ARTICLE, "goldapple", FIRST)]
 
 
 async def test_site_blocked_takes_next_proxy(site):
@@ -99,10 +103,10 @@ async def test_site_blocked_takes_next_proxy(site):
 
     product = await ProductParser(pool, uploader).parse(LINK)
 
-    assert product.article_ga == ARTICLE
+    assert product.article == ARTICLE
     assert used == [FIRST, SECOND]
     assert len(pool) == 1
-    assert uploader.calls[0][2] == SECOND
+    assert uploader.calls[0][3] == SECOND
 
 
 async def test_all_blocked_raises_no_alive_proxy(site):
@@ -150,3 +154,17 @@ async def test_image_failed_parse_still_works(site):
 
     assert product.name == "CLINIQUE Moisture Surge 100h"
     assert product.image_key is None
+
+
+async def test_unsupported_site_no_network(site):
+    """
+    Ссылка на чужой сайт → UnsupportedSite до похода в сеть:
+    прокси не берём и не выкидываем.
+    """
+    _, used = site
+    pool = ProxyPool([FIRST])
+
+    with pytest.raises(UnsupportedSite):
+        await ProductParser(pool, FakeUploader()).parse("https://example.com/123")
+    assert used == []
+    assert len(pool) == 1

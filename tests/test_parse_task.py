@@ -89,15 +89,15 @@ def _full_parsed() -> ParsedProduct:
     """
     ParsedProduct, в котором заполнены все критичные поля.
     """
-    data = {name: "x" for name in CRITICAL_FIELDS if name != "link_ga"}
-    return ParsedProduct(link_ga=LINK, **data)
+    data = {name: "x" for name in CRITICAL_FIELDS if name != "product_link"}
+    return ParsedProduct(product_link=LINK, **data)
 
 
 def test_all_critical_fields_done():
     """
     Все критичные поля спарсены → IN_PROGRESS, потом DONE, last_error пустой.
     """
-    product = Product(link_ga=LINK)
+    product = Product(product_link=LINK)
     repository = _run(product, FakeParser(result=_full_parsed()))
 
     assert repository.statuses == [ProductFillStatus.IN_PROGRESS]
@@ -111,7 +111,7 @@ def test_missing_critical_field_incomplete():
     """
     Не хватает критичного поля → INCOMPLETE, в last_error — каких полей нет.
     """
-    product = Product(link_ga=LINK)
+    product = Product(product_link=LINK)
     parsed = _full_parsed()
     parsed.price_rub = None
 
@@ -126,7 +126,7 @@ def test_parser_error_failed():
     """
     ParserError (NoAliveProxy, ProductNotFound, ParseError) → FAILED + текст в last_error.
     """
-    product = Product(link_ga=LINK)
+    product = Product(product_link=LINK)
     repository = _run(product, FakeParser(error=ProductNotFound("нет товара")))
 
     assert product.fill_status == ProductFillStatus.FAILED
@@ -138,7 +138,7 @@ def test_no_alive_proxy_failed():
     """
     Прокси кончились → FAILED, повторный запрос сможет парсить заново.
     """
-    product = Product(link_ga=LINK)
+    product = Product(product_link=LINK)
     _run(product, FakeParser(error=NoAliveProxy("пул пуст")))
 
     assert product.fill_status == ProductFillStatus.FAILED
@@ -149,7 +149,7 @@ def test_unexpected_error_failed():
     """
     Любая другая ошибка → тоже FAILED, продукт не застревает в IN_PROGRESS.
     """
-    product = Product(link_ga=LINK)
+    product = Product(product_link=LINK)
     repository = _run(product, FakeParser(error=RuntimeError("браузер упал")))
 
     assert product.fill_status == ProductFillStatus.FAILED
@@ -171,7 +171,7 @@ def test_lock_busy_skips():
     """
     Lock занят (ссылку уже парсит другая задача) → продукт не трогаем.
     """
-    product = Product(link_ga=LINK)
+    product = Product(product_link=LINK)
     repository = _run(product, FakeParser(result=_full_parsed()), lock_free=False)
 
     assert repository.statuses == []
@@ -184,7 +184,7 @@ def test_already_done_skips():
     Продукт уже DONE (RabbitMQ отдал задачу повторно) → не парсим заново,
     но подборки, оставшиеся в PARSING, двигаем дальше.
     """
-    product = Product(link_ga=LINK, fill_status=ProductFillStatus.DONE)
+    product = Product(product_link=LINK, fill_status=ProductFillStatus.DONE)
     repository = _run(product, FakeParser(error=RuntimeError("не должен вызываться")))
 
     assert repository.statuses == []
@@ -262,7 +262,7 @@ def test_continue_done_queue_and_generation():
     """
     Продукт DONE → подборки QUEUE, коммит, генерация на каждую, крутки не трогаем.
     """
-    product = Product(id=1, link_ga=LINK, fill_status=ProductFillStatus.DONE)
+    product = Product(id=1, product_link=LINK, fill_status=ProductFillStatus.DONE)
     session, generation, release = _continue(product, [5, 6])
 
     params = session.statements[0].compile().params
@@ -281,7 +281,7 @@ def test_continue_failed_selection_failed_and_release():
     """
     product = Product(
         id=1,
-        link_ga=LINK,
+        product_link=LINK,
         fill_status=ProductFillStatus.FAILED,
         last_error="NoAliveProxy: пул пуст",
     )
@@ -301,7 +301,7 @@ def test_continue_incomplete_selection_failed():
     """
     product = Product(
         id=1,
-        link_ga=LINK,
+        product_link=LINK,
         fill_status=ProductFillStatus.INCOMPLETE,
         last_error="Не хватает полей: price_rub",
     )
@@ -346,7 +346,7 @@ def test_stuck_parsing_product_done_continues():
     """
     Продукт уже DONE (задача упала после парсинга) → двигаем подборки, не парсим.
     """
-    product = Product(id=1, link_ga=LINK, fill_status=ProductFillStatus.DONE)
+    product = Product(id=1, product_link=LINK, fill_status=ProductFillStatus.DONE)
     continue_mock, parse = _check_stuck([_stuck_selection(product)])
 
     continue_mock.assert_called_once()
@@ -358,7 +358,7 @@ def test_stuck_parsing_product_failed_continues():
     """
     Продукт FAILED → подборки FAILED через тот же _continue_selections_after_parse.
     """
-    product = Product(id=1, link_ga=LINK, fill_status=ProductFillStatus.FAILED)
+    product = Product(id=1, product_link=LINK, fill_status=ProductFillStatus.FAILED)
     continue_mock, parse = _check_stuck([_stuck_selection(product)])
 
     continue_mock.assert_called_once()
@@ -370,7 +370,9 @@ def test_stuck_parsing_in_progress_reparse_once():
     Продукт IN_PROGRESS (воркер умер) → парсим заново один раз на продукт,
     даже если подборок две; updated_at сдвигается.
     """
-    product = Product(id=1, link_ga=LINK, fill_status=ProductFillStatus.IN_PROGRESS)
+    product = Product(
+        id=1, product_link=LINK, fill_status=ProductFillStatus.IN_PROGRESS
+    )
     first, second = _stuck_selection(product), _stuck_selection(product)
     continue_mock, parse = _check_stuck([first, second])
 

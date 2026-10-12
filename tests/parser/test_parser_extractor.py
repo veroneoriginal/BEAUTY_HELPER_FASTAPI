@@ -35,8 +35,8 @@ def test_extract_all_fixtures(article, load_card, make_link):
 
     raw = extract(load_card(article), link)
 
-    assert raw["link_ga"] == link
-    assert raw["article_ga"] == article
+    assert raw["product_link"] == link
+    assert raw["article"] == article
     assert raw["name"]
     assert raw["brand"]
     assert raw["price_rub"] is not None
@@ -78,7 +78,7 @@ def test_variant_by_article_from_link(article, volume, price, load_card):
 
     raw = extract(load_card(GIVENCHY), link)
 
-    assert raw["article_ga"] == article
+    assert raw["article"] == article
     assert raw["measure_value"] == volume
     assert raw["price_rub"] == price
     assert f"/{article}/" in raw["image_link"]
@@ -90,7 +90,7 @@ def test_no_article_in_link_takes_data_id(load_card):
     """
     raw = extract(load_card(GIVENCHY), "https://goldapple.ru/l-interdit")
 
-    assert raw["article_ga"] == GIVENCHY
+    assert raw["article"] == GIVENCHY
     assert raw["measure_value"] == "50"
 
 
@@ -101,7 +101,7 @@ def test_unknown_article_takes_first_variant(load_card):
     """
     raw = extract(load_card(GIVENCHY), "https://goldapple.ru/3680399999-l-interdit")
 
-    assert raw["article_ga"] == GIVENCHY
+    assert raw["article"] == GIVENCHY
     assert raw["measure_value"] == "50"
     assert raw["price_rub"] == 13675
     assert f"/{GIVENCHY}/" in raw["image_link"]
@@ -142,7 +142,7 @@ def test_empty_data_gives_none_fields():
     """
     raw = extract({"data": {}}, "https://goldapple.ru/19000002015-test")
 
-    assert raw["article_ga"] == "19000002015"
+    assert raw["article"] == "19000002015"
     assert raw["name"] is None
     assert raw["price_rub"] is None
     assert raw["image_link"] is None

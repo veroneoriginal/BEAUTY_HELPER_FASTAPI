@@ -8,7 +8,7 @@ import pytest
 
 from apps.parser.dto import ParsedProduct
 from apps.parser.goldapple.extractor import extract
-from apps.parser.goldapple.normalizer import (
+from apps.parser.normalizer import (
     clean_text,
     html_to_text,
     normalize,
@@ -200,7 +200,7 @@ def test_normalize_all_fixtures(article, load_card, make_link):
     product = normalize(raw)
 
     assert isinstance(product, ParsedProduct)
-    assert product.article_ga == article
+    assert product.article == article
     assert isinstance(product.price_rub, Decimal)
     assert isinstance(product.measure_value, Decimal)
     assert isinstance(json.loads(product.characteristics), dict)

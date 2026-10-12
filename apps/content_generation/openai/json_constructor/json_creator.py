@@ -76,7 +76,7 @@ class JsonCreator:
         name_product = self.data_collection["name"]
 
         # Получаем артикул
-        article_ga = self.data_collection["article_ga"]
+        article = self.data_collection["article"]
 
         product = {
             "origin_product": {
@@ -88,7 +88,7 @@ class JsonCreator:
                     },
                     "article": {
                         "type": "string",
-                        "description": article_ga,
+                        "description": article,
                     },
                 },
                 "required": ["title", "article"],

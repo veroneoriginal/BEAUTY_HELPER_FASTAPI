@@ -3,7 +3,6 @@ presentation/
 .claude
 graphify-out/
 apps/parser/for_claude
-apps/orchestrator/parser_integration.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

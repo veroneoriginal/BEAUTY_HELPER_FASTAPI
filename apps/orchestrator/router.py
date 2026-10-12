@@ -121,7 +121,7 @@ async def get_my_selections(
         SelectionItem(
             id=s.id,
             product_name=s.product.name if s.product else None,
-            product_link=s.product.link_ga if s.product else None,
+            product_link=s.product.product_link if s.product else None,
             status=s.selection_status,
             pdf_url=s.pdf_url,
         )

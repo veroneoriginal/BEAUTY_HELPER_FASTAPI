@@ -9,6 +9,7 @@ from apps.parser.proxy.models import Proxy, ProxyProtocol
 IMAGE_LINK = "https://cdn-01.goldapple.ru/p/p/19000002015/web/abcfullhd.jpg"
 IMAGE_BYTES = b"\xff\xd8\xff fake jpeg"
 PROXY = Proxy("127.0.0.1", 10809, ProxyProtocol.HTTP)
+SITE = "goldapple"
 
 
 class MemoryStorage:
@@ -73,10 +74,12 @@ async def test_upload_new_image(downloads):
     """
     storage = MemoryStorage()
 
-    image_key = await ImageUploader(storage).upload(IMAGE_LINK, "19000002015", PROXY)
+    image_key = await ImageUploader(storage).upload(
+        IMAGE_LINK, "19000002015", SITE, PROXY
+    )
 
-    assert image_key == "images/19000002015.jpg"
-    assert storage.files == {"images/19000002015.jpg": IMAGE_BYTES}
+    assert image_key == "images/goldapple/19000002015.jpg"
+    assert storage.files == {"images/goldapple/19000002015.jpg": IMAGE_BYTES}
     assert downloads == [(IMAGE_LINK, PROXY)]
 
 
@@ -85,12 +88,12 @@ async def test_existing_image_not_downloaded(downloads):
     Картинка уже в хранилище → ключ сразу, не качаем и не заливаем.
     """
     storage = MemoryStorage()
-    storage.files["images/19000002015.jpg"] = b"old"
+    storage.files["images/goldapple/19000002015.jpg"] = b"old"
 
-    image_key = await ImageUploader(storage).upload(IMAGE_LINK, "19000002015")
+    image_key = await ImageUploader(storage).upload(IMAGE_LINK, "19000002015", SITE)
 
-    assert image_key == "images/19000002015.jpg"
-    assert storage.files["images/19000002015.jpg"] == b"old"
+    assert image_key == "images/goldapple/19000002015.jpg"
+    assert storage.files["images/goldapple/19000002015.jpg"] == b"old"
     assert downloads == []
 
 
@@ -102,7 +105,7 @@ async def test_no_link_or_article(image_link, article, downloads):
     """
     Нет ссылки или артикула → None, в сеть не идём.
     """
-    image_key = await ImageUploader(MemoryStorage()).upload(image_link, article)
+    image_key = await ImageUploader(MemoryStorage()).upload(image_link, article, SITE)
 
     assert image_key is None
     assert downloads == []
@@ -119,7 +122,7 @@ async def test_download_failed(monkeypatch):
     monkeypatch.setattr(ImageUploader, "download", failed_download)
     storage = MemoryStorage()
 
-    image_key = await ImageUploader(storage).upload(IMAGE_LINK, "19000002015")
+    image_key = await ImageUploader(storage).upload(IMAGE_LINK, "19000002015", SITE)
 
     assert image_key is None
     assert storage.files == {}
@@ -131,6 +134,6 @@ async def test_upload_failed(downloads):
     """
     storage = MemoryStorage(upload_error="S3 недоступен")
 
-    image_key = await ImageUploader(storage).upload(IMAGE_LINK, "19000002015")
+    image_key = await ImageUploader(storage).upload(IMAGE_LINK, "19000002015", SITE)
 
     assert image_key is None

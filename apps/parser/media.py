@@ -4,8 +4,10 @@
 
 # Парсер сам в S3 не ходит: хранилище передают снаружи (S3Service),
 # парсер знает только два его метода — file_exists и upload_file.
-# Ключ придумываем здесь: images/<артикул>.<расширение>. Ключ всегда один и тот же,
-# поэтому при повторном парсинге картинка второй раз не заливается.
+# Ключ придумываем здесь: images/<сайт>/<артикул>.<расширение>. Ключ всегда один
+# и тот же, поэтому при повторном парсинге картинка второй раз не заливается.
+# Сайт в ключе — потому что артикулы разных сайтов могут совпасть.
+# Старые картинки лежат по images/<артикул> — их image_key в БД не меняем.
 
 # Картинки лежат на CDN (cdn-01.goldapple.ru), антибота там нет:
 # curl без браузера → 200 image/jpeg. Поэтому качаем через httpx, а не Playwright.
@@ -80,6 +82,7 @@ class ImageUploader:
         self,
         image_link: str | None,
         article: str | None,
+        site: str,
         proxy: Proxy | None = None,
     ) -> str | None:
         """
@@ -87,13 +90,14 @@ class ImageUploader:
 
         :param image_link: ссылка на картинку с сайта
         :param article: артикул товара, из него ключ
+        :param site: имя сайта (SiteStrategy.name), папка в ключе
         :param proxy: через какой прокси качать; None — напрямую
         """
         if not image_link or not article:
             return None
 
         extension = extension_from_link(image_link)
-        image_key = f"{IMAGE_PREFIX}/{article}.{extension}"
+        image_key = f"{IMAGE_PREFIX}/{site}/{article}.{extension}"
 
         # Уже лежит в хранилище — не качаем и не заливаем заново
         exists = await self.storage.file_exists(image_key)

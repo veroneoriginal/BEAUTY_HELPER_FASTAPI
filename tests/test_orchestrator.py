@@ -52,15 +52,15 @@ async def _make_balance(session, user_id, spins=5, reserved=0) -> UserBalance:
 
 
 async def _make_product(
-    session, link="https://gy.ru/p1", fill_status=ProductFillStatus.DONE
+    session, link="https://goldapple.ru/p1", fill_status=ProductFillStatus.DONE
 ) -> Product:
     """
     Создаёт продукт со всеми NOT NULL-полями (по умолчанию спарсенный — DONE).
     """
     product = Product(
-        link_ga=link,
+        product_link=link,
         name="Крем для лица",
-        article_ga="A1",
+        article="A1",
         product_type="крем",
         product_type_detailed="крем для лица",
         measure_type="объём",
@@ -97,7 +97,7 @@ async def _parsing_selection(session, link):
     Подборка по ссылке после запроса (последняя по id).
     """
     return await SelectionRepository(session).get_by_product_and_task_type(
-        link_ga=link,
+        product_link=link,
         task_type=TASK_TYPE,
     )
 
@@ -109,7 +109,7 @@ async def test_parsing_branch_when_product_missing(db_session):
     """
     user = await _make_user(db_session)
     await _make_balance(db_session, user.id, spins=5)
-    link = "https://gy.ru/unknown"
+    link = "https://goldapple.ru/unknown"
 
     with patch.object(orchestrator, "run_parse_product_task") as task:
         result = await get_or_prepare_selection(
@@ -150,7 +150,7 @@ async def test_parsing_branch_when_product_failed(db_session):
     ):
         result = await get_or_prepare_selection(
             user=user,
-            product_link=product.link_ga,
+            product_link=product.product_link,
             task_type=TASK_TYPE,
             session=db_session,
         )
@@ -158,7 +158,7 @@ async def test_parsing_branch_when_product_failed(db_session):
     assert result["status"] == "parsing"
     parse_task.delay.assert_called_once_with(product_id=product.id)
     task.delay.assert_not_called()
-    selection = await _parsing_selection(db_session, product.link_ga)
+    selection = await _parsing_selection(db_session, product.product_link)
     assert selection.selection_status == SelectionStatus.PARSING
     balance = await BalanceRepository(db_session).get_by_user_id(user.id)
     assert (balance.spins, balance.reserved_spins) == (4, 1)
@@ -175,14 +175,14 @@ async def test_incomplete_product_not_parsed_again(db_session):
     with patch.object(orchestrator, "run_parse_product_task") as parse_task:
         result = await get_or_prepare_selection(
             user=user,
-            product_link=product.link_ga,
+            product_link=product.product_link,
             task_type=TASK_TYPE,
             session=db_session,
         )
 
     assert result["status"] == "error"
     parse_task.delay.assert_not_called()
-    assert await _parsing_selection(db_session, product.link_ga) is None
+    assert await _parsing_selection(db_session, product.product_link) is None
 
 
 async def test_parsing_duplicate_request_does_not_start_second_task(db_session):
@@ -192,7 +192,7 @@ async def test_parsing_duplicate_request_does_not_start_second_task(db_session):
     """
     user = await _make_user(db_session)
     await _make_balance(db_session, user.id, spins=5)
-    link = "https://gy.ru/unknown"
+    link = "https://goldapple.ru/unknown"
 
     with patch.object(orchestrator, "run_parse_product_task") as parse_task:
         for _ in range(2):
@@ -215,7 +215,7 @@ async def test_parsing_without_spins_returns_error(db_session):
     """
     user = await _make_user(db_session)
     await _make_balance(db_session, user.id, spins=0)
-    link = "https://gy.ru/unknown"
+    link = "https://goldapple.ru/unknown"
 
     with patch.object(orchestrator, "run_parse_product_task") as parse_task:
         result = await get_or_prepare_selection(
@@ -250,7 +250,7 @@ async def test_parsing_race_on_product_create(db_session):
     ):
         result = await get_or_prepare_selection(
             user=user,
-            product_link="https://gy.ru/unknown",
+            product_link="https://goldapple.ru/unknown",
             task_type=TASK_TYPE,
             session=db_session,
         )
@@ -274,7 +274,7 @@ async def test_created_branch_creates_selection_and_enqueues(db_session):
     with patch.object(orchestrator, "run_create_selection_on_task") as task:
         result = await get_or_prepare_selection(
             user=user,
-            product_link=product.link_ga,
+            product_link=product.product_link,
             task_type=TASK_TYPE,
             session=db_session,
         )
@@ -283,7 +283,7 @@ async def test_created_branch_creates_selection_and_enqueues(db_session):
     task.delay.assert_called_once()
 
     selection = await SelectionRepository(db_session).get_by_product_and_task_type(
-        link_ga=product.link_ga,
+        product_link=product.product_link,
         task_type=TASK_TYPE,
     )
     assert selection is not None
@@ -315,7 +315,7 @@ async def test_pending_branch_adds_waiting_and_reserves(db_session):
 
     result = await get_or_prepare_selection(
         user=user,
-        product_link=product.link_ga,
+        product_link=product.product_link,
         task_type=TASK_TYPE,
         session=db_session,
     )
@@ -350,7 +350,7 @@ async def test_pending_branch_duplicate_click_does_not_reserve_twice(db_session)
 
     result = await get_or_prepare_selection(
         user=user,
-        product_link=product.link_ga,
+        product_link=product.product_link,
         task_type=TASK_TYPE,
         session=db_session,
     )
@@ -381,7 +381,7 @@ async def test_done_branch_charges_spin_and_returns_pdf(db_session):
 
     result = await get_or_prepare_selection(
         user=user,
-        product_link=product.link_ga,
+        product_link=product.product_link,
         task_type=TASK_TYPE,
         session=db_session,
     )
@@ -420,7 +420,7 @@ async def test_done_branch_existing_user_not_charged(db_session):
 
     result = await get_or_prepare_selection(
         user=user,
-        product_link=product.link_ga,
+        product_link=product.product_link,
         task_type=TASK_TYPE,
         session=db_session,
     )
@@ -431,6 +431,34 @@ async def test_done_branch_existing_user_not_charged(db_session):
 
 
 # === normalize_link: одна карточка — одна ссылка ===
+
+
+@pytest.mark.parametrize(
+    "link",
+    ["https://example.com/123", "goldapple.ru/123", "abc"],
+)
+async def test_unsupported_site_returns_error(db_session, link):
+    """
+    Чужой сайт или не ссылка → ошибка сразу: ни продукта,
+    ни подборки, ни задачи парсинга, крутка не тронута.
+    """
+    user = await _make_user(db_session)
+    await _make_balance(db_session, user.id, spins=5)
+
+    with patch.object(orchestrator, "run_parse_product_task") as parse_task:
+        result = await get_or_prepare_selection(
+            user=user,
+            product_link=link,
+            task_type=TASK_TYPE,
+            session=db_session,
+        )
+
+    assert result["status"] == "error"
+    parse_task.delay.assert_not_called()
+    normalized = orchestrator.normalize_link(link)
+    assert await _parsing_selection(db_session, normalized) is None
+    balance = await BalanceRepository(db_session).get_by_user_id(user.id)
+    assert (balance.spins, balance.reserved_spins) == (5, 0)
 
 
 @pytest.mark.parametrize(
@@ -464,7 +492,7 @@ async def test_dirty_link_finds_existing_product(db_session):
     with patch.object(orchestrator, "run_create_selection_on_task"):
         result = await get_or_prepare_selection(
             user=user,
-            product_link=product.link_ga + "/?utm_source=tg",
+            product_link=product.product_link + "/?utm_source=tg",
             task_type=TASK_TYPE,
             session=db_session,
         )

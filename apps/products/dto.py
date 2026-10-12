@@ -18,7 +18,7 @@ class ProductData:
     """
 
     name: str  # Название продукта
-    article_ga: str  # Артикул в Золотом Яблоке
+    article: str  # Артикул товара на сайте
     image_key: str | None  # Ключ изображения на S3
     product_type: str | None  # Тип продукта (сокращённо)
     product_type_detailed: str | None  # Детализированный тип продукта
