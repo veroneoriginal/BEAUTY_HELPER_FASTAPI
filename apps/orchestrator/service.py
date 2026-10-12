@@ -297,7 +297,8 @@ async def get_or_prepare_selection(
     # 4.1 Ищем продукт в БД
     product = await product_service.get_product_by_link(link=product_link)
 
-    # 4.2 Продукта нет или он не спарсен (fill_status не DONE) — парсим
+    # 4.2 Продукта нет или он не спарсен (fill_status не DONE) — в start_parsing:
+    # EMPTY / FAILED / IN_PROGRESS парсим (заново), INCOMPLETE — сразу ошибка
     if not product or not product_service.is_filled(product):
         return await start_parsing(
             user=user,

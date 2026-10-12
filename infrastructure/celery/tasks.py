@@ -436,7 +436,8 @@ def _continue_selections_after_parse(session, product: Product) -> None:
 def _check_stuck_parsing(session) -> None:
     """
     Beat-страховка для подборок в PARSING дольше STUCK_PARSING_SECONDS.
-    Ищем их напрямую, а не через ожидания: у того, кто прислал ссылку, Waiting нет.
+    Ищем по подборкам, а не по ожиданиям: парсинг — один на продукт,
+    сколько бы подборок и ожиданий на нём ни висело.
 
     По fill_status продукта:
     - DONE / FAILED / INCOMPLETE → подборки дальше, как в конце задачи парсинга;
