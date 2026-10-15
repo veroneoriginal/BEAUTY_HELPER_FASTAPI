@@ -6,12 +6,6 @@ set -e
 if [ "${1}" = "uvicorn" ]; then
     echo "Running migrations..."
     alembic upgrade head
-
-    echo "Uploading images to S3..."
-    python scripts/upload_images_to_s3.py
-
-    echo "Importing products into database..."
-    python scripts/import_products.py
 fi
 
 exec "$@"

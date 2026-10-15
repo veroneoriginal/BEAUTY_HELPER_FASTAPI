@@ -21,7 +21,7 @@ pytest, GitHub Actions.
 - **asyncio / async-await** как основа HTTP-слоя: FastAPI + `asyncpg`, асинхронные
   сессии SQLAlchemy (`core/database.py`, `core/repository/sqlalchemy.py`).
 - **Стандартная и сторонние библиотеки**: OpenAI SDK, ReportLab (PDF), aioboto3 (S3),
-  PyJWT, bcrypt, openpyxl, Celery/Kombu.
+  PyJWT, bcrypt, Celery/Kombu.
 - **Идиомы языка**: dataclass-DTO (`apps/products/dto.py`), декораторы
   (`s3_safe_call` — ретраи с бэкоффом, `infrastructure/s3/decorators.py`),
   enum-статусы (`SelectionStatus`, `WaitingStatus`, `BalanceOperationType`),

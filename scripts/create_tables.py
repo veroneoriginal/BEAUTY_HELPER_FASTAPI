@@ -1,6 +1,5 @@
 # scripts/create_tables.py
 # Создаёт все таблицы через синхронный движок.
-# Запускается из entrypoint.sh до import_products.py.
 
 import sys
 from pathlib import Path
