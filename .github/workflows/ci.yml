@@ -8,6 +8,28 @@ jobs:
   lint-and-test:
     runs-on: ubuntu-latest
 
+    # Postgres для миграций и интеграционных тестов. Логин, пароль и имя БД
+    # совпадают с .env.example, который копируется в .env ниже.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password_post
+          POSTGRES_DB: beauty_helper
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    # В .env.example хост db (имя сервиса docker-compose), а в CI Postgres
+    # доступен на localhost. Переменная окружения важнее значения из .env.
+    env:
+      POSTGRES_HOST: localhost
+
     steps:
       - uses: actions/checkout@v5
 
@@ -30,6 +52,12 @@ jobs:
 
       - name: Ruff format check
         run: ruff format --check .
+
+      - name: Migrations on clean database
+        run: alembic upgrade head
+
+      - name: Models match migrations
+        run: alembic check
 
       - name: Tests
         run: pytest -q
