@@ -10,8 +10,12 @@ class FreeText(Flowable):
     Абсолютно позиционированный текст, рисуется вне фрейма.
     Координаты (x, y) — от верхнего левого угла страницы (как и в других Free*).
 
-    image_width — прижать текст к левому краю картинки над ним: картинка стоит
-    по центру фрейма, x = её левый край + image_offset, но не левее заданного x.
+    image_width — прижать текст к краю картинки над ним (картинка стоит
+    по центру фрейма):
+    - align="left" — к левому краю: x = левый край + image_offset,
+      но не левее заданного x;
+    - align="right" — к правому краю: x = правый край − image_offset,
+      но не правее заданного x.
     """
 
     def __init__(
@@ -57,7 +61,11 @@ class FreeText(Flowable):
         x = self.x
         if self.image_width is not None:
             image_left = (self.avail_width - self.image_width) / 2
-            x = max(self.x, image_left + self.image_offset)
+            if self.align == "right":
+                image_right = image_left + self.image_width
+                x = min(self.x, image_right - self.image_offset)
+            else:
+                x = max(self.x, image_left + self.image_offset)
 
         c.setFont(self.font_name, self.font_size)
         c.setFillColor(self.font_color)

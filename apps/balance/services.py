@@ -106,10 +106,27 @@ class BalanceService:
         description: str = "Резервирование генераций перед запуском анализа",
     ) -> bool:
         """
-        Резервировать генерации перед запуском анализа.
+        Резервировать генерации перед запуском анализа и сделать commit.
+        Возвращает False если на балансе недостаточно генераций.
+        """
+        reserved = await self.reserve_spins_no_commit(user_id, count, description)
+        if reserved:
+            await self.repository.session.commit()
+        return reserved
+
+    async def reserve_spins_no_commit(
+        self,
+        user_id: int,
+        count: int = 1,
+        description: str = "Резервирование генераций перед запуском анализа",
+    ) -> bool:
+        """
+        Резервировать генерации без commit.
 
         Уменьшает доступные (spins), увеличивает зарезервированные (reserved_spins).
         Возвращает False если на балансе недостаточно генераций.
+        Используется оркестратором: резерв, подборка, привязка и ожидание
+        коммитятся одной транзакцией. Commit делает вызывающий код.
         """
         balance = await self.repository.get_locked_by_user_id(user_id)
         if balance is None:
@@ -129,7 +146,6 @@ class BalanceService:
             description=description,
         )
 
-        await self.repository.session.commit()
         return True
 
     # === Списание ===
@@ -141,10 +157,25 @@ class BalanceService:
         description: str = "Списание генераций после завершения анализа",
     ) -> bool:
         """
-        Списать зарезервированные генерации.
+        Списать зарезервированные генерации и сделать commit.
+        """
+        confirmed = await self.confirm_spins_no_commit(user_id, count, description)
+        if confirmed:
+            await self.repository.session.commit()
+        return confirmed
+
+    async def confirm_spins_no_commit(
+        self,
+        user_id: int,
+        count: int = 1,
+        description: str = "Списание генераций после завершения анализа",
+    ) -> bool:
+        """
+        Списать зарезервированные генерации без commit.
 
         Вызывается после успешного завершения анализа.
         Уменьшает reserved_spins — генерация использована.
+        Commit делает вызывающий код.
         """
         balance = await self.repository.get_locked_by_user_id(user_id)
         if balance is None:
@@ -163,7 +194,6 @@ class BalanceService:
             description=description,
         )
 
-        await self.repository.session.commit()
         return True
 
     # === Возврат ===

@@ -23,8 +23,15 @@ from infrastructure.celery.tasks import (
     run_create_selection_on_task,
     run_parse_product_task,
 )
+from infrastructure.redis import redis_client
 
 logger = logging.getLogger(__name__)
+
+# Lock на пару «пользователь + ссылка» на время запроса: двойной клик или
+# повтор после обрыва сети не создадут вторую подборку и не зарезервируют
+# вторую крутку. TTL — страховка, если процесс умрёт, не сняв lock;
+# сам запрос идёт доли секунды.
+REQUEST_LOCK_SECONDS = 30
 
 
 def normalize_link(link: str) -> str:
@@ -45,14 +52,15 @@ async def try_reserve_spin_or_return_message(
     user_id: int,
 ) -> tuple[bool, str | None]:
     """
-    Пытается зарезервировать генерацию через BalanceService.
+    Пытается зарезервировать генерацию через BalanceService — без commit:
+    резерв коммитится вместе с подборкой, привязкой и ожиданием.
     Если не удалось — возвращает сообщение об ошибке.
 
     :param balance_service: экземпляр BalanceService
     :param user_id: ID пользователя
     :return: кортеж (успех, сообщение об ошибке или None)
     """
-    reserved = await balance_service.reserve_spins(user_id=user_id)
+    reserved = await balance_service.reserve_spins_no_commit(user_id=user_id)
     if not reserved:
         logger.warning(
             "[BALANCE] Недостаточно генераций для user_id=%s. "
@@ -131,16 +139,21 @@ async def start_parsing(
 
     # EMPTY / FAILED / IN_PROGRESS — парсим (заново). Если задача по этому
     # продукту уже идёт, вторая упрётся в parse_lock и выйдет.
-    new_selection = await selection_service.create_selection(
+    new_selection = await selection_service.create_selection_no_commit(
         product_id=product.id,
         task_type=task_type,
         status=SelectionStatus.PARSING,
     )
-    await selection_service.add_user_to_selection(selection=new_selection, user=user)
-    await waiting_service.get_or_create_waiting(
+    await selection_service.add_user_to_selection_no_commit(
+        selection=new_selection, user=user
+    )
+    await waiting_service.get_or_create_waiting_no_commit(
         user_id=user.id,
         selection_id=new_selection.id,
     )
+    # Резерв, подборка, привязка и ожидание — одним commit: упадёт что-то
+    # посередине — откатится всё, крутка не зависнет в резерве без ожидания
+    await selection_service.repository.session.commit()
 
     run_parse_product_task.delay(product_id=product.id)
 
@@ -163,7 +176,9 @@ async def get_or_prepare_selection(
 ) -> dict:
     """
     Главная функция оркестратора.
-    Принимает запрос пользователя и управляет всем флоу:
+    Принимает запрос пользователя и управляет всем флоу
+    (под Redis-lock'ом на пару «пользователь + ссылка»: повторный запрос,
+    пока идёт первый, сразу получает pending):
 
     1. Ищет подборку по ссылке и типу задачи
     2. Если подборка готова (DONE) — сразу отдаёт PDF
@@ -191,6 +206,64 @@ async def get_or_prepare_selection(
             "message": "Этот сайт пока не поддерживается. Пришлите ссылку "
             "на товар из Золотого Яблока.",
         }
+
+    lock_key = f"selection_request_lock:{user.id}:{product_link}"
+    try:
+        # set(nx=True) отдаёт True, если ключ поставили, и None, если он занят
+        acquired = bool(
+            await redis_client.set(lock_key, "1", nx=True, ex=REQUEST_LOCK_SECONDS)
+        )
+        lock_busy = not acquired
+    except Exception as exc:
+        # Redis недоступен — работаем без lock: двойной клик редок,
+        # а отказывать всем запросам из-за этого хуже
+        logger.warning("[ORCHESTRATOR] Redis недоступен, запрос без lock: %s", exc)
+        acquired = lock_busy = False
+
+    if lock_busy:
+        logger.info(
+            "[ORCHESTRATOR] Повторный запрос user_id=%s по %s, пока идёт первый",
+            user.id,
+            product_link,
+        )
+        return {
+            "status": "pending",
+            "message": "Запрос по этой ссылке уже обрабатываем. "
+            "Подборка появится в списке через несколько секунд.",
+        }
+
+    try:
+        return await _prepare_selection(
+            user=user,
+            product_link=product_link,
+            task_type=task_type,
+            session=session,
+        )
+    finally:
+        if acquired:
+            try:
+                await redis_client.delete(lock_key)
+            except Exception as exc:
+                # Не сняли — lock сам истечёт через REQUEST_LOCK_SECONDS
+                logger.warning("[ORCHESTRATOR] Не удалось снять lock: %s", exc)
+
+
+async def _prepare_selection(
+    user: User,
+    product_link: str,
+    task_type: SelectionTaskType,
+    session: AsyncSession,
+) -> dict:
+    """
+    Флоу оркестратора для чистой поддерживаемой ссылки — под lock'ом
+    на пару «пользователь + ссылка» (см. get_or_prepare_selection).
+
+    :param user: объект пользователя
+    :param product_link: чистая ссылка на товар
+    :param task_type: тип задачи подборки
+    :param session: async сессия SQLAlchemy
+    :return: словарь со статусом и сообщением для пользователя
+    """
 
     # Инициализируем сервисы
     selection_service = SelectionService(SelectionRepository(session))
@@ -232,8 +305,12 @@ async def get_or_prepare_selection(
         if not success:
             return {"status": "error", "message": error_message}
 
-        await selection_service.add_user_to_selection(selection=selection, user=user)
-        await balance_service.confirm_spins(user_id=user.id)
+        await selection_service.add_user_to_selection_no_commit(
+            selection=selection, user=user
+        )
+        await balance_service.confirm_spins_no_commit(user_id=user.id)
+        # Резерв, привязка и списание — одним commit
+        await session.commit()
 
         logger.info(
             "[ORCHESTRATOR] Отправляем готовую подборку %s пользователю %s",
@@ -277,11 +354,15 @@ async def get_or_prepare_selection(
                 "message": error_message,
             }
 
-        await selection_service.add_user_to_selection(selection=selection, user=user)
-        await waiting_service.get_or_create_waiting(
+        await selection_service.add_user_to_selection_no_commit(
+            selection=selection, user=user
+        )
+        await waiting_service.get_or_create_waiting_no_commit(
             user_id=user.id,
             selection_id=selection.id,
         )
+        # Резерв, привязка и ожидание — одним commit
+        await session.commit()
 
         logger.info(
             "[ORCHESTRATOR] Пользователь %s добавлен в ожидание подборки %s",
@@ -320,24 +401,29 @@ async def get_or_prepare_selection(
         return {"status": "error", "message": error_message}
 
     # 4.4 Создаём подборку
-    new_selection = await selection_service.create_selection(
+    new_selection = await selection_service.create_selection_no_commit(
         product_id=product.id,
         task_type=task_type,
     )
 
     # 4.5 Привязываем пользователя
-    await selection_service.add_user_to_selection(
+    await selection_service.add_user_to_selection_no_commit(
         selection=new_selection,
         user=user,
     )
 
     # 4.6 Создаём ожидание
-    await waiting_service.get_or_create_waiting(
+    await waiting_service.get_or_create_waiting_no_commit(
         user_id=user.id,
         selection_id=new_selection.id,
     )
 
-    # 4.7 Запускаем генерацию в Celery
+    # 4.7 Резерв, подборка, привязка и ожидание — одним commit, до .delay():
+    # упадёт что-то посередине — откатится всё, крутка не зависнет в резерве;
+    # а задача генерации увидит уже закоммиченную подборку
+    await session.commit()
+
+    # 4.8 Запускаем генерацию в Celery
     run_create_selection_on_task.delay(selection_id=new_selection.id)
 
     logger.info(

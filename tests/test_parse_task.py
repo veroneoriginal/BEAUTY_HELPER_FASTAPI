@@ -6,8 +6,12 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
+from redis.exceptions import RedisError
+
 from apps.parser.dto import ParsedProduct
 from apps.parser.exceptions import NoAliveProxy, ProductNotFound
+from apps.parser.proxy.models import Proxy, ProxyProtocol
+from apps.parser.proxy.store import save_proxies
 from apps.products.models import Product, ProductFillStatus
 from apps.products.product_service import CRITICAL_FIELDS
 from infrastructure.celery import tasks
@@ -192,20 +196,54 @@ def test_already_done_skips():
     assert repository.continued == [ProductFillStatus.DONE]
 
 
-# === _get_parser: один парсер на процесс, пустой пул перечитывается ===
+# === _get_parser: один парсер на процесс, пул из Redis или proxies.txt ===
 
 
-def test_get_parser_reuses_and_reloads_empty_pool(tmp_path):
+class FakeRedis:
     """
-    Второй вызов отдаёт тот же парсер; пул опустел → proxies.txt читается заново.
+    Redis в памяти: get/set по ключу; error — get бросает RedisError.
+    """
+
+    def __init__(self, error: bool = False):
+        self.data = {}
+        self.error = error
+
+    def get(self, key):
+        if self.error:
+            raise RedisError("Redis недоступен")
+        return self.data.get(key)
+
+    def set(self, key, value):
+        self.data[key] = value
+
+
+@contextmanager
+def _parser_env(tmp_path, redis_client):
+    """
+    Чистый _parser, proxies.txt на два прокси и подменённый Redis.
     """
     proxies_file = tmp_path / "proxies.txt"
     proxies_file.write_text("http://1.1.1.1:80\nhttp://2.2.2.2:80\n")
 
     with (
         patch.object(tasks, "_parser", None),
+        patch.object(tasks, "_parser_proxies_updated_at", None),
+        patch.object(tasks, "redis_client", redis_client),
         patch.object(tasks.settings, "PARSER_PROXIES_FILE", str(proxies_file)),
     ):
+        yield
+
+
+def _pool_servers(parser) -> list[str]:
+    return [proxy.server for proxy in parser.pool._proxies]
+
+
+def test_get_parser_reuses_and_reloads_empty_pool(tmp_path):
+    """
+    В Redis пусто: пул из proxies.txt, второй вызов отдаёт тот же парсер;
+    пул опустел → proxies.txt читается заново.
+    """
+    with _parser_env(tmp_path, FakeRedis()):
         first = tasks._get_parser()
         assert tasks._get_parser() is first
         assert len(first.pool) == 2
@@ -217,6 +255,33 @@ def test_get_parser_reuses_and_reloads_empty_pool(tmp_path):
         reloaded = tasks._get_parser()
         assert reloaded is not first
         assert len(reloaded.pool) == 2
+
+
+def test_get_parser_takes_redis_list_and_reloads_when_newer(tmp_path):
+    """
+    Список в Redis есть — пул из него, а не из файла. Тот же список —
+    тот же парсер; список обновился — парсер пересоздаётся.
+    """
+    redis_client = FakeRedis()
+    with _parser_env(tmp_path, redis_client):
+        save_proxies(redis_client, [Proxy("3.3.3.3", 80, ProxyProtocol.HTTP)])
+        first = tasks._get_parser()
+        assert _pool_servers(first) == ["http://3.3.3.3:80"]
+        assert tasks._get_parser() is first
+
+        save_proxies(redis_client, [Proxy("4.4.4.4", 1080, ProxyProtocol.SOCKS5)])
+        reloaded = tasks._get_parser()
+        assert reloaded is not first
+        assert _pool_servers(reloaded) == ["socks5://4.4.4.4:1080"]
+
+
+def test_get_parser_redis_down_uses_file(tmp_path):
+    """
+    Redis недоступен — пул из proxies.txt, парсинг не падает.
+    """
+    with _parser_env(tmp_path, FakeRedis(error=True)):
+        parser = tasks._get_parser()
+        assert _pool_servers(parser) == ["http://1.1.1.1:80", "http://2.2.2.2:80"]
 
 
 # === _continue_selections_after_parse: подборки PARSING после парсинга ===

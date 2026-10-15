@@ -26,7 +26,7 @@ class SelectionService:
 
     # === Создание ===
 
-    async def create_selection(
+    async def create_selection_no_commit(
         self,
         product_id: int,
         task_type: SelectionTaskType,
@@ -34,7 +34,8 @@ class SelectionService:
     ) -> Selection:
         """
         Создаёт подборку в статусе QUEUE
-        (или PARSING — продукт ещё парсится).
+        (или PARSING — продукт ещё парсится) без commit.
+        Commit делает оркестратор — вместе с резервом крутки.
         """
         selection = await self.repository.create(
             {
@@ -43,7 +44,6 @@ class SelectionService:
                 "selection_status": status,
             }
         )
-        await self.repository.session.commit()
         return selection
 
     # === Получение ===
@@ -126,17 +126,17 @@ class SelectionService:
 
     # === Привязка пользователя ===
 
-    async def add_user_to_selection(
+    async def add_user_to_selection_no_commit(
         self,
         selection: Selection,
         user: User,
     ) -> None:
         """
-        Привязать пользователя к подборке.
+        Привязать пользователя к подборке без commit.
         Если пользователь уже привязан — ничего не делает.
+        Commit делает оркестратор — вместе с резервом крутки.
         """
         await self.repository.add_user(selection, user)
-        await self.repository.session.commit()
 
     # === Смена статуса ===
 

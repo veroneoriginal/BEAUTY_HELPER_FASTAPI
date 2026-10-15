@@ -1,5 +1,6 @@
 # apps/content_generation/openai/limiter/main.py
 
+import copy
 import json
 import logging
 import time as limiter_time
@@ -69,7 +70,8 @@ class Limiter:
         if dict_from_redis_with_keytime:
             return json.loads(dict_from_redis_with_keytime.decode())
 
-        return self.storing_current_request.copy()
+        # deepcopy: вложенные словари аккаунтов не должны быть общими с шаблоном
+        return copy.deepcopy(self.storing_current_request)
 
     def _saving_to_database(
         self,

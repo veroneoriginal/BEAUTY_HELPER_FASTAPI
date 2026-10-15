@@ -1,32 +1,30 @@
 # apps/content_generation/openai/settings.py
-# данные для модели 4о-mini
+# Цены, лимиты и параметры запроса берутся из файла модели в models/
+# по OPENAI_MODEL; неизвестная модель — ошибка при старте
 
+from apps.content_generation.openai.models import get_model_settings
 from core.config import settings
+
+MODEL_SETTINGS = get_model_settings(settings.OPENAI_MODEL)
 
 OPENAI_ACCOUNT_1 = "account_1"
 OPENAI_ACCOUNT_2 = "account_2"
 
 SETTINGS_FOR_OPENAI_RESPONSE = {
-    "temperature": 1,
-    "max_tokens": 4096,
+    "temperature": MODEL_SETTINGS.TEMPERATURE,
+    "max_tokens": MODEL_SETTINGS.MAX_TOKENS,
+    "timeout": MODEL_SETTINGS.TIMEOUT_SECONDS,
     "cost": {
         "USD_TO_RUB": settings.OPENAI_USD_TO_RUB,
-        "PRICE_ONE_TOKEN_PROMPT_USD": 0.00000015,
-        "PRICE_ONE_TOKEN_RESPONSE_USD": 0.000000075,
+        "PRICE_ONE_TOKEN_PROMPT_USD": MODEL_SETTINGS.PRICE_ONE_TOKEN_PROMPT_USD,
+        "PRICE_ONE_TOKEN_RESPONSE_USD": MODEL_SETTINGS.PRICE_ONE_TOKEN_RESPONSE_USD,
     },
 }
 
+# Лимиты у аккаунтов одинаковые — из файла модели
 ACCOUNT_LIMITS = {
-    OPENAI_ACCOUNT_1: {
-        "RPM": 300,  # Requests Per Minute — количество запросов в минуту - 500 реально
-        "TPM": 150000,  # Tokens Per Minute — количество токенов в минуту - 200 000 реально
-        "IPM": 0,  # Images Per Minute — количество картинок в минуту
-    },
-    OPENAI_ACCOUNT_2: {
-        "RPM": 300,
-        "TPM": 150000,
-        "IPM": 0,
-    },
+    OPENAI_ACCOUNT_1: dict(MODEL_SETTINGS.LIMITS),
+    OPENAI_ACCOUNT_2: dict(MODEL_SETTINGS.LIMITS),
 }
 
 STORE_CURRENT_REQUEST = {

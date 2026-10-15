@@ -114,7 +114,7 @@ cd ~/Projects/beauty_helper_fastapi && docker compose -f docker/docker-compose.y
 ```
 Проверить, что headless Chromium запускается внутри воркера (ждём `chromium ok`):
 ```
-cd ~/Projects/beauty_helper_fastapi && docker exec bh_celery python -c "from playwright.sync_api import sync_playwright; p = sync_playwright().start(); b = p.chromium.launch(); print('chromium ok', b.version); b.close(); p.stop()"
+cd ~/Projects/beauty_helper_fastapi && docker exec bh_celery_parse python -c "from playwright.sync_api import sync_playwright; p = sync_playwright().start(); b = p.chromium.launch(); print('chromium ok', b.version); b.close(); p.stop()"
 ```
 
 ## Миграция: статус подборки PARSING (встраивание, шаг 2)
@@ -137,7 +137,7 @@ cd ~/Projects/beauty_helper_fastapi && pip install -r requirements-dev.txt && pr
 cd ~/Projects/beauty_helper_fastapi && pre-commit run --all-files
 ```
 
-## Оркестратор: платный парсинг (09.10)
+## Оркестратор: платный парсинг
 Поднять БД и прогнать тесты оркестратора (ждём `passed` без `skipped`):
 ```
 cd ~/Projects/beauty_helper_fastapi && make up-db && python -m pytest -q -rs tests/test_orchestrator.py
@@ -148,10 +148,10 @@ cd ~/Projects/beauty_helper_fastapi && docker exec bh_pg sh -c 'psql -U "$POSTGR
 ```
 Перезапустить воркер после правок кода (Celery сам код не перечитывает) и смотреть логи парсинга:
 ```
-cd ~/Projects/beauty_helper_fastapi && docker restart bh_celery && docker logs -f --since 1m bh_celery 2>&1 | grep -E "PARSE|PROXY|SELECTION|ERROR"
+cd ~/Projects/beauty_helper_fastapi && docker restart bh_celery_parse && docker logs -f --since 1m bh_celery_parse 2>&1 | grep -E "PARSE|PROXY|SELECTION|ERROR"
 ```
 
-## Переименование link_ga → product_link, article_ga → article (12.10)
+## Переименование link_ga → product_link, article_ga → article
 Поднять БД и прогнать все тесты (ждём `passed` без `skipped`):
 ```
 cd ~/Projects/beauty_helper_fastapi && make up-db && python -m pytest -q -rs tests
@@ -171,4 +171,57 @@ cd ~/Projects/beauty_helper_fastapi && docker exec bh_pg sh -c 'psql -U "$POSTGR
 Проверить откат и вернуть обратно (ждём две строки `Running ...` без ошибок):
 ```
 cd ~/Projects/beauty_helper_fastapi && docker exec bh_backend alembic downgrade -1 && docker exec bh_backend alembic upgrade head
+```
+
+## Время одного запроса к OpenAI (таймаут)
+Перезапустить воркеры и смотреть время каждого запроса к OpenAI, пока идёт генерация (строки `[OPENAI] Запрос к ...`):
+```
+cd ~/Projects/beauty_helper_fastapi && make restart-worker && docker logs -f --since 1m bh_celery_selection 2>&1 | grep -E "OPENAI|Finished|ERROR"
+```
+
+## Образец ответа freeproxyupdate.com (задача 16)
+Скачать страницу с RU-прокси как есть, без браузера, — так её увидит и Celery-задача (ждём размер файла больше нуля и строки с ip):
+```
+cd ~/Projects/beauty_helper_fastapi && curl -sSL -A "Mozilla/5.0" -o tests/parser/fixtures/freeproxyupdate_russia.html https://freeproxyupdate.com/russia-ru && ls -l tests/parser/fixtures/freeproxyupdate_russia.html && grep -cE "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" tests/parser/fixtures/freeproxyupdate_russia.html
+```
+
+## Обновление прокси из Redis (задача 16, шаг 2)
+Перезапустить воркеры и beat (у beat новое расписание), запустить обновление руками, 
+не дожидаясь часа, и смотреть лог (ждём `[PROXY] Список прокси обновлён: N шт.`):
+```
+cd ~/Projects/beauty_helper_fastapi && make restart-worker && docker restart bh_celery_beat && sleep 10 && docker exec bh_celery_selection celery -A infrastructure.celery.app call infrastructure.celery.tasks.refresh_proxies_task && sleep 15 && docker logs -n 50 bh_celery_selection 2>&1 | grep PROXY
+```
+Что лежит в Redis (ждём JSON с `updated_at` и списком `proxies`):
+```
+cd ~/Projects/beauty_helper_fastapi && docker exec bh_redis sh -c 'redis-cli -a "$REDIS_PASSWORD" --no-auth-warning get parser:proxies'
+```
+
+## Парсинг с прокси из Redis (задача 16, шаг 3)
+Перезапустить воркеры и смотреть логи парсинга с этого момента; затем отправить ссылку через Swagger (ждём `[PARSE] Пул прокси загружен из Redis ...`):
+```
+cd ~/Projects/beauty_helper_fastapi && make restart-worker && docker logs -f -n 0 bh_celery_parse 2>&1 | grep -E "PARSE|PROXY|SELECTION|ERROR"
+```
+
+## Миграция: номер последнего шага анализа (analysis_last_step)
+Применить миграцию и перезапустить воркеры (ждём `Running upgrade 229c40bccd34 -> d4e5f6a7b8c9`):
+```
+cd ~/Projects/beauty_helper_fastapi && docker exec bh_backend alembic upgrade head && make restart-worker
+```
+Проверить версию и колонку (ждём `d4e5f6a7b8c9` и `analysis_last_step`):
+```
+cd ~/Projects/beauty_helper_fastapi && docker exec bh_pg sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Atc "SELECT version_num FROM alembic_version; SELECT column_name FROM information_schema.columns WHERE table_name = '"'"'selections'"'"' AND column_name = '"'"'analysis_last_step'"'"';"'
+```
+Проверить откат и вернуть обратно (ждём две строки `Running ...` без ошибок):
+```
+cd ~/Projects/beauty_helper_fastapi && docker exec bh_backend alembic downgrade -1 && docker exec bh_backend alembic upgrade head
+```
+
+## Словарь tiktoken в образе (задача 25)
+Пересобрать образы и поднять стек (при сборке скачивается словарь `o200k_base`):
+```
+cd ~/Projects/beauty_helper_fastapi && docker compose -f docker/docker-compose.yaml --env-file .env up -d --build
+```
+Проверить, что словарь уже в образе и сеть для него не нужна (ждём путь `/opt/tiktoken_cache` и `o200k_base ok`):
+```
+cd ~/Projects/beauty_helper_fastapi && docker exec bh_celery_selection sh -c 'echo $TIKTOKEN_CACHE_DIR && ls /opt/tiktoken_cache && python -c "import tiktoken; print(tiktoken.get_encoding(\"o200k_base\").name, \"ok\")"'
 ```

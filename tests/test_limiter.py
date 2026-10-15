@@ -9,6 +9,7 @@ from apps.content_generation.openai.settings import (
     ACCOUNT_LIMITS,
     OPENAI_ACCOUNT_1,
     OPENAI_ACCOUNT_2,
+    STORE_CURRENT_REQUEST,
 )
 
 # Лимит RPM у обоих аккаунтов (см. settings.ACCOUNT_LIMITS)
@@ -79,3 +80,24 @@ def test_returns_none_when_all_full():
 
     assert account is None
     lim._saving_to_database.assert_not_called()
+
+
+def test_new_minute_does_not_change_template():
+    """Две «новые минуты» подряд в одном процессе — шаблон счётчиков остаётся пустым."""
+    lim = make_limiter()
+    lim.storing_current_request = STORE_CURRENT_REQUEST
+    lim.redis_client = MagicMock()
+    lim.redis_client.get.return_value = None  # ключа текущей минуты в Redis нет
+    request = {"RPM": 1, "TPM": 100, "IPM": 0}
+
+    for key in ("minute_1", "minute_2"):
+        counts = lim.checking_key_in_redis(key)
+        lim._select_account_for_generating(
+            data_with_info=request,
+            key_with_time=key,
+            dict_from_redis_with_keytime=counts,
+        )
+        # каждая новая минута начинается с нуля
+        assert counts[OPENAI_ACCOUNT_1]["RPM"] == 1
+
+    assert STORE_CURRENT_REQUEST == counters()

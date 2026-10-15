@@ -47,10 +47,12 @@
     ставит задачу в Celery и быстро отвечает статусом
     (created / pending / done / parsing / error).
 
-        │ run_create_selection_on_task.delay(selection_id)
+        │ товар есть в БД:   run_create_selection_on_task.delay(selection_id)
+        │ товара нет в БД:   run_parse_product_task.delay(product_id)
         ▼
 
-[2] Celery Worker (sync, psycopg2)
+[2] Celery Worker подборок — bh_celery_selection
+    (sync, psycopg2, очередь Selection_Queue, -c 2)
     Одна задача делает весь пайплайн генерации подборки:
       1. OpenAI — состав делится на шаги по 10 ингредиентов,
          каждый шаг идёт отдельным запросом (KeyManager + Limiter)
@@ -61,10 +63,21 @@
       6. Статус подборки → DONE / FAILED
     Идемпотентность: Redis-lock на selection_id, retry (max 3), acks_late.
 
-[3] Celery Beat (каждые 30 сек: run_waiting_task)
+[3] Celery Worker парсинга — bh_celery_parse
+    (sync, Chromium, очередь Parse_Queue, -c 1)
+    Парсит карточку товара, пока подборка лежит в PARSING.
+    После успешного парсинга переводит подборку в QUEUE и ставит
+    run_create_selection_on_task в Selection_Queue.
+
+[4] Celery Beat (каждые 30 сек: run_waiting_task)
     Страховка: дозакрывает зависшие ожидания и перезапускает
-    подборки, застрявшие в QUEUE.
+    подборки, застрявшие в QUEUE. Задача уходит в Selection_Queue.
 ```
+
+Очередей две, чтобы долгий парсинг (до 40 минут) не задерживал
+короткие генерации и страховку. В `infrastructure/celery/app.py`
+маршрут задан только парсингу, остальное идёт в очередь
+по умолчанию `Selection_Queue`.
 
 Весь пайплайн (OpenAI → PDF → S3) выполняет **одна** Celery-задача
 `run_create_selection_on_task`, а не цепочка отдельных задач. 
@@ -135,7 +148,7 @@ spins (доступные)  --reserve-->  reserved_spins (в работе)
 
 1. Скопировать шаблон переменных и подставить свои значения:
    `cp .env.example .env`
-2. Поднять весь стек (Postgres, Redis, RabbitMQ, app, Celery worker и beat):
+2. Поднять весь стек (Postgres, Redis, RabbitMQ, app, два Celery-воркера и beat):
    `make up`. Остальные цели (логи, пересборка, остановка) — в `Makefile`.
 
 При первом старте `app` (см. `docker/entrypoint.sh`):

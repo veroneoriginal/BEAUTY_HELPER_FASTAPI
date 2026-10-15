@@ -13,6 +13,7 @@ from sqlalchemy import (
     Column,
     Enum,
     ForeignKey,
+    Integer,
     String,
     Table,
     Text,
@@ -146,6 +147,11 @@ class Selection(Base):
         Text,
         nullable=True,
         comment="Финальный ответ от OpenAI",
+    )
+    analysis_last_step: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+        comment="Номер последнего готового шага анализа OpenAI",
     )
 
     # === Стоимость ===

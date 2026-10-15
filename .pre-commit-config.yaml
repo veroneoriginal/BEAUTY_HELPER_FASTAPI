@@ -6,7 +6,7 @@
 # Прогнать вручную по всем файлам:
 #   pre-commit run --all-files
 #
-# Версия Ruff зафиксирована и совпадает с requirements.txt (ruff==0.15.8),
+# Версия Ruff зафиксирована и совпадает с requirements-dev.txt (ruff==0.15.8),
 # чтобы хук и `make lint`/`make format` вели себя одинаково.
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit

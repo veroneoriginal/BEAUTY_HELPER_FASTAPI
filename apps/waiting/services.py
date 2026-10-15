@@ -12,25 +12,23 @@ class WaitingService:
     def __init__(self, repository: WaitingRepository):
         self.repository = repository
 
-    async def get_or_create_waiting(
+    async def get_or_create_waiting_no_commit(
         self,
         user_id: int,
         selection_id: int,
     ) -> tuple[Waiting, bool]:
         """
-        Создаёт или возвращает существующее ожидание для пары (user_id, selection_id).
+        Создаёт или возвращает существующее ожидание для пары (user_id, selection_id)
+        без commit. Commit делает оркестратор — вместе с резервом крутки.
 
         :param user_id: ID пользователя
         :param selection_id: ID подборки
         :return: кортеж (объект Waiting, создан ли новый)
         """
-        waiting, created = await self.repository.get_or_create(
+        return await self.repository.get_or_create(
             user_id=user_id,
             selection_id=selection_id,
         )
-        if created:
-            await self.repository.session.commit()
-        return waiting, created
 
     async def get_open_waiting(
         self,

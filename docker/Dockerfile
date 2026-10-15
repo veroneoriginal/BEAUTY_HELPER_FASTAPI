@@ -13,6 +13,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Chromium для парсера (Playwright) и системные библиотеки к нему
 RUN playwright install --with-deps chromium
 
+# Словарь tiktoken для подсчёта токенов — скачиваем при сборке, а не при
+# первой генерации (там он падал на DNS). Папка вне /app: /app закрыт томом
+# с кодом. o200k_base — словарь gpt-4o-mini; другая модель — пересобрать образ
+ENV TIKTOKEN_CACHE_DIR=/opt/tiktoken_cache
+RUN python -c "import tiktoken; tiktoken.get_encoding('o200k_base')"
+
 # Код приложения
 COPY . .
 

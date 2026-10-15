@@ -2,6 +2,7 @@
 import logging
 import math
 from copy import deepcopy
+from typing import Callable, Optional
 
 from apps.content_generation.openai.json_constructor.main import (
     get_json_scheme,
@@ -28,19 +29,34 @@ class TaskProcessing:
     формирует промпт и JSON-схему, отправляет запрос в OpenAI,
     сохраняет результат.
 
+    Повтор после сбоя: передаём уже готовые шаги (request_data,
+    response_data, last_done_step) — шаги с номером <= last_done_step
+    не отправляются в OpenAI второй раз.
+
     :param collection_data: словарь с данными продукта
     :param task_type: тип задачи подборки
+    :param request_data: запросы готовых шагов (из прошлой попытки)
+    :param response_data: ответы готовых шагов (из прошлой попытки)
+    :param last_done_step: номер последнего готового шага, 0 — нет готовых
+    :param on_step_done: вызывается после каждого шага с его номером —
+        задача сохраняет результат в подборку
     """
 
     def __init__(
         self,
         collection_data: dict,
         task_type: SelectionTaskType,
+        request_data: Optional[list] = None,
+        response_data: Optional[list] = None,
+        last_done_step: int = 0,
+        on_step_done: Optional[Callable[[int], None]] = None,
     ):
         self.collection_data = collection_data
         self.task_type = task_type
-        self.request_data = []  # здесь будут все request_details
-        self.response_data = []  # здесь будут ответы от OPENAI
+        self.request_data = request_data or []  # здесь будут все request_details
+        self.response_data = response_data or []  # здесь будут ответы от OPENAI
+        self.last_done_step = last_done_step
+        self.on_step_done = on_step_done
 
         self.method_for_task_code = {
             # Подробный анализ каждого элемента состава
@@ -210,7 +226,18 @@ class TaskProcessing:
         """
 
         for step_data in all_task_steps:
+            step_number = step_data["Номер шага задачи"]
+
+            # Шаг готов в прошлой попытке — ответ уже есть, не платим ещё раз
+            if step_number <= self.last_done_step:
+                logger.info("[OPENAI] Шаг %s уже готов, пропускаем", step_number)
+                continue
+
             self.run_task_step(step_collection_data=step_data)
+            self.last_done_step = step_number
+
+            if self.on_step_done:
+                self.on_step_done(step_number)
 
     def run_task_processing(
         self,

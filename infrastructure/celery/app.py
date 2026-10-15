@@ -35,13 +35,24 @@ celery_app.conf.update(
     task_track_started=True,
     task_acks_late=True,
     worker_prefetch_multiplier=1,
-    # Своё имя очереди в RabbitMQ вместо дефолтного "celery"
-    task_default_queue="Tasks_Queue",
+    # Две очереди: долгий парсинг (Chromium, до 40 мин) не задерживает
+    # короткие генерации и beat-страховку. Всё, что не парсинг, —
+    # в очередь по умолчанию, а не в дефолтную "celery"
+    task_default_queue="Selection_Queue",
+    task_routes={
+        "infrastructure.celery.tasks.run_parse_product_task": {
+            "queue": "Parse_Queue",
+        },
+    },
 )
 
 celery_app.conf.beat_schedule = {
     "run-waiting-task-every-30-seconds": {
         "task": "infrastructure.celery.tasks.run_waiting_task",
         "schedule": 30.0,
+    },
+    "refresh-proxies-every-hour": {
+        "task": "infrastructure.celery.tasks.refresh_proxies_task",
+        "schedule": 60 * 60,
     },
 }

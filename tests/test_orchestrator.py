@@ -28,6 +28,37 @@ pytestmark = pytest.mark.integration
 TASK_TYPE = SelectionTaskType.COMPOSITION_ANALYSIS
 
 
+# === Redis для lock'а запроса: в памяти, без сервера ===
+
+
+class FakeAsyncRedis:
+    """
+    Async-Redis в памяти: set(nx=True) и delete — всё, что нужно lock'у.
+    """
+
+    def __init__(self):
+        self.data = {}
+
+    async def set(self, key, value, nx=False, ex=None):
+        if nx and key in self.data:
+            return None
+        self.data[key] = value
+        return True
+
+    async def delete(self, key):
+        self.data.pop(key, None)
+
+
+@pytest.fixture(autouse=True)
+def fake_redis():
+    """
+    Оркестратор берёт lock в Redis — в тестах подменяем его памятью.
+    """
+    redis_client = FakeAsyncRedis()
+    with patch.object(orchestrator, "redis_client", redis_client):
+        yield redis_client
+
+
 # === Фабрики тестовых данных ===
 
 
@@ -299,6 +330,105 @@ async def test_created_branch_creates_selection_and_enqueues(db_session):
         selection_id=selection.id,
     )
     assert waiting is not None
+
+
+async def test_created_branch_failure_midway_commits_nothing(db_session):
+    """
+    Резерв, подборка, привязка и ожидание — одна транзакция: если упало
+    создание ожидания, до этого не было ни одного commit, и get_session
+    откатит всё — крутка не останется в резерве без ожидания.
+    """
+    user = await _make_user(db_session)
+    await _make_balance(db_session, user.id, spins=3)
+    product = await _make_product(db_session)
+
+    with (
+        patch.object(orchestrator, "run_create_selection_on_task") as task,
+        patch.object(
+            orchestrator.WaitingService,
+            "get_or_create_waiting_no_commit",
+            AsyncMock(side_effect=RuntimeError("БД упала")),
+        ),
+        patch.object(db_session, "commit", AsyncMock()) as commit,
+        pytest.raises(RuntimeError),
+    ):
+        await get_or_prepare_selection(
+            user=user,
+            product_link=product.product_link,
+            task_type=TASK_TYPE,
+            session=db_session,
+        )
+
+    commit.assert_not_awaited()
+    task.delay.assert_not_called()
+
+
+async def test_second_request_while_first_running_does_not_reserve(
+    db_session, fake_redis
+):
+    """
+    Lock пары «пользователь + ссылка» занят первым запросом — второй
+    сразу отвечает pending: ни подборки, ни резерва крутки.
+    """
+    user = await _make_user(db_session)
+    await _make_balance(db_session, user.id, spins=3)
+    product = await _make_product(db_session)
+    fake_redis.data[f"selection_request_lock:{user.id}:{product.product_link}"] = "1"
+
+    with patch.object(orchestrator, "run_create_selection_on_task") as task:
+        result = await get_or_prepare_selection(
+            user=user,
+            product_link=product.product_link,
+            task_type=TASK_TYPE,
+            session=db_session,
+        )
+
+    assert result["status"] == "pending"
+    task.delay.assert_not_called()
+
+    balance = await BalanceRepository(db_session).get_by_user_id(user.id)
+    assert (balance.spins, balance.reserved_spins) == (3, 0)
+
+
+async def test_lock_released_after_request(db_session, fake_redis):
+    """
+    После запроса lock снят: следующий запрос того же пользователя
+    по той же ссылке пройдёт обычным путём.
+    """
+    user = await _make_user(db_session)
+    await _make_balance(db_session, user.id, spins=3)
+    product = await _make_product(db_session)
+
+    with patch.object(orchestrator, "run_create_selection_on_task"):
+        await get_or_prepare_selection(
+            user=user,
+            product_link=product.product_link,
+            task_type=TASK_TYPE,
+            session=db_session,
+        )
+
+    assert fake_redis.data == {}
+
+
+async def test_redis_down_request_goes_without_lock(db_session, fake_redis):
+    """
+    Redis недоступен — запрос не отклоняется, идёт без lock'а.
+    """
+    user = await _make_user(db_session)
+    await _make_balance(db_session, user.id, spins=3)
+    product = await _make_product(db_session)
+    fake_redis.set = AsyncMock(side_effect=ConnectionError("Redis упал"))
+
+    with patch.object(orchestrator, "run_create_selection_on_task") as task:
+        result = await get_or_prepare_selection(
+            user=user,
+            product_link=product.product_link,
+            task_type=TASK_TYPE,
+            session=db_session,
+        )
+
+    assert result["status"] == "created"
+    task.delay.assert_called_once()
 
 
 # === Ветка pending (подборка в процессе) ===

@@ -59,14 +59,36 @@ services:
     networks:
       - bh_network
 
-  # === Celery Worker ===
-  celery_worker:
+  # === Celery Worker: генерация подборок и beat-страховка ===
+  celery_selection_worker:
     build:
       context: ..
       dockerfile: docker/Dockerfile
     restart: unless-stopped
-    container_name: bh_celery
-    command: celery -A infrastructure.celery.app worker --loglevel=info
+    container_name: bh_celery_selection
+    command: celery -A infrastructure.celery.app worker -Q Selection_Queue -c 2 -n selection@%h --loglevel=info
+    volumes:
+      - ..:/app
+    env_file:
+      - ../.env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - bh_network
+
+  # === Celery Worker: парсинг (Chromium, один процесс) ===
+  celery_parse_worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    container_name: bh_celery_parse
+    command: celery -A infrastructure.celery.app worker -Q Parse_Queue -c 1 -n parse@%h --loglevel=info
     volumes:
       - ..:/app
     env_file:
